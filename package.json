@@ -1,0 +1,15 @@
+{
+  "name": "expensive",
+  "version": "0.0.1",
+  "description": "Expensive is an application to help you managing your expenses",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "expensive",
+    "expense tracker"
+  ],
+  "author": "Amirali Lotfi",
+  "license": "ISC"
+}
