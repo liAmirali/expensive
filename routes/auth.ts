@@ -15,8 +15,12 @@ router.post("/register", (req: Request, res: Response) => {
   users.push(newUser);
 
   res.location("/");
-  res.json({ data: newUser, message: "User was created" });
+  res.json({ data: { user: newUser }, message: "User was created" });
   res.send();
+});
+
+router.get("/users", (req: Request, res: Response) => {
+  res.json({ data: { users: users }, message: "Users sent successfully." });
 });
 
 export default router;

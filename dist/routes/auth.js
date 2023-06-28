@@ -13,7 +13,10 @@ router.post("/register", (req, res) => {
     const newUser = new User_1.User(name, email, password);
     users.push(newUser);
     res.location("/");
-    res.json({ data: newUser, message: "User was created" });
+    res.json({ data: { user: newUser }, message: "User was created" });
     res.send();
+});
+router.get("/users", (req, res) => {
+    res.json({ data: { users: users }, message: "Users sent successfully." });
 });
 exports.default = router;
