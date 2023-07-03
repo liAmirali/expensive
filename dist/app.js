@@ -11,6 +11,7 @@ const path_2 = require("./utils/path");
 const app = (0, express_1.default)();
 const port = 3000;
 app.use(body_parser_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.static(path_1.default.join(path_2.rootDir, "public")));
 app.use("/auth", auth_1.default);
 app.use("/", (req, res) => {
     console.log("Hello!", path_2.rootDir);
