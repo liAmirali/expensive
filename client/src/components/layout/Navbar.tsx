@@ -1,10 +1,12 @@
 const Navbar = () => {
   return (
     <div>
-      <ul>
+      <ul className="">
         <li>Home</li>
         <li>Profile</li>
-        <li>Sign Out</li>
+        <button>
+          <p className="text-red-500">Sign Out</p>
+        </button>
       </ul>
     </div>
   );
