@@ -1,11 +1,7 @@
-import './App.css'
+import Layout from "./components/layout/Layout";
 
 const App = () => {
-  return (
-    <h1>
-      Welcome to Expensive;
-    </h1>
-  )
-}
+  return <Layout />;
+};
 
-export default App
+export default App;
