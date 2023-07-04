@@ -1,14 +1,16 @@
 const Navbar = () => {
   return (
-    <div>
-      <ul className="">
-        <li>Home</li>
-        <li>Profile</li>
-        <button>
-          <p className="text-red-500">Sign Out</p>
-        </button>
-      </ul>
-    </div>
+    <nav className="py-6 px-4">
+      <div className="flex space-x-2">
+        <div className="w-10 h-10 rounded-full border overflow-hidden">
+          <img src="/boy.png" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-timberwolf-400 text-sm">Amirali Lotfi</span>
+          <span className="text-timberwolf-400 text-xs">liamirali.lotfi@gmail.com</span>
+        </div>
+      </div>
+    </nav>
   );
 };
 
