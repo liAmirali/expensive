@@ -1,7 +1,7 @@
 import LoginForm from "../login/LoginForm";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   return <LoginForm />;
 };
 
-export default LoginScreen;
+export default RegisterScreen;

@@ -5,7 +5,7 @@ type Props = {} & PropsWithChildren;
 
 const Layout: FC<Props> = ({ children }) => {
   return (
-    <div className="bg-onyx-500 h-screen">
+    <div>
       <Navbar />
       {children}
     </div>

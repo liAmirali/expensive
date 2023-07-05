@@ -6,8 +6,8 @@ const Navbar = () => {
           <img src="/boy.png" />
         </div>
         <div className="flex flex-col">
-          <span className="text-timberwolf-400 text-sm">Amirali Lotfi</span>
-          <span className="text-timberwolf-400 text-xs">liamirali.lotfi@gmail.com</span>
+          <span className="text-sm">Amirali Lotfi</span>
+          <span className="text-xs">liamirali.lotfi@gmail.com</span>
         </div>
       </div>
     </nav>

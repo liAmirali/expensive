@@ -2,23 +2,35 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import LoginScreen from "./components/screens/LoginScreen";
 import HomeScreen from "./components/screens/HomeScreen";
+import { ThemeProvider } from "@emotion/react";
+import { CssBaseline, createTheme } from "@mui/material";
+import RegisterScreen from "./components/screens/RegisterScreen";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomeScreen />,
+  },
   {
     path: "/login",
     element: <LoginScreen />,
   },
   {
-    path: "/",
-    element: <HomeScreen />,
+    path: "/register",
+    element: <RegisterScreen />,
   },
 ]);
 
+const theme = createTheme();
+
 const App = () => {
   return (
-    <Layout>
-      <RouterProvider router={router} />
-    </Layout>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Layout>
+        <RouterProvider router={router} />
+      </Layout>
+    </ThemeProvider>
   );
 };
 
