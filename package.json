@@ -11,5 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "@mui/icons-material": "^5.13.7"
   }
 }
