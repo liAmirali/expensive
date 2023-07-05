@@ -1,11 +1,13 @@
-import Main from "./Main";
+import { FC, PropsWithChildren } from "react";
 import Navbar from "./Navbar";
 
-const Layout = () => {
+type Props = {} & PropsWithChildren;
+
+const Layout: FC<Props> = ({ children }) => {
   return (
     <div className="bg-onyx-500 h-screen">
       <Navbar />
-      <Main />
+      {children}
     </div>
   );
 };
