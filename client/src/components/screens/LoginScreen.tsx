@@ -1,4 +1,4 @@
-import LoginForm from "../login/LoginForm";
+import LoginForm from "../auth/LoginForm";
 
 const LoginScreen = () => {
   return <LoginForm />;
