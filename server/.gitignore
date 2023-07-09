@@ -1,6 +1,0 @@
-# Environment files
-.env
-
-node_modules
-dist
-*.local
