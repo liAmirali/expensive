@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import path from "path";
 import session from "express-session";
 
-import authRoutes from "./routes/auth";
+import apiBaseRouter from "./routes";
 
 import { rootDir } from "./utils/path";
 import { databaseUri } from "./utils/database";
@@ -30,7 +30,7 @@ app.use(
   })
 );
 
-app.use("/auth", authRoutes);
+app.use("/api", apiBaseRouter);
 
 mongoose
   .connect(databaseUri)
