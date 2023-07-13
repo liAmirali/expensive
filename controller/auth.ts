@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 export const postRegister = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
+  // Checking if all the required fields exist
   if (!name || !email || !password) {
     const message = "Name, email and password field are required!";
     console.error(message);
@@ -15,6 +16,7 @@ export const postRegister = async (req: Request, res: Response) => {
 
   const existingUser = await User.exists({ email: email });
 
+  // Checking if a user with the entered email exists
   if (existingUser !== null) {
     const message = "User with this email already exists";
     console.error(message);
@@ -24,6 +26,7 @@ export const postRegister = async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
+  // Creating the user model
   const newUser = new User({ name, email, password: hashedPassword });
 
   console.log("new User => ", newUser);
@@ -45,6 +48,7 @@ export const postLogin = async (req: Request, res: Response) => {
 
   const fetchedUser = await User.exists({ email }).populate("password");
 
+  // Checking a user with the email exists
   if (fetchedUser === null) {
     return res.send({
       statusCode: 404,
@@ -61,6 +65,7 @@ export const postLogin = async (req: Request, res: Response) => {
   console.log("passwordsMatch :>> ", passwordsMatch);
 
   if (passwordsMatch) {
+    req.session.userId = fetchedUser._id.toString();
     return res.json({ message: "Successful login" });
   } else {
     return res.json({ message: "Invalid credentials" });

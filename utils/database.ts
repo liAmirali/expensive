@@ -1,5 +1,7 @@
-require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import { config } from "dotenv";
+import { MongoClient, ServerApiVersion } from "mongodb";
+
+config();
 
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
