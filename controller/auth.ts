@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../models/User";
 import { ResError } from "../models/ResError";
+import bcrypt from "bcryptjs";
 
 export const postRegister = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -14,7 +15,9 @@ export const postRegister = async (req: Request, res: Response) => {
     return res.status(400).send(ResError(400, message));
   }
 
-  const newUser = new User({ name, email, password });
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const newUser = new User({ name, email, password: hashedPassword });
 
   console.log("new User => ", newUser);
 
