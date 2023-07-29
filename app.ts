@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
-import session from "express-session";
 
 import apiBaseRouter from "./routes";
 
@@ -21,14 +20,6 @@ const port = 5000;
 app.use(bodyParser.json());
 // Making the public directory a static directory
 app.use(express.static(path.join(rootDir, "public")));
-// Setting up the session middleware
-app.use(
-  session({
-    secret: process.env.SECRET!,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
 
 app.use("/api", apiBaseRouter);
 

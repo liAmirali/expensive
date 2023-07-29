@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import { ResError } from "../models/ResError";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { config } from "dotenv";
+
+config();
 
 export const postRegister = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -68,8 +72,13 @@ export const postLogin = async (req: Request, res: Response) => {
   console.log("passwordsMatch :>> ", passwordsMatch);
 
   if (passwordsMatch) {
-    req.session.userId = fetchedUser._id.toString();
-    return res.json({ message: "Successful login" });
+    const secret = process.env.SECRET;
+    if (!secret) {
+      const error = new Error("Server error.");
+      throw error;
+    }
+    const token = jwt.sign({ email: email }, secret);
+    return res.json({ message: "Successful login", token: token });
   } else {
     return res.status(402).json({ message: "Invalid credentials" });
   }
