@@ -18,7 +18,7 @@ const app = express();
 const port = 5000;
 
 // Setting up the body parser
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 // Making the public directory a static directory
 app.use(express.static(path.join(rootDir, "public")));
 // Setting up the session middleware

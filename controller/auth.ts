@@ -46,11 +46,14 @@ export const postRegister = async (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
+  console.log("email :>> ", email);
+  console.log("password :>> ", password);
+
   const fetchedUser = await User.exists({ email }).populate("password");
 
   // Checking a user with the email exists
   if (fetchedUser === null) {
-    return res.send({
+    return res.status(404).send({
       statusCode: 404,
       message: "Email doesn't exist.",
     });
@@ -68,6 +71,6 @@ export const postLogin = async (req: Request, res: Response) => {
     req.session.userId = fetchedUser._id.toString();
     return res.json({ message: "Successful login" });
   } else {
-    return res.json({ message: "Invalid credentials" });
+    return res.status(402).json({ message: "Invalid credentials" });
   }
 };
