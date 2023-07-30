@@ -10,14 +10,6 @@ config();
 export const postRegister = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
-  // Checking if all the required fields exist
-  if (!name || !email || !password) {
-    const message = "Name, email and password field are required!";
-    console.error(message);
-
-    return res.status(400).send(ResError(400, message));
-  }
-
   const existingUser = await User.exists({ email: email });
 
   // Checking if a user with the entered email exists
