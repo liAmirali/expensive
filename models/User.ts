@@ -1,6 +1,4 @@
 import mongoose, { Model, Schema } from "mongoose";
-
-export const USER_MODEL = "User";
 interface IUser {
   firstName: string;
   lastName: string;

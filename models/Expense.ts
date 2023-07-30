@@ -1,7 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-const EXPENSE_MODEL = "Expense";
-
 interface IExpense {
   value: number;
   currency: string;
@@ -30,10 +28,11 @@ const ExpenseSchema = new mongoose.Schema<IExpense>(
     },
     created_by: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       require: true,
     },
   },
   { timestamps: true }
 );
 
-export const Expense: Model<IExpense> = mongoose.model(EXPENSE_MODEL, ExpenseSchema);
+export const Expense: Model<IExpense> = mongoose.model("Expense", ExpenseSchema);
