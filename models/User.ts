@@ -1,10 +1,12 @@
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
-interface IUser extends Document {
+export const USER_MODEL = "User";
+interface IUser {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  expenses: Schema.Types.ObjectId[];
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -12,7 +14,12 @@ const userSchema = new mongoose.Schema<IUser>({
   lastName: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  // expenses: [Expense],
+  expenses: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Expense",
+    },
+  ],
 });
 
 export const User: Model<IUser> = mongoose.model("User", userSchema);

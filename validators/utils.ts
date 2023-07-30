@@ -14,4 +14,7 @@ export const throwValidationError = (req: Request, res: Response, next: NextFunc
   next();
 };
 
-export const emailValidator = () => body("email").notEmpty().isEmail().normalizeEmail();
+/**
+ * Checks the "email" field in request body
+ */
+export const emailValidator = () => body("email").notEmpty().normalizeEmail().isEmail();
