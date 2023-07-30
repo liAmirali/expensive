@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
@@ -9,7 +9,7 @@ import { rootDir } from "./utils/path";
 import { databaseUri } from "./utils/database";
 
 import { config } from "dotenv";
-import { ApiError } from "./utils/errors";
+import { errorHandler } from "./middlewares/errorHandler";
 
 // Loading the .env file
 config();
@@ -25,11 +25,7 @@ app.use(express.static(path.join(rootDir, "public")));
 app.use("/api", apiBaseRouter);
 
 // Error handler
-app.use((error: ApiError, req: Request, res: Response, next: NextFunction) => {
-  return res
-    .status(error.statusCode)
-    .json({ message: error.message, data: error.data, statusCode: error.statusCode });
-});
+app.use(errorHandler);
 
 mongoose
   .connect(databaseUri)
