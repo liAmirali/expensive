@@ -10,4 +10,8 @@ export const registerValidators = [
     minUppercase: 1,
     minSymbols: 1,
   }),
+  body("firstName").notEmpty(),
+  body("lastName").notEmpty(),
 ];
+
+export const loginValidators = [emailValidator(), body("password").notEmpty()];
