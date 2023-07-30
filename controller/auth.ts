@@ -69,7 +69,7 @@ export const postLogin = async (req: Request, res: Response) => {
       const error = new Error("Server error.");
       throw error;
     }
-    const token = jwt.sign({ email: email }, secret);
+    const token = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, secret);
     return res.json({ message: "Successful login", token: token });
   } else {
     return res.status(402).json({ message: "Invalid credentials" });
