@@ -1,23 +1,21 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { User } from "../models/User";
-import { ResError } from "../models/ResError";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
+import { ApiError } from "../utils/errors";
 
 config();
 
-export const postRegister = async (req: Request, res: Response) => {
+export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
   const { firstName, lastName, email, password } = req.body;
 
   const existingUser = await User.exists({ email: email });
 
   // Checking if a user with the entered email exists
   if (existingUser !== null) {
-    const message = "User with this email already exists";
-    console.error(message);
-
-    return res.status(400).send(ResError(400, message));
+    const error = new ApiError("User with this email already exists", 400);
+    return next(error);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
