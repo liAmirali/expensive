@@ -16,3 +16,5 @@ export const createGroupValidators = [
     })
     .withMessage("Members field contains duplicate IDs."),
 ];
+
+export const deleteGroupValidators = [body("id").isMongoId().withMessage("ID is invalid.")];

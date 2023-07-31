@@ -70,3 +70,27 @@ export const createGroup = async (req: Request, res: Response) => {
 
   return res.json({ message: "Group was created successfully." });
 };
+
+export const deleteGroup = async (req: Request, res: Response) => {
+  // TODO: add authorization, only authorized people should be able to delete a group
+  const { id: groupIdToDelete } = req.body;
+
+  // Removing the group
+  const group = await Group.findByIdAndDelete(groupIdToDelete);
+
+  if (group === null) {
+    throw new ApiError("Group was not found.", 404);
+  }
+
+  // Removing the group from its members groups list
+  await User.updateMany(
+    { groups: { $in: [groupIdToDelete] } },
+    {
+      $pull: {
+        groups: groupIdToDelete,
+      },
+    }
+  );
+
+  res.send({ message: "Group was deleted successfully." });
+};
