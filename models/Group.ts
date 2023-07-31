@@ -1,9 +1,9 @@
-import { Schema, Model, model, Document } from "mongoose";
+import { Schema, Model, model, Document, Types } from "mongoose";
 
 export interface IGroup extends Document {
   name: string;
-  members: Schema.Types.ObjectId[];
-  creator: Schema.Types.ObjectId;
+  members: Types.ObjectId[];
+  creator: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

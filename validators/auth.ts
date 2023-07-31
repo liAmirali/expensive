@@ -11,7 +11,7 @@ export const registerValidators = [
     minSymbols: 1,
   }),
   body("firstName").notEmpty(),
-  body("lastName").notEmpty(),
+  body("lastName").optional().notEmpty(),
 ];
 
 export const loginValidators = [emailValidator(), body("password").notEmpty()];
