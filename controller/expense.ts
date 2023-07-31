@@ -1,8 +1,75 @@
 import { NextFunction, Request, Response } from "express";
-import { Expense } from "../models/Expense";
+import { Expense, IExpense } from "../models/Expense";
 import { ObjectId } from "mongodb";
-import { User } from "../models/User";
+import { IUser, User } from "../models/User";
 import { ApiError } from "../utils/errors";
+
+export const getExpense = async (req: Request, res: Response, next: NextFunction) => {
+  const { minValue, maxValue, description, category, currency, endDate, startDate } =
+    req.query as unknown as {
+      minValue: number;
+      maxValue: number;
+      description: string;
+      category: string;
+      currency: string;
+      startDate: string;
+      endDate: string;
+    }; // TODO: Export this into an interface
+
+  console.log("req.query :>> ", req.query);
+  // let minValueNumber = minValue as number;
+
+  const userId = req.user?.userId;
+  const user = (await User.findById(userId).populate({
+    path: "expenses",
+    model: "Expense",
+  })) as IUser & { expenses: IExpense[] };
+  if (user === null) {
+    const error = new ApiError("User was not found.", 401);
+    return next(error);
+  }
+  // Optional Filtering
+  const { expenses } = user;
+  const filteredExpenses = expenses.filter((item: IExpense) => {
+    // Filtering for the value range
+    if (minValue && maxValue) {
+      if (item.value < minValue || item.value > maxValue) return false;
+    } else if (minValue) {
+      if (item.value < minValue) return false;
+    } else if (maxValue) {
+      if (item.value > maxValue) return false;
+    }
+
+    // Expense description must contain the description filter provided
+    if (description && item.description && !item.description.includes(description)) return false;
+
+    // Expense category must be equal to the category filter provided
+    if (category && item.category && item.category !== category) return false;
+
+    // Expense currency must be equal to the currency filter provided
+    if (currency && item.currency && item.currency !== currency) return false;
+
+    // Filtering for the expense date
+    console.log("item.createdAt :>> ", item.createdAt);
+    if (startDate && endDate) {
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+      if (item.createdAt > endDateObj || item.createdAt < startDateObj) return false;
+    } else if (startDate) {
+      const startDateObj = new Date(startDate);
+      if (item.createdAt < startDateObj) return false;
+    } else if (endDate) {
+      const endDateObj = new Date(endDate);
+      if (item.createdAt > endDateObj) return false;
+    }
+
+    return true;
+  });
+
+  console.log("filteredExpenses :>> ", filteredExpenses);
+
+  return res.json({ message: "Expenses was sent successfully.", data: filteredExpenses });
+};
 
 export const addExpense = async (req: Request, res: Response, next: NextFunction) => {
   const { value, category, description, currency } = req.body;
@@ -14,7 +81,7 @@ export const addExpense = async (req: Request, res: Response, next: NextFunction
     category,
     description,
     currency,
-    created_by: new ObjectId(userId),
+    createdBy: new ObjectId(userId),
   });
 
   if (!userId) {

@@ -1,11 +1,13 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-interface IExpense {
+export interface IExpense {
   value: number;
   currency?: string | null;
   category?: string;
   description?: string;
-  created_by: Schema.Types.ObjectId;
+  createdBy: Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ExpenseSchema = new mongoose.Schema<IExpense>(
@@ -23,7 +25,7 @@ const ExpenseSchema = new mongoose.Schema<IExpense>(
     description: {
       type: String,
     },
-    created_by: {
+    createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       require: true,
