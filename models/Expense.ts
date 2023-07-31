@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Model, Schema, model } from "mongoose";
 
 export interface IExpense {
   value: number;
@@ -10,7 +10,7 @@ export interface IExpense {
   updatedAt: Date;
 }
 
-const ExpenseSchema = new mongoose.Schema<IExpense>(
+const ExpenseSchema = new Schema<IExpense>(
   {
     value: {
       type: Number,
@@ -35,4 +35,4 @@ const ExpenseSchema = new mongoose.Schema<IExpense>(
   { timestamps: true }
 );
 
-export const Expense: Model<IExpense> = mongoose.model("Expense", ExpenseSchema);
+export const Expense: Model<IExpense> = model("Expense", ExpenseSchema);

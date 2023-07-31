@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 export interface IUser {
   firstName: string;
   lastName: string;
@@ -7,7 +7,7 @@ export interface IUser {
   expenses: Schema.Types.ObjectId[];
 }
 
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new Schema<IUser>({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
@@ -20,4 +20,4 @@ const userSchema = new mongoose.Schema<IUser>({
   ],
 });
 
-export const User: Model<IUser> = mongoose.model("User", userSchema);
+export const User: Model<IUser> = model("User", userSchema);
