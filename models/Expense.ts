@@ -15,6 +15,7 @@ const ExpenseSchema = new mongoose.Schema<IExpense>(
     value: {
       type: Number,
       required: true,
+      min: 0,
     },
     currency: {
       type: String,
