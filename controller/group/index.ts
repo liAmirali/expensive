@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { User } from "../models/User";
-import { ApiError } from "../utils/errors";
-import { Group } from "../models/Group";
+import { User } from "../../models/User";
+import { ApiError } from "../../utils/errors";
+import { Group } from "../../models/Group";
 import { Types } from "mongoose";
 
 export const listGroups = async (req: Request, res: Response) => {
