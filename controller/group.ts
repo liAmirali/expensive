@@ -19,6 +19,10 @@ export const createGroup = async (req: Request, res: Response, next: NextFunctio
   const newGroup = new Group({ name: name, creator: creatorUser._id });
 
   if (memberObjectIds) {
+    if (memberObjectIds.includes(creatorUser._id)) {
+      throw new ApiError("Creator must not be passed to the group members. It will be added automatically.", 422);
+    }
+
     const fetchedMembers = await User.find({ _id: { $in: memberObjectIds } });
     console.log("fetchedMembers:", fetchedMembers);
 
