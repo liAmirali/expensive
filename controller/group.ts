@@ -1,10 +1,29 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { User } from "../models/User";
 import { ApiError } from "../utils/errors";
 import { Group } from "../models/Group";
 import { Types } from "mongoose";
 
-export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
+export const listGroups = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const user = await User.findById(userId).populate("groups");
+  if (user === null) {
+    throw new ApiError("User is not authenticated.", 401);
+  }
+
+  const { groups } = user;
+
+  if (!groups || groups.length === 0) {
+    throw new ApiError("No groups found.", 404);
+  }
+
+  console.log("user's groups :>> ", groups);
+
+  return res.json({ message: "Groups fetched successfully.", data: groups });
+};
+
+export const createGroup = async (req: Request, res: Response) => {
   const { name, members } = req.body as { name?: string; members?: string[] }; // TODO: Define interface
 
   const memberObjectIds = members && members.map((id) => new Types.ObjectId(id));
@@ -20,7 +39,10 @@ export const createGroup = async (req: Request, res: Response, next: NextFunctio
 
   if (memberObjectIds) {
     if (memberObjectIds.includes(creatorUser._id)) {
-      throw new ApiError("Creator must not be passed to the group members. It will be added automatically.", 422);
+      throw new ApiError(
+        "Creator must not be passed to the group members. It will be added automatically.",
+        422
+      );
     }
 
     const fetchedMembers = await User.find({ _id: { $in: memberObjectIds } });
