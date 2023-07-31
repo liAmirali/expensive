@@ -5,12 +5,12 @@ import { Group } from "../models/Group";
 import { ObjectId } from "mongodb";
 
 export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
-  const { name, members } = req.body as { name: string; members: string[] }; // TODO: Define interface
+  const { name, members } = req.body as { name?: string; members?: string[] }; // TODO: Define interface
+
+  const memberObjectIds = members && members.map((id) => new ObjectId(id));
 
   if (members) {
-    const fetchedMembers = await User.find({ _id: { $in: { members } } });
-
-    console.log("MEMBERS: ", members);
+    const fetchedMembers = await User.find({ _id: { $in: memberObjectIds } });
     console.log("fetchedMembers:", fetchedMembers);
 
     // Throwing an error if some users in the members array was not found in the database
@@ -28,7 +28,7 @@ export const createGroup = async (req: Request, res: Response, next: NextFunctio
     throw new ApiError("Creator was not authenticated.", 401);
   }
 
-  const newGroup = new Group({ name: name, creator: creatorUser._id });
+  const newGroup = new Group({ name: name, creator: creatorUser._id, members: memberObjectIds });
   await newGroup.save();
 
   return res.json({ message: "Group was created successfully." });
