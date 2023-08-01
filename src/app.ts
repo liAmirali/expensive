@@ -10,6 +10,7 @@ import { databaseUri } from "./utils/database";
 
 import { config } from "dotenv";
 import { errorHandler } from "./middlewares/errorHandler";
+import { defaults } from "./middlewares/defaults";
 
 // Loading the .env file
 config();
@@ -21,6 +22,8 @@ const port = 5000;
 app.use(bodyParser.json());
 // Making the public directory a static directory
 app.use(express.static(path.join(rootDir, "public")));
+// Setting some default settings on the request and response
+app.use(defaults);
 
 app.use("/api", apiBaseRouter);
 
