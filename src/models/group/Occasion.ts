@@ -1,29 +1,17 @@
-import { Model, Schema, model } from "mongoose";
-import { IOccasionExpense, OccasionExpense } from "./OccasionExpense";
-import { IUser, User } from "../User";
+import { Schema, Types } from "mongoose";
+import { IOccasionExpense, occasionExpenseSchema } from "./OccasionExpense";
 
 export interface IOccasion {
   name: string;
-  members: IUser[];
-  expenses: IOccasionExpense[];
+  members?: Types.ObjectId[];
+  expenses?: IOccasionExpense[];
 }
 
-const occasionSchema = new Schema<IOccasion>({
+export const occasionSchema = new Schema<IOccasion>({
   name: {
     type: String,
     required: true,
   },
-  members: [
-    {
-      type: User,
-      required: true,
-    },
-  ],
-  expenses: [
-    {
-      type: OccasionExpense,
-    },
-  ],
+  members: [Schema.Types.ObjectId],
+  expenses: [occasionExpenseSchema],
 });
-
-export const Occasion: Model<IOccasion> = model("Occasion", occasionSchema);

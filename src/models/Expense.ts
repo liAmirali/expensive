@@ -10,7 +10,7 @@ export interface IExpense {
   updatedAt: Date;
 }
 
-const ExpenseSchema = new Schema<IExpense>(
+export const expenseSchema = new Schema<IExpense>(
   {
     value: {
       type: Number,
@@ -35,4 +35,4 @@ const ExpenseSchema = new Schema<IExpense>(
   { timestamps: true }
 );
 
-export const Expense: Model<IExpense> = model("Expense", ExpenseSchema);
+export const Expense: Model<IExpense> = model("Expense", expenseSchema);

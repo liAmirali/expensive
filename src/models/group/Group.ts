@@ -1,14 +1,16 @@
 import { Schema, Model, model, Document, Types } from "mongoose";
+import { IOccasion, occasionSchema } from "./Occasion";
 
 export interface IGroup extends Document {
   name: string;
   members: Types.ObjectId[];
   creator: Types.ObjectId;
+  occasions: IOccasion[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-const groupSchema = new Schema<IGroup>(
+export const groupSchema = new Schema<IGroup>(
   {
     name: {
       type: String,
@@ -25,6 +27,7 @@ const groupSchema = new Schema<IGroup>(
       ref: "User",
       required: true,
     },
+    occasions: [occasionSchema],
   },
   {
     timestamps: true,

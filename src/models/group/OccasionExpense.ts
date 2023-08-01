@@ -1,5 +1,5 @@
 import { Model, Schema, model } from "mongoose";
-import { IUser, User } from "../User";
+import { IUser, User, userSchema } from "../User";
 
 export interface IOccasionExpense {
   value: number;
@@ -9,7 +9,7 @@ export interface IOccasionExpense {
   updatedAt: Date;
 }
 
-const occasionExpenseSchema = new Schema<IOccasionExpense>(
+export const occasionExpenseSchema = new Schema<IOccasionExpense>(
   {
     value: {
       type: Number,
@@ -17,19 +17,12 @@ const occasionExpenseSchema = new Schema<IOccasionExpense>(
       min: 0,
     },
     paidBy: {
-      type: User,
+      type: userSchema,
       required: true,
     },
-    assignedTo: [
-      {
-        type: User,
-        required: true,
-      },
-    ],
+    assignedTo: [userSchema],
   },
   {
     timestamps: true,
   }
 );
-
-export const OccasionExpense: Model<IOccasionExpense> = model("OccasionExpense", occasionExpenseSchema);

@@ -8,7 +8,7 @@ export interface IUser {
   groups: Types.ObjectId[];
 }
 
-const userSchema = new Schema<IUser>({
+export const userSchema = new Schema<IUser>({
   firstName: { type: String, required: true },
   lastName: { type: String, required: false },
   email: { type: String, required: true },

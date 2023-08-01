@@ -39,7 +39,7 @@ export const createGroup = async (req: Request, res: Response) => {
   const newGroup = new Group({ name: name, creator: creatorUser._id });
 
   if (memberObjectIds) {
-    if (memberObjectIds.includes(creatorUser._id)) {
+    if (members.includes(userId)) {
       throw new ApiError(
         "Creator must not be passed to the group members. It will be added automatically.",
         422
@@ -70,7 +70,7 @@ export const createGroup = async (req: Request, res: Response) => {
 
   await newGroup.save();
 
-  return res.json({ message: "Group was created successfully." });
+  return res.json({ message: "Group was created successfully." }); // TODO: return group data (at least the id)
 };
 
 export const deleteGroup = async (req: Request, res: Response) => {

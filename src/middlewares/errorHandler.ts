@@ -10,6 +10,6 @@ export const errorHandler = (
   console.log("[ERROR]: ", error);
 
   return res
-    .status(error.statusCode | 500)
+    .status(error.statusCode || 500)
     .json({ message: error.message, data: error.data, statusCode: error.statusCode });
 };
