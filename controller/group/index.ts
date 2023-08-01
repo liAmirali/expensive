@@ -3,6 +3,7 @@ import { User } from "../../models/User";
 import { ApiError } from "../../utils/errors";
 import { Group } from "../../models/group/Group";
 import { Types } from "mongoose";
+import { matchedData } from "express-validator";
 
 export const listGroups = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
@@ -24,7 +25,7 @@ export const listGroups = async (req: Request, res: Response) => {
 };
 
 export const createGroup = async (req: Request, res: Response) => {
-  const { name, members } = req.body as { name?: string; members?: string[] }; // TODO: Define interface
+  const { name, members } = matchedData(req) as { name?: string; members?: string[] }; // TODO: Define interface
 
   const memberObjectIds = members && members.map((id) => new Types.ObjectId(id));
 
