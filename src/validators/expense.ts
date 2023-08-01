@@ -1,4 +1,4 @@
-import { body, query } from "express-validator";
+import { body, checkExact, query } from "express-validator";
 
 export const getExpenseValidators = [
   query("minValue")
@@ -44,6 +44,7 @@ export const getExpenseValidators = [
       return true;
     })
     .withMessage("End date cannot be before start date."),
+  checkExact([], { message: "Too many fields specified." }),
 ];
 
 export const addExpenseValidators = [
@@ -51,6 +52,7 @@ export const addExpenseValidators = [
   body("description").optional().trim().escape(),
   body("category").optional().trim(),
   body("currency").optional().isCurrency(),
+  checkExact([], { message: "Too many fields specified." }),
 ];
 
 export const editExpenseValidators = [
@@ -59,6 +61,10 @@ export const editExpenseValidators = [
   body("description").optional().trim().escape(),
   body("category").optional().trim(),
   body("currency").optional().isCurrency(),
+  checkExact([], { message: "Too many fields specified." }),
 ];
 
-export const deleteExpenseValidators = [body("id").isMongoId()];
+export const deleteExpenseValidators = [
+  body("id").isMongoId(),
+  checkExact([], { message: "Too many fields specified." }),
+];

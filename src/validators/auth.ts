@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, checkExact } from "express-validator";
 import { emailValidator } from "./utils";
 
 export const registerValidators = [
@@ -12,6 +12,11 @@ export const registerValidators = [
   }),
   body("firstName").notEmpty(),
   body("lastName").optional().notEmpty(),
+  checkExact([], { message: "Too many fields specified." }),
 ];
 
-export const loginValidators = [emailValidator(), body("password").notEmpty()];
+export const loginValidators = [
+  emailValidator(),
+  body("password").notEmpty(),
+  checkExact([], { message: "Too many fields specified." }),
+];
