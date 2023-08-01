@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 
 export interface IExpense {
   value: number;

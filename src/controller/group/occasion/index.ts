@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { ApiError } from "../../../utils/errors";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
-import { IUser, User } from "../../../models/User";
 import { Types } from "mongoose";
 
 export const createOccasion = async (req: Request, res: Response) => {

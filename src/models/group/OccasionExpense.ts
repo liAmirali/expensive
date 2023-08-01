@@ -1,5 +1,5 @@
-import { Model, Schema, model } from "mongoose";
-import { IUser, User, userSchema } from "../User";
+import { Schema } from "mongoose";
+import { IUser, userSchema } from "../User";
 
 export interface IOccasionExpense {
   value: number;
