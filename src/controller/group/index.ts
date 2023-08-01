@@ -59,13 +59,14 @@ export const createGroup = async (req: Request, res: Response) => {
 
     // Adding the group to each of the members groups
     await User.updateMany({ _id: { $in: memberObjectIds } }, { $push: { groups: newGroup._id } });
-    // Adding the group to the creator groups
-    await User.findByIdAndUpdate(userId, { $push: { groups: newGroup._id } });
-
     // Adding the users to the group
     newGroup.members = memberObjectIds;
-    newGroup.members.push(creatorUser._id);
   }
+
+  // Adding the group to the creator groups
+  await User.findByIdAndUpdate(userId, { $push: { groups: newGroup._id } });
+  // Adding the creator to the members
+  newGroup.members.push(creatorUser._id);
 
   await newGroup.save();
 
