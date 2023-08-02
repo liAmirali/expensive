@@ -8,12 +8,13 @@ import {
 } from "../validators/expense";
 import { throwValidationError } from "../validators/utils";
 import { isAuth } from "../middlewares/authenticationHandler";
+import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
-router.get("/", [isAuth, ...getExpenseValidators, throwValidationError], getExpense);
-router.post("/", [isAuth, ...addExpenseValidators, throwValidationError], addExpense);
-router.put("/", [isAuth, ...editExpenseValidators, throwValidationError], editExpense);
-router.delete("/", [isAuth, ...deleteExpenseValidators, throwValidationError], deleteExpense);
+router.get("/", [isAuth, ...getExpenseValidators, throwValidationError], asyncHandler(getExpense));
+router.post("/", [isAuth, ...addExpenseValidators, throwValidationError], asyncHandler(addExpense));
+router.put("/", [isAuth, ...editExpenseValidators, throwValidationError], asyncHandler(editExpense));
+router.delete("/", [isAuth, ...deleteExpenseValidators, throwValidationError], asyncHandler(deleteExpense));
 
 export default router;

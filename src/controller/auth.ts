@@ -14,8 +14,7 @@ export const postRegister = async (req: Request, res: Response, next: NextFuncti
 
   // Checking if a user with the entered email exists
   if (existingUser !== null) {
-    const error = new ApiError("User with this email already exists", 400);
-    return next(error); // TODO: Change all next(error) to throw error, and wrap the controller with asyncHandler function
+    throw new ApiError("User with this email already exists", 400);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);

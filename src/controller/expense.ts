@@ -25,8 +25,7 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
     model: "Expense",
   })) as IUser & { expenses: IExpense[] };
   if (user === null) {
-    const error = new ApiError("User was not found.", 401);
-    return next(error);
+    throw new ApiError("User was not found.", 401);
   }
   // Optional Filtering
   const { expenses } = user;
@@ -85,13 +84,8 @@ export const addExpense = async (req: Request, res: Response, next: NextFunction
     createdBy: new ObjectId(userId),
   });
 
-  if (!userId) {
-    const error = new ApiError("User not found.");
-    error.statusCode = 401;
-    return next(error);
-  }
   const found = await User.findOneAndUpdate(
-    { _id: new ObjectId(userId) },
+    { _id: userId },
     {
       $push: {
         expenses: newExpense,
@@ -99,9 +93,7 @@ export const addExpense = async (req: Request, res: Response, next: NextFunction
     }
   );
   if (found === null) {
-    const error = new ApiError("Couldn't update user.");
-    error.statusCode = 500;
-    return next(error);
+    throw new ApiError("User is not authorized.", 401);
   }
 
   await newExpense.save();
@@ -134,9 +126,7 @@ export const deleteExpense = async (req: Request, res: Response, next: NextFunct
   const expense = await Expense.findByIdAndDelete(id);
   console.log("DELETION RESULT:", expense);
   if (expense === null) {
-    const error = new ApiError("Expense was not found.");
-    error.statusCode = 404;
-    return next(error);
+    throw new ApiError("Expense was not found.", 404);
   }
 
   return res.json(new ApiRes("Expense was deleted successfully."));
