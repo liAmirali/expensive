@@ -24,6 +24,8 @@ export const createOccasionExpenseValidators = [
 ];
 
 export const getOccasionExpensesValidators = [
+  query("groupId").isMongoId(),
+  query("occasionId").isMongoId(),
   query("minValue")
     .optional()
     .trim()

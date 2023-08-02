@@ -30,7 +30,7 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
   }
   // Optional Filtering
   const { expenses } = user;
-  const filteredExpenses = expenses.filter((item: IExpense) => {
+  const filteredExpenses = expenses.filter((item: IExpense) => { // TODO: Refactor and outsource code to a function
     // Filtering for the value range
     if (minValue && maxValue) {
       if (item.value < minValue || item.value > maxValue) return false;
