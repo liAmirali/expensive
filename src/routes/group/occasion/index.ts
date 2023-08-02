@@ -5,6 +5,7 @@ import { throwValidationError } from "../../../validators/utils";
 import {
   createOccasionExpenseValidators,
   createOccasionValidators,
+  getOccasionExpensesValidators,
 } from "../../../validators/group/occasion";
 import {
   createOccasionExpense,
@@ -26,6 +27,10 @@ router.post(
   asyncHandler(createOccasionExpense)
 );
 
-router.get("/expense", [isAuth, throwValidationError], asyncHandler(getOccasionExpenses));
+router.get(
+  "/expense",
+  [isAuth, ...getOccasionExpensesValidators, throwValidationError],
+  asyncHandler(getOccasionExpenses)
+);
 
 export default router;

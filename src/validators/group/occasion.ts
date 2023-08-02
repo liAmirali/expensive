@@ -1,7 +1,11 @@
 import { query, body, checkExact } from "express-validator";
 
 export const createOccasionValidators = [
-  body("groupId").isMongoId().withMessage("Group ID is invalid."),
+  body("groupId")
+    .exists()
+    .withMessage("Field is required.")
+    .isMongoId()
+    .withMessage("Group ID is invalid."),
   body("name").notEmpty().withMessage("Name cannot be empty"),
   body("members")
     .optional()
@@ -12,9 +16,13 @@ export const createOccasionValidators = [
 ];
 
 export const createOccasionExpenseValidators = [
-  body("groupId").isMongoId(),
-  body("occasionId").isMongoId(),
-  body("value").isFloat({ min: 0 }).withMessage("Value must be a non-negative float."),
+  body("groupId").exists().withMessage("Field is required.").isMongoId(),
+  body("occasionId").exists().withMessage("Field is required.").isMongoId(),
+  body("value")
+    .exists()
+    .withMessage("Field is required.")
+    .isFloat({ min: 0 })
+    .withMessage("Value must be a non-negative float."),
   body("description").optional().notEmpty().escape(),
   body("category").optional().notEmpty().escape(),
   body("currency").optional().isCurrency().withMessage("Currency is invalid."),
@@ -24,8 +32,12 @@ export const createOccasionExpenseValidators = [
 ];
 
 export const getOccasionExpensesValidators = [
-  query("groupId").isMongoId(),
-  query("occasionId").isMongoId(),
+  query("groupId")
+    .exists()
+    .withMessage("Field is required.")
+    .isMongoId()
+    .withMessage("Group ID is invalid."),
+  query("occasionId").exists().withMessage("Field is required.").isMongoId(),
   query("minValue")
     .optional()
     .trim()
