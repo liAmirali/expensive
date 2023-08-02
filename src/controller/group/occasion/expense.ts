@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
-import { ApiError } from "../../../utils/errors";
+import { ApiError, ApiRes } from "../../../utils/responses";
 import { Types } from "mongoose";
+import { OccasionExpense } from "../../../models/group/OccasionExpense";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, description, category, currency, paidBy, assignedTo } =
@@ -53,7 +54,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
 
   if (!occasion.expenses) occasion.expenses = [];
 
-  occasion.expenses.push({
+  const newExpense = new OccasionExpense({
     value,
     paidBy: new Types.ObjectId(paidBy),
     assignedTo: assignedTo.map((id) => new Types.ObjectId(id)),
@@ -64,9 +65,12 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     dateTime: new Date(),
   });
 
+  occasion.expenses.push(newExpense);
+
+  await newExpense.save();
   await group.save();
 
-  return res.json({ message: "Expense created successfully." });
+  return res.json(new ApiRes("Expense created successfully.", { expense: newExpense }));
 };
 
 export const getOccasionExpenses = async (req: Request, res: Response) => {
@@ -149,7 +153,7 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     if (item.paidBy.toString() !== paidBy) return false;
 
     if (assignedTo) {
-      const occasionExpenseIds = item.assignedTo.map(objId => objId.toString());
+      const occasionExpenseIds = item.assignedTo.map((objId) => objId.toString());
       for (let assignee of assignedTo) {
         if (!occasionExpenseIds.includes(assignee)) return false;
       }
@@ -158,5 +162,28 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     return true;
   });
 
-  return res.json({ message: "Expenses sent successfully." });
+  const demandsAndDebts: { [key: string]: { demand: number; debt: number } } = {};
+
+  for (let expense of filteredExpenses) {
+    const payerId = expense.paidBy.toString();
+    if (!(payerId in demandsAndDebts)) demandsAndDebts[payerId] = { demand: 0, debt: 0 };
+
+    demandsAndDebts[payerId].demand += expense.value;
+
+    const eachPersonDong = expense.value / expense.assignedTo.length;
+
+    for (let assignee of expense.assignedTo) {
+      const assigneeId = assignee._id.toString();
+      if (!(assigneeId in demandsAndDebts)) demandsAndDebts[assigneeId] = { demand: 0, debt: 0 };
+
+      demandsAndDebts[assigneeId].debt += eachPersonDong;
+    }
+  }
+
+  return res.json(
+    new ApiRes("Expenses sent successfully.", {
+      expenses: filteredExpenses,
+      demandsAndDebts: demandsAndDebts,
+    })
+  );
 };

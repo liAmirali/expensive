@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../../models/User";
-import { ApiError } from "../../utils/errors";
+import { ApiError, ApiRes } from "../../utils/responses";
 import { Group } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
@@ -21,7 +21,7 @@ export const listGroups = async (req: Request, res: Response) => {
 
   console.log("user's groups :>> ", groups);
 
-  return res.json({ message: "Groups fetched successfully.", data: groups });
+  return res.json(new ApiRes("Groups fetched successfully.", { groups }));
 };
 
 export const createGroup = async (req: Request, res: Response) => {
@@ -70,7 +70,7 @@ export const createGroup = async (req: Request, res: Response) => {
 
   await newGroup.save();
 
-  return res.json({ message: "Group was created successfully." }); // TODO: return group data (at least the id)
+  return res.json(new ApiRes("Group was created successfully.", { group: newGroup }));
 };
 
 export const deleteGroup = async (req: Request, res: Response) => {
@@ -94,5 +94,5 @@ export const deleteGroup = async (req: Request, res: Response) => {
     }
   );
 
-  res.send({ message: "Group was deleted successfully." });
+  return res.send(new ApiRes("Group was deleted successfully."));
 };

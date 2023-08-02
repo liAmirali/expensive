@@ -3,7 +3,7 @@ import { User } from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
-import { ApiError } from "../utils/errors";
+import { ApiError, ApiRes } from "../utils/responses";
 
 config();
 
@@ -25,16 +25,9 @@ export const postRegister = async (req: Request, res: Response, next: NextFuncti
 
   console.log("new User => ", newUser);
 
-  newUser.save();
+  await newUser.save();
 
-  res.location("/");
-  res.json({
-    statusCode: 200,
-    message: "User was created",
-    data: { user: newUser },
-  });
-
-  return res.send();
+  return res.json(new ApiRes("User was registered successfully.", { user: newUser }));
 };
 
 export const postLogin = async (req: Request, res: Response) => {
@@ -47,10 +40,7 @@ export const postLogin = async (req: Request, res: Response) => {
 
   // Checking a user with the email exists
   if (fetchedUser === null) {
-    return res.status(404).send({
-      statusCode: 404,
-      message: "Email doesn't exist.",
-    });
+    throw new ApiError("Email doesn't exist.", 404);
   }
 
   // TODO: REMOVE THIS SHIT
@@ -68,8 +58,8 @@ export const postLogin = async (req: Request, res: Response) => {
       throw error;
     }
     const token = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, secret);
-    return res.json({ message: "Successful login", token: token });
+    return res.json(new ApiRes("Successful login", { token }));
   } else {
-    return res.status(402).json({ message: "Invalid credentials" });
+    throw new ApiError("Invalid credentials.", 402);
   }
 };

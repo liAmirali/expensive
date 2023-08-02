@@ -6,23 +6,18 @@ export interface IOccasionExpense extends IExpense {
   assignedTo: Types.ObjectId[];
 }
 
-export const occasionExpenseSchema = new Schema<IOccasionExpense>(
-  {
-    paidBy: {
+export const occasionExpenseSchema = new Schema<IOccasionExpense>({
+  paidBy: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  assignedTo: [
+    {
       type: Schema.Types.ObjectId,
       required: true,
     },
-    assignedTo: [
-      {
-        type: Schema.Types.ObjectId,
-        required: true,
-      },
-    ],
-  },
-  {
-    timestamps: true,
-  }
-);
+  ],
+});
 
 export const OccasionExpense: Model<IOccasionExpense> = Expense.discriminator(
   "OccasionExpense",

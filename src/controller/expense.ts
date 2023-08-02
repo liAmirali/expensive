@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Expense, IExpense } from "../models/Expense";
 import { ObjectId } from "mongodb";
 import { IUser, User } from "../models/User";
-import { ApiError } from "../utils/errors";
+import { ApiError, ApiRes } from "../utils/responses";
 
 export const getExpense = async (req: Request, res: Response, next: NextFunction) => {
   const { minValue, maxValue, description, category, currency, endDate, startDate } =
@@ -30,7 +30,8 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
   }
   // Optional Filtering
   const { expenses } = user;
-  const filteredExpenses = expenses.filter((item: IExpense) => { // TODO: Refactor and outsource code to a function
+  const filteredExpenses = expenses.filter((item: IExpense) => {
+    // TODO: Refactor and outsource code to a function
     // Filtering for the value range
     if (minValue && maxValue) {
       if (item.value < minValue || item.value > maxValue) return false;
@@ -68,7 +69,7 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
 
   console.log("filteredExpenses :>> ", filteredExpenses);
 
-  return res.json({ message: "Expenses was sent successfully.", data: filteredExpenses });
+  return res.json(new ApiRes("Expenses was sent successfully.", { expenses: filteredExpenses }));
 };
 
 export const addExpense = async (req: Request, res: Response, next: NextFunction) => {
@@ -103,9 +104,9 @@ export const addExpense = async (req: Request, res: Response, next: NextFunction
     return next(error);
   }
 
-  newExpense.save();
+  await newExpense.save();
 
-  return res.json({ message: "Expense was created successfully." });
+  return res.json(new ApiRes("Expense was created successfully.", { expense: newExpense }));
 };
 
 export const editExpense = async (req: Request, res: Response, next: NextFunction) => {
@@ -121,12 +122,10 @@ export const editExpense = async (req: Request, res: Response, next: NextFunctio
   });
 
   if (expense === null) {
-    const error = new ApiError("Expense was not found.");
-    error.statusCode = 404;
-    return next(error);
+    throw new ApiError("Expense was not found.", 404);
   }
 
-  return res.json({ message: "Expense was updated successfully." });
+  return res.json(new ApiRes("Expense was updated successfully.", { expense }));
 };
 
 export const deleteExpense = async (req: Request, res: Response, next: NextFunction) => {
@@ -140,5 +139,5 @@ export const deleteExpense = async (req: Request, res: Response, next: NextFunct
     return next(error);
   }
 
-  return res.json({ message: "Expense was deleted successfully." });
+  return res.json(new ApiRes("Expense was deleted successfully."));
 };

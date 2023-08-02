@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ApiError } from "../../../utils/errors";
+import { ApiError, ApiRes } from "../../../utils/responses";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { Types } from "mongoose";
@@ -44,11 +44,13 @@ export const createOccasion = async (req: Request, res: Response) => {
   let membersToAdd = members ? members.map((id) => new Types.ObjectId(id)) : [];
   membersToAdd.push(new Types.ObjectId(userId));
 
-  group.occasions.push({
+  const newOccasion = {
     name,
     members: membersToAdd,
-  });
+  };
+
+  group.occasions.push(newOccasion);
   await group.save();
 
-  res.json({ message: "Occasion was created successfully" });
+  res.json(new ApiRes("Occasion was created successfully", { occasion: newOccasion }));
 };

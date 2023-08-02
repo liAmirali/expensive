@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/errors";
+import { ApiError } from "../utils/responses";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "dotenv";
 import { IJwtPayload } from "../interfaces/auth";
