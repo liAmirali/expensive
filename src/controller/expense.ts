@@ -50,17 +50,17 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
     if (currency && item.currency && item.currency !== currency) return false;
 
     // Filtering for the expense date
-    console.log("item.createdAt :>> ", item.createdAt);
+    console.log("item.dateTime :>> ", item.dateTime);
     if (startDate && endDate) {
       const startDateObj = new Date(startDate);
       const endDateObj = new Date(endDate);
-      if (item.createdAt > endDateObj || item.createdAt < startDateObj) return false;
+      if (item.dateTime > endDateObj || item.dateTime < startDateObj) return false;
     } else if (startDate) {
       const startDateObj = new Date(startDate);
-      if (item.createdAt < startDateObj) return false;
+      if (item.dateTime < startDateObj) return false;
     } else if (endDate) {
       const endDateObj = new Date(endDate);
-      if (item.createdAt > endDateObj) return false;
+      if (item.dateTime > endDateObj) return false;
     }
 
     return true;

@@ -1,28 +1,30 @@
-import { Schema } from "mongoose";
-import { IUser, userSchema } from "../User";
+import { Model, Schema, Types } from "mongoose";
+import { Expense, IExpense } from "../Expense";
 
-export interface IOccasionExpense {
-  value: number;
-  paidBy: IUser;
-  assignedTo: IUser[];
-  createdAt: Date;
-  updatedAt: Date;
+export interface IOccasionExpense extends IExpense {
+  paidBy: Types.ObjectId;
+  assignedTo: Types.ObjectId[];
 }
 
 export const occasionExpenseSchema = new Schema<IOccasionExpense>(
   {
-    value: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
     paidBy: {
-      type: userSchema,
+      type: Schema.Types.ObjectId,
       required: true,
     },
-    assignedTo: [userSchema],
+    assignedTo: [
+      {
+        type: Schema.Types.ObjectId,
+        required: true,
+      },
+    ],
   },
   {
     timestamps: true,
   }
+);
+
+export const OccasionExpense: Model<IOccasionExpense> = Expense.discriminator(
+  "OccasionExpense",
+  occasionExpenseSchema
 );

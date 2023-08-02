@@ -12,11 +12,11 @@ export const registerValidators = [
   }),
   body("firstName").notEmpty(),
   body("lastName").optional().notEmpty(),
-  checkExact([], { message: "Too many fields specified." }),
+  checkExact(),
 ];
 
 export const loginValidators = [
   emailValidator(),
   body("password").notEmpty(),
-  checkExact([], { message: "Too many fields specified." }),
+  checkExact(),
 ];

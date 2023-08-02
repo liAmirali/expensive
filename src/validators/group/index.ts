@@ -15,18 +15,7 @@ export const createGroupValidators = [
       return value.length === removedDuplicates.length;
     })
     .withMessage("Members field contains duplicate IDs."),
-  checkExact([], { message: "Too many fields specified." }),
+  checkExact(),
 ];
 
 export const deleteGroupValidators = [body("id").isMongoId().withMessage("ID is invalid.")];
-
-export const createOccasionValidators = [
-  body("groupId").isMongoId().withMessage("Group ID is invalid."),
-  body("name").notEmpty().withMessage("Name cannot be empty"),
-  body("members")
-    .optional()
-    .isArray()
-    .isMongoId()
-    .withMessage("Members field must be an array of member IDs."),
-  checkExact([], { message: "Too many fields specified." }),
-];

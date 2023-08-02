@@ -1,6 +1,29 @@
-import { body, checkExact, query } from "express-validator";
+import { query, body, checkExact } from "express-validator";
 
-export const getExpenseValidators = [
+export const createOccasionValidators = [
+  body("groupId").isMongoId().withMessage("Group ID is invalid."),
+  body("name").notEmpty().withMessage("Name cannot be empty"),
+  body("members")
+    .optional()
+    .isArray()
+    .isMongoId()
+    .withMessage("Members field must be an array of member IDs."),
+  checkExact(),
+];
+
+export const createOccasionExpenseValidators = [
+  body("groupId").isMongoId(),
+  body("occasionId").isMongoId(),
+  body("value").isFloat({ min: 0 }).withMessage("Value must be a non-negative float."),
+  body("description").optional().notEmpty().escape(),
+  body("category").optional().notEmpty().escape(),
+  body("currency").optional().isCurrency().withMessage("Currency is invalid."),
+  body("paidBy").isMongoId().withMessage("User ID is invalid."),
+  body("assignedTo").isArray().isMongoId().withMessage("Field must be an array of user IDs."),
+  checkExact(),
+];
+
+export const getOccasionExpensesValidators = [
   query("minValue")
     .optional()
     .trim()
@@ -44,27 +67,11 @@ export const getExpenseValidators = [
       return true;
     })
     .withMessage("End date cannot be before start date."),
-  checkExact(),
-];
-
-export const addExpenseValidators = [
-  body("value").trim().isFloat({ min: 0 }).toFloat(),
-  body("description").optional().trim().escape(),
-  body("category").optional().trim(),
-  body("currency").optional().isCurrency(),
-  checkExact(),
-];
-
-export const editExpenseValidators = [
-  body("id").notEmpty().isMongoId(),
-  body("value").optional().trim().isFloat({ min: 0 }).toFloat(),
-  body("description").optional().trim().escape(),
-  body("category").optional().trim(),
-  body("currency").optional().isCurrency(),
-  checkExact(),
-];
-
-export const deleteExpenseValidators = [
-  body("id").isMongoId(),
+  query("paidBy").optional().isMongoId().withMessage("User ID is invalid."),
+  query("assignedTo")
+    .optional()
+    .isArray()
+    .isMongoId()
+    .withMessage("This field must be an array of user IDs."),
   checkExact(),
 ];

@@ -2,8 +2,9 @@ import { Schema, Types } from "mongoose";
 import { IOccasionExpense, occasionExpenseSchema } from "./OccasionExpense";
 
 export interface IOccasion {
+  _id?: Types.ObjectId;
   name: string;
-  members?: Types.ObjectId[];
+  members: Types.ObjectId[];
   expenses?: IOccasionExpense[];
 }
 

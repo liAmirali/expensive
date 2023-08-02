@@ -1,13 +1,12 @@
-import { Model, Schema, model } from "mongoose";
+import { Model, Schema, SchemaTimestampsConfig, Types, model } from "mongoose";
 
 export interface IExpense {
   value: number;
   currency?: string | null;
   category?: string;
   description?: string;
-  createdBy: Schema.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  createdBy: Types.ObjectId;
+  dateTime: Date;
 }
 
 export const expenseSchema = new Schema<IExpense>(
@@ -29,7 +28,11 @@ export const expenseSchema = new Schema<IExpense>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
+    },
+    dateTime: {
+      type: Date,
+      required: true,
     },
   },
   { timestamps: true }
