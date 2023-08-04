@@ -84,8 +84,8 @@ export const getOccasionExpensesValidators = [
   query("paidBy").optional().isMongoId().withMessage("User ID is invalid."),
   query("assignedTo")
     .optional()
-    .isArray()
     .isMongoId()
+    .toArray()
     .withMessage("This field must be an array of user IDs."),
   checkExact(),
 ];

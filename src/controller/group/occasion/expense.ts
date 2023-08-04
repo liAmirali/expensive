@@ -65,7 +65,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     category,
     currency,
     dateTime: new Date(),
-    __t: "OccasionExpense"
+    __t: "OccasionExpense",
   };
 
   occasion.expenses.push(newExpense);
@@ -123,6 +123,8 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 
   const expenses = occasion.expenses as unknown as IOccasionExpense[];
 
+  console.log("expenses:", expenses);
+
   const filteredExpenses = expenses.filter((item) => {
     // TODO: Refactor and outsource code to a function
     // Filtering for the value range
@@ -157,7 +159,7 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
       if (item.dateTime > endDateObj) return false;
     }
 
-    if (item.paidBy.toString() !== paidBy) return false;
+    if (paidBy && item.paidBy.toString() !== paidBy) return false;
 
     if (assignedTo) {
       const occasionExpenseIds = item.assignedTo.map((objId) => objId.toString());
@@ -168,6 +170,8 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 
     return true;
   });
+
+  console.log("filteredExpenses:", filteredExpenses);
 
   const demandsAndDebts: { [key: string]: { demand: number; debt: number } } = {};
 
