@@ -22,9 +22,9 @@ export const userSchema = new Schema<IUser>({
   groups: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Group"
-    }
-  ]
+      ref: "Group",
+    },
+  ],
 });
 
 export const User: Model<IUser> = model("User", userSchema);

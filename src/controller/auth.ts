@@ -35,18 +35,19 @@ export const postLogin = async (req: Request, res: Response) => {
   console.log("email :>> ", email);
   console.log("password :>> ", password);
 
-  const fetchedUser = await User.exists({ email }).populate("password");
+  const fetchedUser = await User.findOne({ email }).select("-__v");
 
   // Checking a user with the email exists
   if (fetchedUser === null) {
     throw new ApiError("Email doesn't exist.", 404);
   }
 
+  console.log("fetchedUser :>> ", fetchedUser);
+
   // TODO: REMOVE THIS SHIT
   // @ts-ignore
   const passwordsMatch = await bcrypt.compare(password, fetchedUser.password);
 
-  console.log("fetchedUser :>> ", fetchedUser);
   console.log("email :>> ", email);
   console.log("passwordsMatch :>> ", passwordsMatch);
 
@@ -56,8 +57,10 @@ export const postLogin = async (req: Request, res: Response) => {
       const error = new Error("Server error.");
       throw error;
     }
-    const token = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, secret);
-    return res.json(new ApiRes("Successful login", { token }));
+    const accessToken = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, secret);
+
+    (fetchedUser.password as string | undefined) = undefined; // Removing the password field from the response
+    return res.json(new ApiRes("Successful login", { accessToken, user: fetchedUser }));
   } else {
     throw new ApiError("Invalid credentials.", 402);
   }

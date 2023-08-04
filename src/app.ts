@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
+import cors from "cors";
 
 import apiBaseRouter from "./routes";
 
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(rootDir, "public")));
 // Setting some default settings on the request and response
 app.use(defaults);
+app.use(cors());
 
 app.use("/api", apiBaseRouter);
 
