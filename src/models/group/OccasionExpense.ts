@@ -18,8 +18,3 @@ export const occasionExpenseSchema = new Schema<IOccasionExpense>({
     },
   ],
 });
-
-export const OccasionExpense: Model<IOccasionExpense> = Expense.discriminator(
-  "OccasionExpense",
-  occasionExpenseSchema
-);

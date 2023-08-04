@@ -30,6 +30,8 @@ app.use("/api", apiBaseRouter);
 // Error handler
 app.use(errorHandler);
 
+mongoose.set("debug", true); // Debug mode
+
 mongoose
   .connect(databaseUri)
   .then(() => {

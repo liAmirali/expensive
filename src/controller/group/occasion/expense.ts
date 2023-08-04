@@ -3,7 +3,7 @@ import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
 import { Types } from "mongoose";
-import { OccasionExpense } from "../../../models/group/OccasionExpense";
+import { IOccasionExpense } from "../../../models/group/OccasionExpense";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, description, category, currency, paidBy, assignedTo } =
@@ -17,6 +17,8 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
       paidBy: string;
       assignedTo: string[];
     };
+
+  console.log("req.body:", req.body);
 
   const userId = req.user!.userId;
 
@@ -54,7 +56,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
 
   if (!occasion.expenses) occasion.expenses = [];
 
-  const newExpense = new OccasionExpense({
+  const newExpense = {
     value,
     paidBy: new Types.ObjectId(paidBy),
     assignedTo: assignedTo.map((id) => new Types.ObjectId(id)),
@@ -63,12 +65,15 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     category,
     currency,
     dateTime: new Date(),
-  });
+    __t: "OccasionExpense"
+  };
 
   occasion.expenses.push(newExpense);
 
-  await newExpense.save();
+  // await newExpense.save();
+  console.log("HERE1");
   await group.save();
+  console.log("HERE2");
 
   return res.json(new ApiRes("Expense created successfully.", { expense: newExpense }));
 };
@@ -116,7 +121,9 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     throw new ApiError("No expenses was found.", 404);
   }
 
-  const filteredExpenses = occasion.expenses.filter((item) => {
+  const expenses = occasion.expenses as unknown as IOccasionExpense[];
+
+  const filteredExpenses = expenses.filter((item) => {
     // TODO: Refactor and outsource code to a function
     // Filtering for the value range
     if (minValue && maxValue) {
