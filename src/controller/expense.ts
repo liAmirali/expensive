@@ -71,8 +71,8 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
   return res.json(new ApiRes("Expenses was sent successfully.", { expenses: filteredExpenses }));
 };
 
-export const addExpense = async (req: Request, res: Response, next: NextFunction) => {
-  const { value, category, description, currency } = req.body;
+export const addExpense = async (req: Request, res: Response) => {
+  const { value, category, description, currency, dateTime } = req.body;
 
   const userId = req.user!.userId; // We authenticate user in a middleware so the user object definitely exists
 
