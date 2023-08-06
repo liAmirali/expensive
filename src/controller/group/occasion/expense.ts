@@ -6,14 +6,15 @@ import { Types } from "mongoose";
 import { IOccasionExpense } from "../../../models/group/OccasionExpense";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
-  const { groupId, occasionId, value, description, category, currency, paidBy, assignedTo } =
+  const { groupId, occasionId, value, title, description, category, currency, paidBy, assignedTo } =
     matchedData(req) as {
       groupId: string;
       occasionId: string;
       value: number;
+      title: string;
+      currency: string;
       description?: string;
       category?: string;
-      currency?: string;
       paidBy: string;
       assignedTo: string[];
     };
@@ -61,6 +62,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     paidBy: new Types.ObjectId(paidBy),
     assignedTo: assignedTo.map((id) => new Types.ObjectId(id)),
     createdBy: new Types.ObjectId(userId),
+    title,
     description,
     category,
     currency,

@@ -72,16 +72,19 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
 };
 
 export const addExpense = async (req: Request, res: Response) => {
-  const { value, category, description, currency, dateTime } = req.body;
+  const { value, title, category, description, currency, dateTime, type } = req.body;
 
   const userId = req.user!.userId; // We authenticate user in a middleware so the user object definitely exists
 
   const newExpense = new Expense({
     value,
+    currency,
+    title,
     category,
     description,
-    currency,
     createdBy: new ObjectId(userId),
+    dateTime,
+    type,
   });
 
   const found = await User.findOneAndUpdate(
@@ -95,8 +98,6 @@ export const addExpense = async (req: Request, res: Response) => {
   if (found === null) {
     throw new ApiError("User is not authorized.", 401);
   }
-
-  await newExpense.save();
 
   return res.json(new ApiRes("Expense was created successfully.", { expense: newExpense }));
 };

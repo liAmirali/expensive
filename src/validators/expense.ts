@@ -1,4 +1,6 @@
 import { body, checkExact, query } from "express-validator";
+import { getEnumValues } from "../utils/getters";
+import { ExpenseType } from "../models/Expense";
 
 export const getExpenseValidators = [
   query("minValue")
@@ -48,8 +50,15 @@ export const getExpenseValidators = [
 ];
 
 export const addExpenseValidators = [
+  body("type")
+    .optional()
+    .isIn(getEnumValues(ExpenseType))
+    .withMessage(
+      "Invalid type. Expense type can only be one of " + getEnumValues(ExpenseType) + "."
+    ),
   body("value").trim().isFloat({ min: 0 }).toFloat(),
-  body("currency").optional(),
+  body("currency").notEmpty(),
+  body("title").notEmpty().trim().escape(),
   body("description").optional().trim().escape(),
   body("category").optional().trim().escape(),
   body("dateTime").optional().isISO8601().withMessage("TimeDate is not in ISO 8601 format."),

@@ -1,4 +1,5 @@
 import { Model, Schema, Types, model } from "mongoose";
+import { expenseSchema } from "./Expense";
 export interface IUser {
   firstName: string;
   lastName?: string;
@@ -13,12 +14,7 @@ export const userSchema = new Schema<IUser>({
   lastName: { type: String, required: false },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  expenses: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Expense",
-    },
-  ],
+  expenses: [expenseSchema],
   groups: [
     {
       type: Schema.Types.ObjectId,

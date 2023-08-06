@@ -23,8 +23,9 @@ export const createOccasionExpenseValidators = [
     .withMessage("Field is required.")
     .isFloat({ min: 0 })
     .withMessage("Value must be a non-negative float."),
+  body("category").notEmpty(),
+  body("title").notEmpty().trim().escape(),
   body("description").optional().notEmpty().escape(),
-  body("category").optional().notEmpty().escape(),
   body("currency").optional().isCurrency().withMessage("Currency is invalid."),
   body("paidBy").isMongoId().withMessage("User ID is invalid."),
   body("assignedTo").isArray().isMongoId().withMessage("Field must be an array of user IDs."),
