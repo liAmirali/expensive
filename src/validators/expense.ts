@@ -49,9 +49,10 @@ export const getExpenseValidators = [
 
 export const addExpenseValidators = [
   body("value").trim().isFloat({ min: 0 }).toFloat(),
+  body("currency").optional(),
   body("description").optional().trim().escape(),
-  body("category").optional().trim(),
-  body("currency").optional().isCurrency(),
+  body("category").optional().trim().escape(),
+  body("dateTime").optional().isISO8601().withMessage("TimeDate is not in ISO 8601 format."),
   checkExact(),
 ];
 
@@ -64,7 +65,4 @@ export const editExpenseValidators = [
   checkExact(),
 ];
 
-export const deleteExpenseValidators = [
-  body("id").isMongoId(),
-  checkExact(),
-];
+export const deleteExpenseValidators = [body("id").isMongoId(), checkExact()];

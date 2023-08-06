@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/responses";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import { IJwtPayload } from "../interfaces/auth";
 
@@ -42,7 +42,7 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
     };
   } catch (error) {
     console.log("[JWT ERROR]:", error);
-    throw error;
+    throw new ApiError("Invalid token.", 401);
   }
 
   next();

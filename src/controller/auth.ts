@@ -65,3 +65,12 @@ export const postLogin = async (req: Request, res: Response) => {
     throw new ApiError("Invalid credentials.", 402);
   }
 };
+
+export const verifyAccessToken = async (req: Request, res: Response) => {
+  const user = await User.findById(req.user!.userId).select("-password -__v");
+  if (user === null) {
+    throw new ApiError("No user was found.", 401);
+  }
+
+  return res.json(new ApiRes("Access token is verified.", { user: user }, 200));
+};

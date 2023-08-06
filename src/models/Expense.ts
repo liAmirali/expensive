@@ -33,6 +33,7 @@ export const expenseSchema = new Schema<IExpense>(
     dateTime: {
       type: Date,
       required: true,
+      default: Date.now(),
     },
   },
   { timestamps: true }
