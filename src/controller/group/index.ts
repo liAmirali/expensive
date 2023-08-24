@@ -1,19 +1,36 @@
 import { Request, Response } from "express";
-import { User } from "../../models/User";
+import { IUser, User } from "../../models/User";
 import { ApiError, ApiRes } from "../../utils/responses";
-import { Group } from "../../models/group/Group";
+import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
 
 export const listGroups = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
 
-  const user = await User.findById(userId).populate("groups");
+  const user = await User.findById(userId)
+    .select("groups")
+    .populate<{ groups: (IGroup & { members: IUser[] })[] }>("groups")
+    .populate({
+      path: "groups",
+      populate: {
+        path: "members",
+        model: "User",
+      },
+    });
   if (user === null) {
     throw new ApiError("User is not authenticated.", 401);
   }
 
   const { groups } = user;
+
+  console.log("groups:", groups);
+
+  groups.map((group) => {
+    for (let member of group.members as IUser[]) {
+      member.expenses = undefined;
+    }
+  });
 
   if (!groups || groups.length === 0) {
     throw new ApiError("No groups found.", 404);
