@@ -1,4 +1,4 @@
-import { body, checkExact, query } from "express-validator";
+import { body, checkExact, param, query } from "express-validator";
 
 export const createGroupValidators = [
   body("name").notEmpty().withMessage("Group name must be specified."),
@@ -23,7 +23,9 @@ export const deleteGroupValidators = [
   checkExact(),
 ];
 
-export const getGroupListValidators = [
-  query("id").optional().isMongoId().withMessage("Group ID is invalid."),
+export const getGroupListValidators = [checkExact()];
+
+export const getSingleGroupValidators = [
+  param("groupId").isMongoId().withMessage("Group ID is invalid."),
   checkExact(),
 ];

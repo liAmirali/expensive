@@ -1,6 +1,7 @@
 import { Model, Schema, Types, model } from "mongoose";
 import { ExpenseType, IExpense, expenseSchema } from "./Expense";
 export interface IUser {
+  _id: Types.ObjectId;
   name: string;
   username: string;
   email: string;

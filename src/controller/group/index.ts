@@ -5,6 +5,30 @@ import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
 
+export const getSingleGroup = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const { groupId } = matchedData(req, { locations: ["params"] }) as { groupId: string };
+
+  const group = await Group.findById(groupId).populate<{members: IUser[]}>("members");
+
+  if (group === null) {
+    return res.json(new ApiError("Group was not found.", 404));
+  }
+
+  const userExistingInGroup = group.members.find((u) => u._id.toString() === userId);
+
+  if (!userExistingInGroup) {
+    return res.json(new ApiError("You don't have access to this group.", 403));
+  }
+
+  for (let member of group.members) {
+    member.expenses = undefined;
+  }
+
+  return res.json(new ApiRes("Group fetched successfully.", { group }));
+};
+
 export const listGroups = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
 
@@ -24,9 +48,7 @@ export const listGroups = async (req: Request, res: Response) => {
 
   const { groups } = user;
 
-  console.log("groups:", groups);
-
-  groups.map((group) => {
+  groups.forEach((group) => {
     for (let member of group.members as IUser[]) {
       member.expenses = undefined;
     }
@@ -35,8 +57,6 @@ export const listGroups = async (req: Request, res: Response) => {
   if (!groups || groups.length === 0) {
     throw new ApiError("No groups found.", 404);
   }
-
-  console.log("user's groups :>> ", groups);
 
   return res.json(new ApiRes("Groups fetched successfully.", { groups }));
 };
