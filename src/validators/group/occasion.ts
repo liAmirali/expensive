@@ -1,4 +1,5 @@
 import { query, body, checkExact } from "express-validator";
+import { isAcceptedCurrency } from "../utils";
 
 export const createOccasionValidators = [
   body("groupId")
@@ -26,7 +27,7 @@ export const createOccasionExpenseValidators = [
   body("category").notEmpty(),
   body("title").notEmpty().trim().escape(),
   body("description").optional().notEmpty().escape(),
-  body("currency").optional().isCurrency().withMessage("Currency is invalid."),
+  body("currency").custom(isAcceptedCurrency).withMessage("Currency is invalid."),
   body("paidBy").isMongoId().withMessage("User ID is invalid."),
   body("assignedTo").isArray().isMongoId().withMessage("Field must be an array of user IDs."),
   checkExact(),

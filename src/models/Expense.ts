@@ -30,6 +30,7 @@ export const expenseSchema = new Schema<IExpense>(
     },
     currency: {
       type: String,
+      required: true,
     },
     title: {
       type: String,
