@@ -3,6 +3,37 @@ import { ApiError, ApiRes } from "../../../utils/responses";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { Types } from "mongoose";
+import { calculateDemandAndDebts } from "../../../utils/expense";
+
+export const getSingleOccasion = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const { groupId, occasionId } = matchedData(req, { locations: ["params", "query"] }) as {
+    groupId: string;
+    occasionId: string;
+  };
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    throw new ApiError("Group was not found.", 404);
+  }
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion was not found.", 404);
+  }
+
+  const userFound = occasion.members.find((objId) => objId.toString() === userId);
+  if (!userFound) {
+    throw new ApiError("You are not part of this occasion.", 403);
+  }
+
+  const demandsAndDebts = calculateDemandAndDebts(occasion.expenses!);
+
+  return res.json(
+    new ApiRes("Occasion details was sent successfully.", { occasion, demandsAndDebts })
+  );
+};
 
 export const createOccasion = async (req: Request, res: Response) => {
   const { name, members, groupId } = matchedData(req) as {

@@ -1,4 +1,4 @@
-import { query, body, checkExact } from "express-validator";
+import { query, body, checkExact, param } from "express-validator";
 import { isAcceptedCurrency } from "../utils";
 
 export const createOccasionValidators = [
@@ -13,6 +13,12 @@ export const createOccasionValidators = [
     .isArray()
     .isMongoId()
     .withMessage("Members field must be an array of member IDs."),
+  checkExact(),
+];
+
+export const getSingleOccasionValidators = [
+  param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
+  query("groupId").isMongoId().withMessage("Group ID is invalid."),
   checkExact(),
 ];
 
