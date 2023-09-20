@@ -28,10 +28,10 @@ export const getSingleOccasion = async (req: Request, res: Response) => {
     throw new ApiError("You are not part of this occasion.", 403);
   }
 
-  const demandsAndDebts = calculateDemandAndDebts(occasion.expenses!);
+  const debtsAndDemands = calculateDemandAndDebts(occasion.expenses!);
 
   return res.json(
-    new ApiRes("Occasion details was sent successfully.", { occasion, demandsAndDebts })
+    new ApiRes("Occasion details was sent successfully.", { occasion, debtsAndDemands })
   );
 };
 

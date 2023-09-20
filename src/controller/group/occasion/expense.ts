@@ -133,12 +133,12 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 
   console.log("filteredExpenses:", filteredExpenses);
 
-  const demandsAndDebts = calculateDemandAndDebts(filteredExpenses);
+  const debtsAndDemands = calculateDemandAndDebts(filteredExpenses);
 
   return res.json(
     new ApiRes("Expenses sent successfully.", {
       expenses: filteredExpenses,
-      demandsAndDebts: demandsAndDebts,
+      debtsAndDemands: debtsAndDemands,
     })
   );
 };

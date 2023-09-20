@@ -1,4 +1,4 @@
-import { FilterExpenseArgs } from "../../types/expense";
+import { DebtsAndDemands, FilterExpenseArgs } from "../../types/expense";
 import { IOccasionExpense } from "../models/group/OccasionExpense";
 
 export const filterExpenses = (
@@ -62,23 +62,23 @@ export const filterExpenses = (
 };
 
 export const calculateDemandAndDebts = (expenses: IOccasionExpense[]) => {
-  const demandsAndDebts: { [key: string]: { demand: number; debt: number } } = {};
+  const debtsAndDemands: DebtsAndDemands = {};
 
   for (let expense of expenses) {
     const payerId = expense.paidBy.toString();
-    if (!(payerId in demandsAndDebts)) demandsAndDebts[payerId] = { demand: 0, debt: 0 };
+    if (!(payerId in debtsAndDemands)) debtsAndDemands[payerId] = { demand: 0, debt: 0 };
 
-    demandsAndDebts[payerId].demand += expense.value;
+    debtsAndDemands[payerId].demand += expense.value;
 
     const eachPersonDong = expense.value / expense.assignedTo.length;
 
     for (let assignee of expense.assignedTo) {
       const assigneeId = assignee._id.toString();
-      if (!(assigneeId in demandsAndDebts)) demandsAndDebts[assigneeId] = { demand: 0, debt: 0 };
+      if (!(assigneeId in debtsAndDemands)) debtsAndDemands[assigneeId] = { demand: 0, debt: 0 };
 
-      demandsAndDebts[assigneeId].debt += eachPersonDong;
+      debtsAndDemands[assigneeId].debt += eachPersonDong;
     }
   }
-  
-  return demandsAndDebts;
+
+  return debtsAndDemands;
 };

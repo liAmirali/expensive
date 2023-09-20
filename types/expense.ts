@@ -9,3 +9,5 @@ export type FilterExpenseArgs = {
   paidBy?: string;
   assignedTo?: string[];
 };
+
+export type DebtsAndDemands = { [key: string]: { demand: number; debt: number } };
