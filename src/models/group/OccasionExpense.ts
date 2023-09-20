@@ -4,6 +4,8 @@ import { Expense, IExpense } from "../Expense";
 export interface IOccasionExpense extends IExpense {
   paidBy: Types.ObjectId;
   assignedTo: Types.ObjectId[];
+  dong?: number;
+  demand?: number;
 }
 
 export const occasionExpenseSchema = new Schema<IOccasionExpense>({

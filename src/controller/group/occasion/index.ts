@@ -13,7 +13,7 @@ export const getSingleOccasion = async (req: Request, res: Response) => {
     occasionId: string;
   };
 
-  const group = await Group.findById(groupId);
+  const group = await Group.findById(groupId).lean();
   if (!group) {
     throw new ApiError("Group was not found.", 404);
   }
@@ -28,7 +28,8 @@ export const getSingleOccasion = async (req: Request, res: Response) => {
     throw new ApiError("You are not part of this occasion.", 403);
   }
 
-  const debtsAndDemands = calculateDemandAndDebts(occasion.expenses!);
+  const [expenses, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses!, userId);
+  occasion.expenses = expenses;
 
   return res.json(
     new ApiRes("Occasion details was sent successfully.", { occasion, debtsAndDemands })

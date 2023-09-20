@@ -82,6 +82,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
 };
 
 export const getOccasionExpenses = async (req: Request, res: Response) => {
+  const { userId } = req.user!;
   const {
     groupId,
     occasionId,
@@ -133,7 +134,7 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 
   console.log("filteredExpenses:", filteredExpenses);
 
-  const debtsAndDemands = calculateDemandAndDebts(filteredExpenses);
+  const debtsAndDemands = calculateDemandAndDebts(filteredExpenses, userId);
 
   return res.json(
     new ApiRes("Expenses sent successfully.", {

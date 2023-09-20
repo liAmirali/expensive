@@ -61,16 +61,29 @@ export const filterExpenses = (
   });
 };
 
-export const calculateDemandAndDebts = (expenses: IOccasionExpense[]) => {
+export const calculateDemandAndDebts = (
+  expenses: IOccasionExpense[],
+  loggedInUserId: string
+): [IOccasionExpense[], DebtsAndDemands] => {
   const debtsAndDemands: DebtsAndDemands = {};
+  const processedExpenses = [...expenses];
 
-  for (let expense of expenses) {
+  for (let i = 0; i < processedExpenses.length; i++) {
+    const expense = processedExpenses[i];
+
     const payerId = expense.paidBy.toString();
     if (!(payerId in debtsAndDemands)) debtsAndDemands[payerId] = { demand: 0, debt: 0 };
 
     debtsAndDemands[payerId].demand += expense.value;
 
     const eachPersonDong = expense.value / expense.assignedTo.length;
+
+    expense.dong = eachPersonDong;
+    if (payerId === loggedInUserId) {
+      expense.demand =
+        eachPersonDong * expense.assignedTo.length -
+        (expense.assignedTo.map((i) => i.toString()).includes(payerId) ? eachPersonDong : 0);
+    }
 
     for (let assignee of expense.assignedTo) {
       const assigneeId = assignee._id.toString();
@@ -80,5 +93,7 @@ export const calculateDemandAndDebts = (expenses: IOccasionExpense[]) => {
     }
   }
 
-  return debtsAndDemands;
+  console.log("processedExpenses :>> ", processedExpenses);
+
+  return [processedExpenses, debtsAndDemands];
 };

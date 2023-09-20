@@ -18,5 +18,5 @@ export const registerValidators = [
 export const loginValidators = [
   emailValidator(),
   body("password").notEmpty(),
-  checkExact(),
+  // checkExact(),
 ];
