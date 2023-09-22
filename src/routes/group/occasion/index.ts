@@ -1,11 +1,16 @@
 import { Router } from "express";
-import { createOccasion, getSingleOccasion } from "../../../controller/group/occasion";
+import {
+  createOccasion,
+  getOccasionMembers,
+  getSingleOccasion,
+} from "../../../controller/group/occasion";
 import { isAuth } from "../../../middlewares/authenticationHandler";
 import { throwValidationError } from "../../../validators/utils";
 import {
   createOccasionExpenseValidators,
   createOccasionValidators,
   getOccasionExpensesValidators,
+  getOccasionMembersValidators,
   getSingleOccasionValidators,
 } from "../../../validators/group/occasion";
 import {
@@ -26,6 +31,12 @@ router.get(
   "/:occasionId",
   [isAuth, ...getSingleOccasionValidators, throwValidationError],
   asyncHandler(getSingleOccasion)
+);
+
+router.get(
+  "/:occasionId/members",
+  [isAuth, ...getOccasionMembersValidators, throwValidationError],
+  asyncHandler(getOccasionMembers)
 );
 
 router.post(

@@ -22,6 +22,12 @@ export const getSingleOccasionValidators = [
   checkExact(),
 ];
 
+export const getOccasionMembersValidators = [
+  param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
+  query("groupId").isMongoId().withMessage("Group ID is invalid."),
+  checkExact(),
+];
+
 export const createOccasionExpenseValidators = [
   body("groupId").exists().withMessage("Field is required.").isMongoId(),
   body("occasionId").exists().withMessage("Field is required.").isMongoId(),

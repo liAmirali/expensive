@@ -4,6 +4,8 @@ import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { Types } from "mongoose";
 import { calculateDemandAndDebts } from "../../../utils/expense";
+import { IUser } from "../../../models/User";
+import { IOccasion } from "../../../models/group/Occasion";
 
 export const getSingleOccasion = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
@@ -85,4 +87,45 @@ export const createOccasion = async (req: Request, res: Response) => {
   await group.save();
 
   res.json(new ApiRes("Occasion was created successfully", { occasion: newOccasion }));
+};
+
+export const getOccasionMembers = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { occasionId, groupId } = matchedData(req, { locations: ["params", "query"] });
+
+  console.log("occasionId :>> ", occasionId);
+  console.log("groupId :>> ", groupId);
+
+  const group = await Group.findById(groupId)
+    .populate<{ occasions: (IOccasion & { members: IUser[] })[] }>({
+      path: "occasions",
+      populate: {
+        path: "members",
+        model: "User",
+      },
+    })
+    .lean();
+
+  if (!group) {
+    throw new ApiError("Group was not found.", 404);
+  }
+  console.log("group.occasions :>> ", group.occasions);
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion was not found.", 404);
+  }
+
+  let userIsInOccasion = false;
+  for (const member of occasion.members) {
+    if (member._id.toString() === userId) userIsInOccasion = true;
+    member.expenses = undefined;
+  }
+  if (!userIsInOccasion) {
+    throw new ApiError("Not authorized.", 403);
+  }
+
+  return res.json(
+    new ApiRes("Occasion members was sent successfully.", { members: occasion.members })
+  );
 };
