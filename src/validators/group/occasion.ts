@@ -18,19 +18,19 @@ export const createOccasionValidators = [
 
 export const getSingleOccasionValidators = [
   param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
-  query("groupId").isMongoId().withMessage("Group ID is invalid."),
+  query("groupId").exists().isMongoId().withMessage("Group ID is invalid."),
   checkExact(),
 ];
 
 export const getOccasionMembersValidators = [
   param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
-  query("groupId").isMongoId().withMessage("Group ID is invalid."),
+  query("groupId").exists().isMongoId().withMessage("Group ID is invalid."),
   checkExact(),
 ];
 
 export const createOccasionExpenseValidators = [
+  param("occasionId").isMongoId(),
   body("groupId").exists().withMessage("Field is required.").isMongoId(),
-  body("occasionId").exists().withMessage("Field is required.").isMongoId(),
   body("value")
     .exists()
     .withMessage("Field is required.")
@@ -38,7 +38,7 @@ export const createOccasionExpenseValidators = [
     .withMessage("Value must be a non-negative float."),
   body("category").notEmpty(),
   body("title").notEmpty().trim().escape(),
-  body("description").optional().notEmpty().escape(),
+  body("description").optional().escape(),
   body("currency").custom(isAcceptedCurrency).withMessage("Currency is invalid."),
   body("paidBy").isMongoId().withMessage("User ID is invalid."),
   body("assignedTo").isArray().isMongoId().withMessage("Field must be an array of user IDs."),
@@ -46,12 +46,12 @@ export const createOccasionExpenseValidators = [
 ];
 
 export const getOccasionExpensesValidators = [
+  param("occasionId").isMongoId(),
   query("groupId")
     .exists()
     .withMessage("Field is required.")
     .isMongoId()
     .withMessage("Group ID is invalid."),
-  query("occasionId").exists().withMessage("Field is required.").isMongoId(),
   query("minValue")
     .optional()
     .trim()

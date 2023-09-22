@@ -40,13 +40,13 @@ router.get(
 );
 
 router.post(
-  "/expense",
+  "/:occasionId/expense",
   [isAuth, ...createOccasionExpenseValidators, throwValidationError],
   asyncHandler(createOccasionExpense)
 );
 
 router.get(
-  "/expense",
+  "/:occasionId/expense",
   [isAuth, ...getOccasionExpensesValidators, throwValidationError],
   asyncHandler(getOccasionExpenses)
 );

@@ -3,12 +3,11 @@ import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
 import { Types } from "mongoose";
-import { IOccasionExpense } from "../../../models/group/OccasionExpense";
 import { calculateDemandAndDebts, filterExpenses } from "../../../utils/expense";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, title, description, category, currency, paidBy, assignedTo } =
-    matchedData(req) as {
+    matchedData(req, { locations: ["params", "body"] }) as {
       groupId: string;
       occasionId: string;
       value: number;
@@ -95,7 +94,7 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     endDate,
     paidBy,
     assignedTo,
-  } = matchedData(req) as {
+  } = matchedData(req, { locations: ["params", "query"] }) as {
     groupId: string;
     occasionId: string;
     minValue?: number;
