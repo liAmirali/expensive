@@ -35,7 +35,7 @@ export const postLogin = async (req: Request, res: Response) => {
   console.log("email :>> ", email);
   console.log("password :>> ", password);
 
-  const fetchedUser = await User.findOne({ email }).select("-__v");
+  const fetchedUser = await User.findOne({ email }).select("password").select("-__v");
 
   // Checking a user with the email exists
   if (fetchedUser === null) {
