@@ -1,5 +1,5 @@
 import { Model, Schema, Types, model } from "mongoose";
-import { ExpenseType, IExpense, expenseSchema } from "./Expense";
+import { IExpense, expenseSchema } from "./Expense";
 export interface IUser {
   _id: Types.ObjectId;
   name: string;
@@ -8,6 +8,9 @@ export interface IUser {
   password: string;
   expenses?: IExpense[];
   groups: Types.ObjectId[];
+
+  resetPassToken?: string;
+  resetPassTokenExpiration?: number;
 }
 
 export const userSchema = new Schema<IUser>({
@@ -23,6 +26,8 @@ export const userSchema = new Schema<IUser>({
       select: false,
     },
   ],
+  resetPassToken: { type: String, select: false },
+  resetPassTokenExpiration: { type: Date, select: false },
 });
 
 export const User: Model<IUser> = model("User", userSchema);

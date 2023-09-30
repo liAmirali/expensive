@@ -1,13 +1,15 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { User } from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { config } from "dotenv";
 import { ApiError, ApiRes } from "../utils/responses";
+import { sendEmail } from "../utils/email";
+import crypto from "crypto";
+import { DB_SECRET } from "../constants/database";
+import { CLIENT_ADDRESS } from "../constants/addresses";
+import { matchedData } from "express-validator";
 
-config();
-
-export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
+export const postRegister = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = req.body;
 
   const existingUser = await User.exists({ email: email });
@@ -52,12 +54,11 @@ export const postLogin = async (req: Request, res: Response) => {
   console.log("passwordsMatch :>> ", passwordsMatch);
 
   if (passwordsMatch) {
-    const secret = process.env.SECRET;
-    if (!secret) {
+    if (!DB_SECRET) {
       const error = new Error("Server error.");
       throw error;
     }
-    const accessToken = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, secret);
+    const accessToken = jwt.sign({ email: email, userId: fetchedUser._id.toString() }, DB_SECRET);
 
     (fetchedUser.password as string | undefined) = undefined; // Removing the password field from the response
     return res.json(new ApiRes("Successful login", { accessToken, user: fetchedUser }));
@@ -73,4 +74,77 @@ export const verifyAccessToken = async (req: Request, res: Response) => {
   }
 
   return res.json(new ApiRes("Access token is verified.", { user: user }, 200));
+};
+
+export const resetPasswordRequest = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError("No valid user was found.", 401);
+  }
+
+  const resetTokenBuffer = crypto.randomBytes(32);
+
+  const resetToken = resetTokenBuffer.toString("hex");
+
+  console.log("resetToken :>> ", resetToken);
+  user.resetPassToken = resetToken;
+  user.resetPassTokenExpiration = Date.now() + 60 * 60 * 1000; // 1 hour from now
+
+  await user.save();
+
+  const resetPasswordLink = `${CLIENT_ADDRESS}/auth/reset-password?resetToken=${resetToken}`;
+
+  sendEmail({
+    to: user.email,
+    subject: "Password Reset | Expensive",
+    text: `Hey it looks like you requested to reset your password. Here's the link, go ahead and copy it in your browser address bar: ${resetPasswordLink}`,
+    html: `Hey it looks like you requested to reset your password. \
+    Here's the link: <a href="${resetPasswordLink}">Rest Password</a>\
+    <br />\
+    If you can't open the link, copy and paste this link inside your browser address bar:<br />\
+    ${resetPasswordLink}<br />\
+    This link will be <strong>expired in 1 hour</strong>.`,
+  });
+
+  return res.json(new ApiRes("Password reset request was successful."));
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { newPassword, resetToken } = matchedData(req) as {
+    newPassword: string;
+    resetToken: string;
+  };
+
+  const user = await User.findById(userId)
+    .populate("resetPassToken resetPassTokenExpiration")
+    .select("+resetPassToken +resetPassTokenExpiration");
+  if (!user) {
+    throw new ApiError("User was not found.", 401);
+  }
+
+  console.log("user :>> ", user);
+
+  if (
+    !user.resetPassToken ||
+    user.resetPassToken !== resetToken ||
+    !user.resetPassTokenExpiration
+  ) {
+    throw new ApiError("Reset Password Token is not valid.", 403);
+  }
+
+  if (user.resetPassTokenExpiration < Date.now()) {
+    throw new ApiError("Reset Password Token is expired.", 403);
+  }
+
+  user.resetPassToken = undefined;
+  user.resetPassTokenExpiration = undefined;
+
+  user.password = await bcrypt.hash(newPassword, 12);
+
+  await user.save();
+
+  return res.json(new ApiRes("Password was reset successfully."));
 };

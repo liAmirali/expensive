@@ -1,10 +1,6 @@
 import { config } from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
-
-config();
-
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
+import { DB_PASSWORD, DB_USER } from "../constants/database";
 
 export const databaseUri = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@expensivecluster.khrpja3.mongodb.net/expensive?retryWrites=true&w=majority`;
 

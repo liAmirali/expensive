@@ -15,8 +15,16 @@ export const registerValidators = [
   checkExact(),
 ];
 
-export const loginValidators = [
-  emailValidator(),
-  body("password").notEmpty(),
-  // checkExact(),
+export const loginValidators = [emailValidator(), body("password").notEmpty(), checkExact()];
+
+export const resetPasswordValidators = [
+  body("newPassword").isStrongPassword({
+    minLength: 8,
+    minNumbers: 1,
+    minLowercase: 1,
+    minUppercase: 1,
+    minSymbols: 1,
+  }),
+  body("resetToken").exists(),
+  checkExact(),
 ];

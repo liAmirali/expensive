@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/responses";
 import jwt from "jsonwebtoken";
-import { config } from "dotenv";
 import { IJwtPayload } from "../interfaces/auth";
-
-config();
+import { DB_SECRET } from "../constants/database";
 
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const authorizationHeader = req.get("Authorization");
@@ -17,8 +15,7 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
     throw error;
   }
 
-  const secret = process.env.SECRET;
-  if (!secret) {
+  if (!DB_SECRET) {
     const error = new ApiError("Internal error.");
     error.statusCode = 500;
     throw error;
@@ -33,7 +30,7 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     console.log("READ TOKEN:", token);
-    const payload = jwt.verify(token, secret) as IJwtPayload;
+    const payload = jwt.verify(token, DB_SECRET) as IJwtPayload;
     console.log("JWT payload:", payload);
 
     req.user = {
