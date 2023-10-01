@@ -103,3 +103,24 @@ export const getOccasionExpensesValidators = [
     .withMessage("This field must be an array of user IDs."),
   checkExact(),
 ];
+
+export const updateOccasionExpenseValidators = [
+  param("occasionId").exists().isMongoId(),
+  body("groupId").exists().withMessage("Field is required.").isMongoId(),
+  body("expenseId").exists().withMessage("Field is required.").isMongoId(),
+  body("value")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Value must be a non-negative float."),
+  body("category").optional().notEmpty(),
+  body("title").optional().notEmpty().trim().escape(),
+  body("description").optional().optional().escape(),
+  body("currency").optional().custom(isAcceptedCurrency).withMessage("Currency is invalid."),
+  body("paidBy").optional().isMongoId().withMessage("User ID is invalid."),
+  body("assignedTo")
+    .optional()
+    .isArray()
+    .isMongoId()
+    .withMessage("Field must be an array of user IDs."),
+  checkExact(),
+];

@@ -142,3 +142,77 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     })
   );
 };
+
+export const updateOccasionExpense = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const {
+    groupId,
+    occasionId,
+    expenseId,
+    value,
+    title,
+    description,
+    category,
+    currency,
+    paidBy,
+    assignedTo,
+  } = matchedData(req, { locations: ["params", "body"] }) as {
+    groupId: string;
+    occasionId: string;
+    expenseId: string;
+    value?: number;
+    title?: string;
+    currency?: string;
+    description?: string;
+    category?: string;
+    paidBy?: string;
+    assignedTo?: string[];
+  };
+
+  const group = await Group.findById(groupId).select("occasions");
+  if (!group) {
+    throw new ApiError("Group ID was not found.", 404);
+  }
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion ID was not found.", 404);
+  }
+
+  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId);
+  if (!expense) {
+    throw new ApiError("Expense ID was not found.", 404);
+  }
+
+  if (value) expense.value = value;
+  if (title) expense.title = title;
+  if (currency) expense.currency = currency;
+  if (description) expense.description = description;
+  if (category) expense.category = category;
+  if (paidBy) {
+    const payerExists = occasion.members.find((member) => member._id.toString() === paidBy);
+    if (!payerExists) {
+      throw new ApiError("Payer must be among the occasion members.", 403);
+    }
+    expense.paidBy = new Types.ObjectId(paidBy);
+  }
+  if (assignedTo) {
+    for (const assigneeId of assignedTo) {
+      const assigneeExists = occasion.members.find(
+        (member) => member._id.toString() === assigneeId
+      );
+      if (!assigneeExists) {
+        throw new ApiError(
+          `All assignees must be among the occasions; but ${assigneeId} is not.`,
+          403
+        );
+      }
+    }
+
+    expense.assignedTo = assignedTo.map((id) => new Types.ObjectId(id));
+  }
+
+  await group.save();
+
+  return res.json(new ApiRes("Expense was updated successfully", { expense }));
+};

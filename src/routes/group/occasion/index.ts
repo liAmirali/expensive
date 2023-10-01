@@ -12,10 +12,12 @@ import {
   getOccasionExpensesValidators,
   getOccasionMembersValidators,
   getSingleOccasionValidators,
+  updateOccasionExpenseValidators,
 } from "../../../validators/group/occasion";
 import {
   createOccasionExpense,
   getOccasionExpenses,
+  updateOccasionExpense,
 } from "../../../controller/group/occasion/expense";
 import { asyncHandler } from "../../../utils/asyncHandler";
 
@@ -49,6 +51,12 @@ router.get(
   "/:occasionId/expense",
   [isAuth, ...getOccasionExpensesValidators, throwValidationError],
   asyncHandler(getOccasionExpenses)
+);
+
+router.patch(
+  "/:occasionId/expense",
+  [isAuth, ...updateOccasionExpenseValidators, throwValidationError],
+  asyncHandler(updateOccasionExpense)
 );
 
 export default router;

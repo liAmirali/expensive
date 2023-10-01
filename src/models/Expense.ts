@@ -6,6 +6,7 @@ export enum ExpenseType {
   INCOME = "INCOME",
 }
 export interface IExpense {
+  _id?: Types.ObjectId;
   value: number;
   type?: string;
   currency: string;
