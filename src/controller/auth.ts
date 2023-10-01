@@ -24,8 +24,6 @@ export const postRegister = async (req: Request, res: Response) => {
   // Creating the user model
   const newUser = new User({ firstName, lastName, email, password: hashedPassword });
 
-  console.log("new User => ", newUser);
-
   await newUser.save();
 
   return res.json(new ApiRes("User was registered successfully.", { user: newUser }));
@@ -34,9 +32,6 @@ export const postRegister = async (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  console.log("email :>> ", email);
-  console.log("password :>> ", password);
-
   const fetchedUser = await User.findOne({ email }).select("password").select("-__v");
 
   // Checking a user with the email exists
@@ -44,14 +39,9 @@ export const postLogin = async (req: Request, res: Response) => {
     throw new ApiError("Email doesn't exist.", 404);
   }
 
-  console.log("fetchedUser :>> ", fetchedUser);
-
   // TODO: REMOVE THIS SHIT
   // @ts-ignore
   const passwordsMatch = await bcrypt.compare(password, fetchedUser.password);
-
-  console.log("email :>> ", email);
-  console.log("passwordsMatch :>> ", passwordsMatch);
 
   if (passwordsMatch) {
     if (!DB_SECRET) {
@@ -88,7 +78,6 @@ export const requestResetPassword = async (req: Request, res: Response) => {
 
   const resetToken = resetTokenBuffer.toString("hex");
 
-  console.log("resetToken :>> ", resetToken);
   user.resetPassToken = resetToken;
   user.resetPassTokenExpiration = Date.now() + 60 * 60 * 1000; // 1 hour from now
 
@@ -124,8 +113,6 @@ export const resetPassword = async (req: Request, res: Response) => {
   if (!user) {
     throw new ApiError("User was not found.", 401);
   }
-
-  console.log("user :>> ", user);
 
   if (
     !user.resetPassToken ||
@@ -183,16 +170,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const { verifyEmailToken } = matchedData(req);
 
-  console.log("verifyEmailToken :>> ", verifyEmailToken);
-
-  const user = await User.findById(userId).populate(
-    "emailVerificationToken emailVerificationTokenExpiration"
-  );
+  const user = await User.findById(userId).populate("emailVerificationToken emailVerificationTokenExpiration");
   if (!user) {
     throw new ApiError("User not found.", 403);
   }
-
-  console.log("user :>> ", user);
 
   if (!user.emailVerificationToken || user.emailVerificationToken !== verifyEmailToken) {
     throw new ApiError("Verification token is not valid.", 403);
