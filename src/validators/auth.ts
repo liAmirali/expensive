@@ -28,3 +28,5 @@ export const resetPasswordValidators = [
   body("resetToken").exists(),
   checkExact(),
 ];
+
+export const emailVerificationValidators = [body("verifyEmailToken").exists(), checkExact()];

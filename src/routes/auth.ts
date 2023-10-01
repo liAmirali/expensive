@@ -3,11 +3,18 @@ import {
   postLogin,
   postRegister,
   resetPassword,
-  resetPasswordRequest,
+  requestResetPassword,
   verifyAccessToken,
+  requestEmailVerification,
+  verifyEmail,
 } from "../controller/auth";
 import { throwValidationError } from "../validators/utils";
-import { loginValidators, registerValidators, resetPasswordValidators } from "../validators/auth";
+import {
+  emailVerificationValidators,
+  loginValidators,
+  registerValidators,
+  resetPasswordValidators,
+} from "../validators/auth";
 import { asyncHandler } from "../utils/asyncHandler";
 import { isAuth } from "../middlewares/authenticationHandler";
 
@@ -19,12 +26,19 @@ router.post("/login", [...loginValidators, throwValidationError], asyncHandler(p
 
 router.post("/me", [isAuth], asyncHandler(verifyAccessToken));
 
-router.get("/reset-pass", [isAuth], asyncHandler(resetPasswordRequest));
+router.get("/reset-pass", [isAuth], asyncHandler(requestResetPassword));
 
 router.post(
   "/reset-pass",
   [isAuth, ...resetPasswordValidators, throwValidationError],
   asyncHandler(resetPassword)
+);
+
+router.get("/verify-email", [isAuth], asyncHandler(requestEmailVerification));
+router.post(
+  "/verify-email",
+  [isAuth, ...emailVerificationValidators, throwValidationError],
+  asyncHandler(verifyEmail)
 );
 
 export default router;

@@ -76,7 +76,7 @@ export const verifyAccessToken = async (req: Request, res: Response) => {
   return res.json(new ApiRes("Access token is verified.", { user: user }, 200));
 };
 
-export const resetPasswordRequest = async (req: Request, res: Response) => {
+export const requestResetPassword = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
 
   const user = await User.findById(userId);
@@ -94,7 +94,7 @@ export const resetPasswordRequest = async (req: Request, res: Response) => {
 
   await user.save();
 
-  const resetPasswordLink = `${CLIENT_ADDRESS}/auth/reset-password?resetToken=${resetToken}`;
+  const resetPasswordLink = `${CLIENT_ADDRESS}/auth/reset-password?token=${resetToken}`;
 
   sendEmail({
     to: user.email,
@@ -147,4 +147,68 @@ export const resetPassword = async (req: Request, res: Response) => {
   await user.save();
 
   return res.json(new ApiRes("Password was reset successfully."));
+};
+
+export const requestEmailVerification = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError("User not found.", 403);
+  }
+
+  if (user.isEmailVerified) {
+    throw new ApiError("Email is already verified", 403);
+  }
+
+  const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+  user.emailVerificationToken = emailVerificationToken;
+  user.emailVerificationTokenExpiration = Date.now() + 60 * 60 * 1000; // 1 hour from now
+
+  await user.save();
+
+  const clientRedirectUrl = `${CLIENT_ADDRESS}/auth/verify-email?token=${emailVerificationToken}`;
+
+  sendEmail({
+    to: user.email,
+    subject: "Email Verification | Expensive",
+    text: `Please verify your email by copying this link into your browser address bar: ${clientRedirectUrl}`,
+    html: `Please verify your email. Click <a href="${clientRedirectUrl}">this link</a> or copy this link into your browser address bar.<br>${clientRedirectUrl}.`,
+  });
+
+  return res.json(new ApiRes("Email verification code was sent successfully."));
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { verifyEmailToken } = matchedData(req);
+
+  console.log("verifyEmailToken :>> ", verifyEmailToken);
+
+  const user = await User.findById(userId).populate(
+    "emailVerificationToken emailVerificationTokenExpiration"
+  );
+  if (!user) {
+    throw new ApiError("User not found.", 403);
+  }
+
+  console.log("user :>> ", user);
+
+  if (!user.emailVerificationToken || user.emailVerificationToken !== verifyEmailToken) {
+    throw new ApiError("Verification token is not valid.", 403);
+  }
+
+  if (
+    !user.emailVerificationTokenExpiration ||
+    user.emailVerificationTokenExpiration < Date.now()
+  ) {
+    throw new ApiError("Verification token is expired.", 403);
+  }
+
+  user.isEmailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationTokenExpiration = undefined;
+  await user.save();
+
+  return res.json(new ApiRes("Email was verified successfully."));
 };

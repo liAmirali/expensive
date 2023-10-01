@@ -9,6 +9,9 @@ export interface IUser {
   expenses?: IExpense[];
   groups: Types.ObjectId[];
 
+  isEmailVerified: boolean;
+  emailVerificationToken?: string;
+  emailVerificationTokenExpiration?: number;
   resetPassToken?: string;
   resetPassTokenExpiration?: number;
 }
@@ -26,6 +29,9 @@ export const userSchema = new Schema<IUser>({
       select: false,
     },
   ],
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String, select: false },
+  emailVerificationTokenExpiration: {type: Date, select: false},
   resetPassToken: { type: String, select: false },
   resetPassTokenExpiration: { type: Date, select: false },
 });
