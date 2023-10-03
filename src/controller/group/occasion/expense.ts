@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
 import { calculateDemandAndDebts, filterExpenses } from "../../../utils/expense";
+import { IOccasionExpense } from "../../../models/group/OccasionExpense";
+import { IOccasion } from "../../../models/group/Occasion";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, title, description, category, currency, paidBy, assignedTo } =
@@ -215,4 +217,49 @@ export const updateOccasionExpense = async (req: Request, res: Response) => {
   await group.save();
 
   return res.json(new ApiRes("Expense was updated successfully", { expense }));
+};
+
+export const deleteOccasionExpense = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const { groupId, occasionId, expenseId } = matchedData(req);
+
+  const group = await Group.findById(groupId).select("occasions");
+  if (!group) {
+    throw new ApiError("Group ID was not found.", 404);
+  }
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion ID was not found.", 404);
+  }
+
+  let userIsAuthorized = false;
+  for (let i = 0; i < occasion.members.length; i++) {
+    if (occasion.members[i]._id.toString() === userId) {
+      userIsAuthorized = true;
+      break;
+    }
+  }
+  if (!userIsAuthorized) {
+    throw new ApiError("User is not authorized.", 403);
+  }
+
+  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId);
+  if (!expense) {
+    throw new ApiError("Expense ID was not found.", 404);
+  }
+
+  await Group.findOneAndUpdate(
+    { _id: groupId, "occasions._id": occasionId },
+    {
+      $pull: {
+        "occasions.$.expenses": {
+          _id: expenseId,
+        },
+      },
+    }
+  );
+
+  return res.json(new ApiRes("Expense was deleted successfully"));
 };

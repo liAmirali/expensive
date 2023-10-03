@@ -9,6 +9,7 @@ import { throwValidationError } from "../../../validators/utils";
 import {
   createOccasionExpenseValidators,
   createOccasionValidators,
+  deleteOccasionExpenseValidators,
   getOccasionExpensesValidators,
   getOccasionMembersValidators,
   getSingleOccasionValidators,
@@ -16,6 +17,7 @@ import {
 } from "../../../validators/group/occasion";
 import {
   createOccasionExpense,
+  deleteOccasionExpense,
   getOccasionExpenses,
   updateOccasionExpense,
 } from "../../../controller/group/occasion/expense";
@@ -57,6 +59,12 @@ router.patch(
   "/:occasionId/expense",
   [isAuth, ...updateOccasionExpenseValidators, throwValidationError],
   asyncHandler(updateOccasionExpense)
+);
+
+router.delete(
+  "/:occasionId/expense",
+  [isAuth, ...deleteOccasionExpenseValidators],
+  asyncHandler(deleteOccasionExpense)
 );
 
 export default router;

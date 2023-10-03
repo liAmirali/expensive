@@ -106,12 +106,9 @@ export const getOccasionExpensesValidators = [
 
 export const updateOccasionExpenseValidators = [
   param("occasionId").exists().isMongoId(),
-  body("groupId").exists().withMessage("Field is required.").isMongoId(),
-  body("expenseId").exists().withMessage("Field is required.").isMongoId(),
-  body("value")
-    .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Value must be a non-negative float."),
+  body("groupId").exists().isMongoId(),
+  body("expenseId").exists().isMongoId(),
+  body("value").optional().isFloat({ min: 0 }).withMessage("Value must be a non-negative float."),
   body("category").optional().notEmpty(),
   body("title").optional().notEmpty().trim().escape(),
   body("description").optional().optional().escape(),
@@ -123,4 +120,10 @@ export const updateOccasionExpenseValidators = [
     .isMongoId()
     .withMessage("Field must be an array of user IDs."),
   checkExact(),
+];
+
+export const deleteOccasionExpenseValidators = [
+  param("occasionId").exists().isMongoId(),
+  body("groupId").exists().isMongoId(),
+  body("expenseId").exists().isMongoId(),
 ];
