@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  addOccasionMembers as updateOccasionMembers,
   createOccasion,
   getOccasionMembers,
   getSingleOccasion,
@@ -7,6 +8,7 @@ import {
 import { isAuth } from "../../../middlewares/authenticationHandler";
 import { throwValidationError } from "../../../validators/utils";
 import {
+  addOccasionMembersValidators as updateOccasionMembersValidators,
   createOccasionExpenseValidators,
   createOccasionValidators,
   deleteOccasionExpenseValidators,
@@ -41,6 +43,12 @@ router.get(
   "/:occasionId/members",
   [isAuth, ...getOccasionMembersValidators, throwValidationError],
   asyncHandler(getOccasionMembers)
+);
+
+router.put(
+  "/:occasionId/members",
+  [isAuth, ...updateOccasionMembersValidators, throwValidationError],
+  asyncHandler(updateOccasionMembers)
 );
 
 router.post(
