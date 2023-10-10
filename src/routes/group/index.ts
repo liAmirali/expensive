@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { createGroup, deleteGroup, getSingleGroup, listGroups } from "../../controller/group";
+import {
+  createGroup,
+  deleteGroup,
+  getSingleGroup,
+  listGroups,
+  updateGroup,
+} from "../../controller/group";
 import { isAuth } from "../../middlewares/authenticationHandler";
 import { throwValidationError } from "../../validators/utils";
 import {
@@ -7,6 +13,7 @@ import {
   deleteGroupValidators,
   getGroupListValidators,
   getSingleGroupValidators,
+  updateGroupValidators,
 } from "../../validators/group";
 import { asyncHandler } from "../../utils/asyncHandler";
 
@@ -30,9 +37,14 @@ router.post(
   asyncHandler(createGroup)
 );
 router.delete(
-  "/",
+  "/:groupId",
   [isAuth, ...deleteGroupValidators, throwValidationError],
   asyncHandler(deleteGroup)
+);
+router.patch(
+  "/:groupId",
+  [isAuth, ...updateGroupValidators, throwValidationError],
+  asyncHandler(updateGroup)
 );
 
 router.use("/occasion", occasionRouter);

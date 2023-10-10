@@ -19,7 +19,14 @@ export const createGroupValidators = [
 ];
 
 export const deleteGroupValidators = [
-  body("id").isMongoId().withMessage("ID is invalid."),
+  param("groupId").isMongoId().withMessage("Group ID is invalid."),
+  checkExact(),
+];
+
+export const updateGroupValidators = [
+  param("groupId").isMongoId().withMessage("Group ID is invalid."),
+  body("name").optional(),
+  body("members").optional().isMongoId().isArray(),
   checkExact(),
 ];
 

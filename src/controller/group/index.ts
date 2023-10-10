@@ -10,7 +10,7 @@ export const getSingleGroup = async (req: Request, res: Response) => {
 
   const { groupId } = matchedData(req, { locations: ["params"] }) as { groupId: string };
 
-  const group = await Group.findById(groupId).populate<{members: IUser[]}>("members");
+  const group = await Group.findById(groupId).populate<{ members: IUser[] }>("members");
 
   if (group === null) {
     return res.json(new ApiError("Group was not found.", 404));
@@ -112,7 +112,7 @@ export const createGroup = async (req: Request, res: Response) => {
 
 export const deleteGroup = async (req: Request, res: Response) => {
   // TODO: add authorization, only authorized people should be able to delete a group
-  const { id: groupIdToDelete } = req.body;
+  const { groupId: groupIdToDelete } = req.body;
 
   // Removing the group
   const group = await Group.findByIdAndDelete(groupIdToDelete);
@@ -132,4 +132,56 @@ export const deleteGroup = async (req: Request, res: Response) => {
   );
 
   return res.send(new ApiRes("Group was deleted successfully."));
+};
+
+export const updateGroup = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  console.log("userId :>> ", userId);
+
+  const { groupId, name, members } = matchedData(req, { locations: ["params", "body"] }) as {
+    groupId: string;
+    name?: string;
+    members?: string[];
+  };
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    throw new ApiError("No group was found with this ID", 404);
+  }
+
+  if (!group.members.find((id) => id.toString() === userId)) {
+    throw new ApiError("You are not authorized.", 403);
+  }
+
+  if (members) {
+    const removedUsers = group.members
+      .filter((memberId) => !members.includes(memberId.toString()))
+      .map((objId) => objId.toString());
+
+    if (removedUsers.length > 0) {
+      for (const occasion of group.occasions) {
+        const occasionMembersToRemove = occasion.members.filter((memberId) =>
+          removedUsers.includes(memberId.toString())
+        );
+
+        if (occasionMembersToRemove.length > 0) {
+          throw new ApiError(
+            "You can't remove a user from a group that is a part of an occasion.",
+            403
+          );
+        }
+      }
+    }
+
+    group.members = members.map((id) => new Types.ObjectId(id));
+  }
+
+  if (name) {
+    group.name = name;
+  }
+
+  await group.save();
+
+  return res.json(new ApiRes("Group was updated successfully."));
 };

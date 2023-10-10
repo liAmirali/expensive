@@ -153,7 +153,7 @@ export const addOccasionMembers = async (req: Request, res: Response) => {
     throw new ApiError("Occasion was not found.", 404);
   }
 
-  if (!occasion.members.find(member => member._id.toString() === userId)) {
+  if (!occasion.members.find((member) => member._id.toString() === userId)) {
     throw new ApiError("You are not authorized", 403);
   }
 
