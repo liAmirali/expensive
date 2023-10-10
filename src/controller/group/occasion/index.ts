@@ -89,6 +89,38 @@ export const createOccasion = async (req: Request, res: Response) => {
   res.json(new ApiRes("Occasion was created successfully", { occasion: newOccasion }));
 };
 
+export const deleteOccasion = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { occasionId, groupId } = matchedData(req, { locations: ["params", "body"] }) as {
+    occasionId: string;
+    groupId: string;
+  };
+
+  const group = await Group.findById(groupId).populate<{ occasions: IOccasion[] }>("occasions");
+  if (!group) {
+    throw new ApiError("Group was not found.", 404);
+  }
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion was not found.", 404);
+  }
+
+  if (!occasion.members.find((member) => member._id.toString() === userId)) {
+    throw new ApiError("You are not authorized", 403);
+  }
+
+   await group.updateOne({
+    $pull: {
+      occasions: {
+        _id: occasionId,
+      },
+    },
+  });
+
+  return res.json(new ApiRes("Occasion was deleted successfully."));
+};
+
 export const getOccasionMembers = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const { occasionId, groupId } = matchedData(req, { locations: ["params", "query"] });
@@ -162,5 +194,5 @@ export const addOccasionMembers = async (req: Request, res: Response) => {
     { $set: { "occasions.$.members": userIds } }
   );
 
-  return res.json("OK");
+  return res.json(new ApiRes("Occasion was updated successfully."));
 };

@@ -4,6 +4,7 @@ import {
   createOccasion,
   getOccasionMembers,
   getSingleOccasion,
+  deleteOccasion,
 } from "../../../controller/group/occasion";
 import { isAuth } from "../../../middlewares/authenticationHandler";
 import { throwValidationError } from "../../../validators/utils";
@@ -16,6 +17,7 @@ import {
   getOccasionMembersValidators,
   getSingleOccasionValidators,
   updateOccasionExpenseValidators,
+  deleteOccasionValidators,
 } from "../../../validators/group/occasion";
 import {
   createOccasionExpense,
@@ -27,16 +29,22 @@ import { asyncHandler } from "../../../utils/asyncHandler";
 
 const router = Router();
 
+router.get(
+  "/:occasionId",
+  [isAuth, ...getSingleOccasionValidators, throwValidationError],
+  asyncHandler(getSingleOccasion)
+);
+
 router.post(
   "/",
   [isAuth, ...createOccasionValidators, throwValidationError],
   asyncHandler(createOccasion)
 );
 
-router.get(
+router.delete(
   "/:occasionId",
-  [isAuth, ...getSingleOccasionValidators, throwValidationError],
-  asyncHandler(getSingleOccasion)
+  [isAuth, ...deleteOccasionValidators, throwValidationError],
+  asyncHandler(deleteOccasion)
 );
 
 router.get(

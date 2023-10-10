@@ -22,6 +22,12 @@ export const getSingleOccasionValidators = [
   checkExact(),
 ];
 
+export const deleteOccasionValidators = [
+  param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
+  body("groupId").exists().isMongoId().withMessage("Group ID is invalid."),
+  checkExact(),
+];
+
 export const getOccasionMembersValidators = [
   param("occasionId").isMongoId().withMessage("Occasion ID is invalid."),
   query("groupId").exists().isMongoId().withMessage("Group ID is invalid."),
@@ -33,7 +39,7 @@ export const addOccasionMembersValidators = [
   body("groupId").exists().isMongoId().withMessage("Group ID is invalid."),
   body("userIds").exists().isArray().isMongoId().withMessage("User ID is invalid."),
   checkExact(),
-]
+];
 
 export const createOccasionExpenseValidators = [
   param("occasionId").isMongoId(),
