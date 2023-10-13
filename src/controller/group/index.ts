@@ -4,6 +4,7 @@ import { ApiError, ApiRes } from "../../utils/responses";
 import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
+import { IOccasion } from "../../models/group/Occasion";
 
 export const getSingleGroup = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
@@ -25,6 +26,12 @@ export const getSingleGroup = async (req: Request, res: Response) => {
   for (let member of group.members) {
     member.expenses = undefined;
   }
+
+  group.occasions = group.occasions.filter((occasion) =>
+    occasion.members.find((memberObjId) => memberObjId.toString() === userId)
+  );
+
+  console.log("group.occasions :>> ", group.occasions);
 
   return res.json(new ApiRes("Group fetched successfully.", { group }));
 };
@@ -52,6 +59,10 @@ export const listGroups = async (req: Request, res: Response) => {
     for (let member of group.members as IUser[]) {
       member.expenses = undefined;
     }
+
+    group.occasions = group.occasions.filter((occasion) =>
+      occasion.members.find((memberObjId) => memberObjId.toString() === userId)
+    );
   });
 
   if (!groups || groups.length === 0) {
