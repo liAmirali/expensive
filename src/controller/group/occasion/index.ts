@@ -110,7 +110,7 @@ export const deleteOccasion = async (req: Request, res: Response) => {
     throw new ApiError("You are not authorized", 403);
   }
 
-   await group.updateOne({
+  await group.updateOne({
     $pull: {
       occasions: {
         _id: occasionId,
