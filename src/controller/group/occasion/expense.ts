@@ -2,10 +2,8 @@ import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
-import { Document, Types } from "mongoose";
+import { Types } from "mongoose";
 import { calculateDemandAndDebts, filterExpenses } from "../../../utils/expense";
-import { IOccasionExpense } from "../../../models/group/OccasionExpense";
-import { IOccasion } from "../../../models/group/Occasion";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, title, description, category, currency, paidBy, assignedTo } =
@@ -135,7 +133,7 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 
   console.log("filteredExpenses:", filteredExpenses);
 
-  const debtsAndDemands = calculateDemandAndDebts(filteredExpenses, userId);
+  const [_, debtsAndDemands] = calculateDemandAndDebts(filteredExpenses, userId);
 
   return res.json(
     new ApiRes("Expenses sent successfully.", {

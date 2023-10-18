@@ -86,14 +86,12 @@ export const calculateDemandAndDebts = (
     }
 
     for (let assignee of expense.assignedTo) {
-      const assigneeId = assignee._id.toString();
+      const assigneeId = assignee.toString();
       if (!(assigneeId in debtsAndDemands)) debtsAndDemands[assigneeId] = { demand: 0, debt: 0 };
 
       debtsAndDemands[assigneeId].debt += eachPersonDong;
     }
   }
-
-  console.log("processedExpenses :>> ", processedExpenses);
 
   return [processedExpenses, debtsAndDemands];
 };

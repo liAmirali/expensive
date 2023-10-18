@@ -5,6 +5,7 @@ import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
 import { IOccasion } from "../../models/group/Occasion";
+import { calculateDemandAndDebts } from "../../utils/expense";
 
 export const getSingleGroup = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
@@ -23,17 +24,25 @@ export const getSingleGroup = async (req: Request, res: Response) => {
     return res.json(new ApiError("You don't have access to this group.", 403));
   }
 
-  for (let member of group.members) {
+  const groupToSend = JSON.parse(JSON.stringify(group)) as IGroup;
+
+  for (let member of (groupToSend.members as unknown as IUser[])) {
     member.expenses = undefined;
   }
 
-  group.occasions = group.occasions.filter((occasion) =>
+  groupToSend.occasions = groupToSend.occasions.filter((occasion) =>
     occasion.members.find((memberObjId) => memberObjId.toString() === userId)
   );
 
-  console.log("group.occasions :>> ", group.occasions);
+  for (let i = 0; i < groupToSend.occasions.length; i++) {
+    const occasion = groupToSend.occasions[i];
+    if (!occasion.expenses) continue;
 
-  return res.json(new ApiRes("Group fetched successfully.", { group }));
+    const [_, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses, userId);
+    occasion.debtsAndDemands = debtsAndDemands;
+  }
+
+  return res.json(new ApiRes("Group fetched successfully.", { group: groupToSend }));
 };
 
 export const listGroups = async (req: Request, res: Response) => {
