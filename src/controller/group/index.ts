@@ -5,7 +5,8 @@ import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
 import { IOccasion } from "../../models/group/Occasion";
-import { calculateDemandAndDebts } from "../../utils/expense";
+import { calculateDemandAndDebts, mergeDebtsAndDemands } from "../../utils/expense";
+import { DebtsAndDemands } from "../../../types/expense";
 
 export const getSingleGroup = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
@@ -26,7 +27,7 @@ export const getSingleGroup = async (req: Request, res: Response) => {
 
   const groupToSend = JSON.parse(JSON.stringify(group)) as IGroup;
 
-  for (let member of (groupToSend.members as unknown as IUser[])) {
+  for (let member of groupToSend.members as unknown as IUser[]) {
     member.expenses = undefined;
   }
 
@@ -74,11 +75,32 @@ export const listGroups = async (req: Request, res: Response) => {
     );
   });
 
+  let groupsToSend = JSON.parse(JSON.stringify(groups)) as IGroup[];
+  groupsToSend = groupsToSend.map((group) => {
+    let groupDebtsAndDemands: DebtsAndDemands = {};
+
+    group.occasions = group.occasions.map((occasion) => {
+      if (!occasion.expenses) return occasion;
+
+      const [_, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses, userId);
+      groupDebtsAndDemands = mergeDebtsAndDemands(groupDebtsAndDemands, debtsAndDemands);
+      return {
+        ...occasion,
+        debtsAndDemands: debtsAndDemands,
+      };
+    });
+
+    return {
+      ...group,
+      debtsAndDemands: groupDebtsAndDemands,
+    };
+  });
+
   if (!groups || groups.length === 0) {
     throw new ApiError("No groups found.", 404);
   }
 
-  return res.json(new ApiRes("Groups fetched successfully.", { groups }));
+  return res.json(new ApiRes("Groups fetched successfully.", { groups: groupsToSend }));
 };
 
 export const createGroup = async (req: Request, res: Response) => {

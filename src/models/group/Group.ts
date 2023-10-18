@@ -1,13 +1,15 @@
 import { Schema, Model, model, Document, Types } from "mongoose";
 import { IOccasion, occasionSchema } from "./Occasion";
+import { DebtsAndDemands } from "../../../types/expense";
 
-export interface IGroup extends Document {
+export interface IGroup  {
   name: string;
   members: Types.ObjectId[];
   creator: Types.ObjectId;
   occasions: IOccasion[];
   createdAt: Date;
   updatedAt: Date;
+  debtsAndDemands?: DebtsAndDemands;
 }
 
 export const groupSchema = new Schema<IGroup>(

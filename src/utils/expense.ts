@@ -95,3 +95,18 @@ export const calculateDemandAndDebts = (
 
   return [processedExpenses, debtsAndDemands];
 };
+
+export const mergeDebtsAndDemands = (dnd1: DebtsAndDemands, dnd2: DebtsAndDemands) => {
+  const merged: DebtsAndDemands = { ...dnd1 };
+
+  (Object.keys(dnd2) as string[]).forEach((userId) => {
+    if (merged[userId]) {
+      merged[userId].debt += dnd2[userId].debt;
+      merged[userId].demand += dnd2[userId].demand;
+    } else {
+      merged[userId] = dnd2[userId];
+    }
+  });
+
+  return merged;
+};
