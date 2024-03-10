@@ -20,12 +20,14 @@ import {
   deleteOccasionValidators,
 } from "../../../validators/group/occasion";
 import {
+  clearDebt,
   createOccasionExpense,
   deleteOccasionExpense,
   getOccasionExpenses,
   updateOccasionExpense,
 } from "../../../controller/group/occasion/expense";
 import { asyncHandler } from "../../../utils/asyncHandler";
+import { clearDebtValidators } from "../../../validators/expense";
 
 const router = Router();
 
@@ -79,8 +81,14 @@ router.patch(
 
 router.delete(
   "/:occasionId/expense",
-  [isAuth, ...deleteOccasionExpenseValidators],
+  [isAuth, ...deleteOccasionExpenseValidators, throwValidationError],
   asyncHandler(deleteOccasionExpense)
+);
+
+router.post(
+  "/:occasionId/clear-debt",
+  [isAuth, ...clearDebtValidators, throwValidationError],
+  asyncHandler(clearDebt)
 );
 
 export default router;

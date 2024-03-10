@@ -75,3 +75,5 @@ export const editExpenseValidators = [
 ];
 
 export const deleteExpenseValidators = [body("id").isMongoId(), checkExact()];
+
+export const clearDebtValidators = [body("groupId"), body("occasionId"), body("expenseId")];

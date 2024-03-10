@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { matchedData } from "express-validator";
+import { Result, matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
 import { Types } from "mongoose";
@@ -260,4 +260,19 @@ export const deleteOccasionExpense = async (req: Request, res: Response) => {
   );
 
   return res.json(new ApiRes("Expense was deleted successfully"));
+};
+
+export const clearDebt = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { groupId, occasionId, expenseId } = matchedData(req);
+
+  const expense = await Group.find({
+    _id: groupId,
+    "occasions.$._id": occasionId,
+    "occasions.$.expenses.$._id": expenseId,
+  });
+
+  console.log('expense :>> ', expense);
+
+  return res.send("OK")
 };
