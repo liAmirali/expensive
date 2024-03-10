@@ -14,7 +14,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { defaults } from "./middlewares/defaults";
 
 // Loading the .env file
-config({path: "./gholam/env"});
+config();
 
 const app = express();
 const port = 5000;
