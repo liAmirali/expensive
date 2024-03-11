@@ -3,6 +3,8 @@ import { emailValidator } from "./utils";
 
 export const registerValidators = [
   emailValidator(),
+  body("username").trim().notEmpty(),
+  body("name").trim(),
   body("password").isStrongPassword({
     minLength: 8,
     minNumbers: 1,
@@ -10,8 +12,6 @@ export const registerValidators = [
     minUppercase: 1,
     minSymbols: 1,
   }),
-  body("firstName").notEmpty(),
-  body("lastName").optional().notEmpty(),
   checkExact(),
 ];
 

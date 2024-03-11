@@ -10,7 +10,7 @@ import { CLIENT_ADDRESS } from "../constants/addresses";
 import { matchedData } from "express-validator";
 
 export const postRegister = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   const existingUser = await User.exists({ email: email });
 
@@ -22,7 +22,7 @@ export const postRegister = async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, 12);
 
   // Creating the user model
-  const newUser = new User({ firstName, lastName, email, password: hashedPassword });
+  const newUser = new User({ name, username, email, password: hashedPassword });
 
   await newUser.save();
 
