@@ -12,11 +12,16 @@ import { matchedData } from "express-validator";
 export const postRegister = async (req: Request, res: Response) => {
   const { name, username, email, password } = req.body;
 
-  const existingUser = await User.exists({ email: email });
-
+  let existingUser = await User.exists({ email: email });
   // Checking if a user with the entered email exists
   if (existingUser !== null) {
     throw new ApiError("User with this email already exists", 400);
+  }
+
+  existingUser = await User.exists({ username: { $regex: new RegExp(username, "i") } }); // Checks case insensitively
+  // Checking if a user with the entered username exists
+  if (existingUser !== null) {
+    throw new ApiError("User with this username already exists", 400);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -170,7 +175,9 @@ export const verifyEmail = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const { verifyEmailToken } = matchedData(req);
 
-  const user = await User.findById(userId).populate("emailVerificationToken emailVerificationTokenExpiration");
+  const user = await User.findById(userId).populate(
+    "emailVerificationToken emailVerificationTokenExpiration"
+  );
   if (!user) {
     throw new ApiError("User not found.", 403);
   }
