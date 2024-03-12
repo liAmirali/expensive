@@ -1,5 +1,5 @@
 #Environment files
-.env
+.env*
 
 # dependencies
 /.pnp
@@ -10,6 +10,7 @@ node_modules
 # production
 /dist
 /build
+liara.json
 
 # testing
 /coverage
