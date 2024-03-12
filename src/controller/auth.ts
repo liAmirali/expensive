@@ -37,15 +37,14 @@ export const postRegister = async (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const fetchedUser = await User.findOne({ email }).select("password").select("-__v");
+  const fetchedUser = await User.findOne({ email }).select("+password");
+  console.log("fetchedUser:", fetchedUser)
 
   // Checking a user with the email exists
   if (fetchedUser === null) {
     throw new ApiError("Email doesn't exist.", 404);
   }
 
-  // TODO: REMOVE THIS SHIT
-  // @ts-ignore
   const passwordsMatch = await bcrypt.compare(password, fetchedUser.password);
 
   if (passwordsMatch) {
