@@ -78,7 +78,8 @@ export const createOccasion = async (req: Request, res: Response) => {
   let membersToAdd = members ? members.map((id) => new Types.ObjectId(id)) : [];
   membersToAdd.push(new Types.ObjectId(userId));
 
-  const newOccasion = {
+  const newOccasion: IOccasion = {
+    _id: new Types.ObjectId(),
     name,
     members: membersToAdd,
   };
