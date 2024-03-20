@@ -15,7 +15,7 @@ export interface IUser {
   resetPassToken?: string;
   resetPassTokenExpiration?: number;
 
-  __v?: number
+  __v?: number;
 }
 
 export const userSchema = new Schema<IUser>({

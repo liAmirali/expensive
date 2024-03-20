@@ -65,6 +65,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     category,
     currency,
     dateTime: new Date(),
+    occasionId: new Types.ObjectId(occasion._id),
   };
 
   const newOccasionExpense = new OccasionExpense(newExpense);
@@ -140,21 +141,21 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
 export const getSingleOccasionExpense = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
 
-  const { groupId, occasionId, expenseId } = matchedData(req, { locations: ["params", "query"] });
+  const { expenseId } = matchedData(req);
 
-  const group = await Group.findById(groupId)
-    .select("occasions")
-    .populate("occasions.expenses.paidBy")
-    .populate("occasions.expenses.assignedTo")
-    .populate("occasions.expenses.tempUser")
-    .populate("occasions.expenses.createdBy");
-  if (!group) {
-    throw new ApiError("Group ID was not found.", 404);
+  const occasionExpense = await OccasionExpense.findById(expenseId)
+    .populate("createdBy")
+    .populate("paidBy")
+    .populate("assignedTo");
+  if (!occasionExpense) {
+    throw new ApiError("Occasion Expense was not found.", 404);
   }
-
-  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  const group = await Group.findOne({ "occasions._id": occasionExpense.occasionId });
+  const occasion = group?.occasions.find(
+    (occ) => occ._id!.toString() === occasionExpense.occasionId.toString()
+  );
   if (!occasion) {
-    throw new ApiError("Occasion ID was not found.", 404);
+    throw new ApiError("Occasion of the expense was not found.", 404);
   }
 
   let userIsAuthorized = false;
@@ -168,12 +169,7 @@ export const getSingleOccasionExpense = async (req: Request, res: Response) => {
     throw new ApiError("User is not authorized.", 403);
   }
 
-  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId)
-  if (!expense) {
-    throw new ApiError("Expense ID was not found.", 404);
-  }
-
-  return res.json(new ApiRes("Expense fetched successfully.", { expense: expense }));
+  return res.json(new ApiRes("Expense fetched successfully.", { expense: occasionExpense }));
 };
 
 export const updateOccasionExpense = async (req: Request, res: Response) => {

@@ -19,6 +19,7 @@ interface IOccasionExpense extends IBaseExpense {
   assignedTo: import("mongoose").Types.ObjectId[];
   dong?: number;
   demand?: number;
+  occasionId: import("mongoose").Types.ObjectId;
 }
 
 type FilterExpenseArgs = {

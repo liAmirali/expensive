@@ -2,6 +2,11 @@ import { model, Model, Schema } from "mongoose";
 
 export const occasionExpenseSchema = new Schema<IOccasionExpense>(
   {
+    occasionId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Occasion",
+    },
     value: {
       type: Number,
       required: true,
