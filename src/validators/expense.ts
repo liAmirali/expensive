@@ -1,6 +1,4 @@
 import { body, checkExact, query } from "express-validator";
-import { getEnumValues } from "../utils/getters";
-import { ExpenseType } from "../models/Expense";
 
 export const getExpenseValidators = [
   query("minValue")
@@ -52,10 +50,8 @@ export const getExpenseValidators = [
 export const addExpenseValidators = [
   body("type")
     .optional()
-    .isIn(getEnumValues(ExpenseType))
-    .withMessage(
-      "Invalid type. Expense type can only be one of " + getEnumValues(ExpenseType) + "."
-    ),
+    .isIn(["EXPENSE", "INCOME"])
+    .withMessage("Invalid type. Expense type can only be one of " + ["EXPENSE", "INCOME"] + "."),
   body("value").trim().isFloat({ min: 0 }).toFloat(),
   body("currency").notEmpty(),
   body("title").notEmpty().trim().escape(),

@@ -10,24 +10,15 @@ import { isAuth } from "../../../middlewares/authenticationHandler";
 import { throwValidationError } from "../../../validators/utils";
 import {
   addOccasionMembersValidators as updateOccasionMembersValidators,
-  createOccasionExpenseValidators,
   createOccasionValidators,
-  deleteOccasionExpenseValidators,
-  getOccasionExpensesValidators,
   getOccasionMembersValidators,
   getSingleOccasionValidators,
-  updateOccasionExpenseValidators,
   deleteOccasionValidators,
 } from "../../../validators/group/occasion";
-import {
-  clearDebt,
-  createOccasionExpense,
-  deleteOccasionExpense,
-  getOccasionExpenses,
-  updateOccasionExpense,
-} from "../../../controller/group/occasion/expense";
+import { clearDebt } from "../../../controller/group/occasion/expense";
 import { asyncHandler } from "../../../utils/asyncHandler";
 import { clearDebtValidators } from "../../../validators/expense";
+import expenseRouter from "./expense";
 
 const router = Router();
 
@@ -62,33 +53,11 @@ router.put(
 );
 
 router.post(
-  "/:occasionId/expense",
-  [isAuth, ...createOccasionExpenseValidators, throwValidationError],
-  asyncHandler(createOccasionExpense)
-);
-
-router.get(
-  "/:occasionId/expense",
-  [isAuth, ...getOccasionExpensesValidators, throwValidationError],
-  asyncHandler(getOccasionExpenses)
-);
-
-router.patch(
-  "/:occasionId/expense",
-  [isAuth, ...updateOccasionExpenseValidators, throwValidationError],
-  asyncHandler(updateOccasionExpense)
-);
-
-router.delete(
-  "/:occasionId/expense",
-  [isAuth, ...deleteOccasionExpenseValidators, throwValidationError],
-  asyncHandler(deleteOccasionExpense)
-);
-
-router.post(
   "/:occasionId/clear-debt",
   [isAuth, ...clearDebtValidators, throwValidationError],
   asyncHandler(clearDebt)
 );
+
+router.use("/:occasionId/expense", expenseRouter);
 
 export default router;

@@ -1,28 +1,11 @@
 import { Model, Schema, Types, model } from "mongoose";
-import { getEnumValues } from "../utils/getters";
 
-export enum ExpenseType {
-  EXPENSE = "EXPENSE",
-  INCOME = "INCOME",
-}
-export interface IExpense {
-  _id?: Types.ObjectId;
-  value: number;
-  type?: string;
-  currency: string;
-  title: string;
-  category?: string;
-  description?: string;
-  createdBy: Types.ObjectId;
-  dateTime: Date;
-}
-
-export const expenseSchema = new Schema<IExpense>(
+export const expenseSchema = new Schema<IPersonalExpense>(
   {
     type: {
       type: String,
-      enum: getEnumValues(ExpenseType) as string[],
-      default: ExpenseType.EXPENSE,
+      enum: ["EXPENSE", "INCOME"],
+      default: "EXPENSE",
     },
     value: {
       type: Number,
@@ -57,4 +40,4 @@ export const expenseSchema = new Schema<IExpense>(
   { timestamps: true }
 );
 
-export const Expense: Model<IExpense> = model("Expense", expenseSchema);
+export const Expense: Model<IPersonalExpense> = model("Expense", expenseSchema);

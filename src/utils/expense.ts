@@ -1,6 +1,3 @@
-import { DebtsAndDemands, FilterExpenseArgs } from "../../types/expense";
-import { IOccasionExpense } from "../models/group/OccasionExpense";
-
 export const filterExpenses = (
   {
     minValue,

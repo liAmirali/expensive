@@ -1,6 +1,5 @@
 import { Schema, Model, model, Document, Types } from "mongoose";
 import { IOccasion, occasionSchema } from "./Occasion";
-import { DebtsAndDemands } from "../../../types/expense";
 
 export interface IGroup  {
   name: string;

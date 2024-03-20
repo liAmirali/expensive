@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Expense, IExpense } from "../models/Expense";
+import { Expense } from "../models/Expense";
 import { ObjectId } from "mongodb";
 import { IUser, User } from "../models/User";
 import { ApiError, ApiRes } from "../utils/responses";
@@ -23,13 +23,13 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
   const user = (await User.findById(userId).populate({
     path: "expenses",
     model: "Expense",
-  })) as IUser & { expenses: IExpense[] };
+  })) as IUser & { expenses: IPersonalExpense[] };
   if (user === null) {
     throw new ApiError("User was not found.", 401);
   }
   // Optional Filtering
   const { expenses } = user;
-  const filteredExpenses = expenses.filter((item: IExpense) => {
+  const filteredExpenses = expenses.filter((item: IPersonalExpense) => {
     // TODO: Refactor and outsource code to a function
     // Filtering for the value range
     if (minValue && maxValue) {

@@ -15,7 +15,9 @@ export const getSingleOccasion = async (req: Request, res: Response) => {
     occasionId: string;
   };
 
-  const group = await Group.findById(groupId).lean();
+  const group = await Group.findById(groupId)
+    .populate<{ occasions: (IOccasion & { expenses: IOccasionExpense[] })[] }>("occasions.expenses")
+    .lean();
   if (!group) {
     throw new ApiError("Group was not found.", 404);
   }
@@ -31,7 +33,7 @@ export const getSingleOccasion = async (req: Request, res: Response) => {
   }
 
   const [expenses, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses!, userId);
-  occasion.expenses = expenses;
+  // occasion.expenses = expenses;
 
   return res.json(
     new ApiRes("Occasion details was sent successfully.", { occasion, debtsAndDemands })
@@ -82,6 +84,7 @@ export const createOccasion = async (req: Request, res: Response) => {
     _id: new Types.ObjectId(),
     name,
     members: membersToAdd,
+    expenses: [],
   };
 
   group.occasions.push(newOccasion);

@@ -1,22 +1,53 @@
-import { Model, Schema, Types } from "mongoose";
-import { Expense, IExpense } from "../Expense";
+import { model, Model, Schema } from "mongoose";
 
-export interface IOccasionExpense extends IExpense {
-  paidBy: Types.ObjectId;
-  assignedTo: Types.ObjectId[];
-  dong?: number;
-  demand?: number;
-}
-
-export const occasionExpenseSchema = new Schema<IOccasionExpense>({
-  paidBy: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-  assignedTo: [
-    {
-      type: Schema.Types.ObjectId,
+export const occasionExpenseSchema = new Schema<IOccasionExpense>(
+  {
+    value: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    currency: {
+      type: String,
       required: true,
     },
-  ],
-});
+    title: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    dateTime: {
+      type: Date,
+      required: true,
+      default: Date.now(),
+    },
+    paidBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    assignedTo: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export const OccasionExpense: Model<IOccasionExpense> = model(
+  "OccasionExpense",
+  occasionExpenseSchema
+);

@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { Result, matchedData } from "express-validator";
+import { matchedData } from "express-validator";
 import { Group } from "../../../models/group/Group";
 import { ApiError, ApiRes } from "../../../utils/responses";
 import { Types } from "mongoose";
 import { calculateDemandAndDebts, filterExpenses } from "../../../utils/expense";
+import { OccasionExpense } from "../../../models/group/OccasionExpense";
+import { IOccasion } from "../../../models/group/Occasion";
 
 export const createOccasionExpense = async (req: Request, res: Response) => {
   const { groupId, occasionId, value, title, description, category, currency, paidBy, assignedTo } =
@@ -33,8 +35,6 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     throw new ApiError("Occasion does not exist in the group.", 404);
   }
 
-  console.log("OCCASION:", occasion);
-
   // Checking if the expense creator is inside the occasion
   const existingCreator = occasion.members.find((item) => item._id.toString() === userId);
   if (!existingCreator) {
@@ -57,7 +57,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
 
   if (!occasion.expenses) occasion.expenses = [];
 
-  const newExpense = {
+  const newExpense: IOccasionExpense = {
     value,
     paidBy: new Types.ObjectId(paidBy),
     assignedTo: assignedTo.map((id) => new Types.ObjectId(id)),
@@ -67,15 +67,12 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
     category,
     currency,
     dateTime: new Date(),
-    __t: "OccasionExpense",
   };
 
-  occasion.expenses.push(newExpense);
+  const newOccasionExpense = new OccasionExpense(newExpense);
+  occasion.expenses.push(newOccasionExpense._id);
 
-  // await newExpense.save();
-  console.log("HERE1");
   await group.save();
-  console.log("HERE2");
 
   return res.json(new ApiRes("Expense created successfully.", { expense: newExpense }));
 };
@@ -108,7 +105,11 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     assignedTo?: string[];
   };
 
-  const group = await Group.findById(groupId).select("occasions");
+  const group = await Group.findById(groupId)
+    .select("occasions")
+    .populate<{ occasions: (IOccasion & { expenses: IOccasionExpense[] })[] }>(
+      "occasions.expenses"
+    );
   if (group === null) {
     throw new ApiError("No group was found with this ID.", 404);
   }
@@ -118,13 +119,9 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     throw new ApiError("Occasion does not exist in the group.", 404);
   }
 
-  console.log("OCCASION:", occasion);
-
   if (!occasion.expenses) {
     throw new ApiError("No expenses was found.", 404);
   }
-
-  console.log("expenses:", occasion.expenses);
 
   const filteredExpenses = filterExpenses(
     { minValue, maxValue, description, category, currency, startDate, endDate, paidBy, assignedTo },
@@ -141,6 +138,46 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
       debtsAndDemands: debtsAndDemands,
     })
   );
+};
+
+export const getSingleOccasionExpense = async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+
+  const { groupId, occasionId, expenseId } = matchedData(req, { locations: ["params", "query"] });
+
+  const group = await Group.findById(groupId)
+    .select("occasions")
+    .populate("occasions.expenses.paidBy")
+    .populate("occasions.expenses.assignedTo")
+    .populate("occasions.expenses.tempUser")
+    .populate("occasions.expenses.createdBy");
+  if (!group) {
+    throw new ApiError("Group ID was not found.", 404);
+  }
+
+  const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
+  if (!occasion) {
+    throw new ApiError("Occasion ID was not found.", 404);
+  }
+
+  let userIsAuthorized = false;
+  for (let i = 0; i < occasion.members.length; i++) {
+    if (occasion.members[i]._id.toString() === userId) {
+      userIsAuthorized = true;
+      break;
+    }
+  }
+  if (!userIsAuthorized) {
+    throw new ApiError("User is not authorized.", 403);
+  }
+
+  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId);
+  console.log("expense:", expense);
+  if (!expense) {
+    throw new ApiError("Expense ID was not found.", 404);
+  }
+
+  return res.json(new ApiRes("Expense fetched successfully.", { expense: expense }));
 };
 
 export const updateOccasionExpense = async (req: Request, res: Response) => {
@@ -169,7 +206,9 @@ export const updateOccasionExpense = async (req: Request, res: Response) => {
     assignedTo?: string[];
   };
 
-  const group = await Group.findById(groupId).select("occasions");
+  const group = await Group.findById(groupId)
+    .populate<{ occasions: ({ expenses: IOccasionExpense[] } & IOccasion)[] }>("occasions.expenses")
+    .select("occasions");
   if (!group) {
     throw new ApiError("Group ID was not found.", 404);
   }
@@ -272,7 +311,7 @@ export const clearDebt = async (req: Request, res: Response) => {
     "occasions.$.expenses.$._id": expenseId,
   });
 
-  console.log('expense :>> ', expense);
+  console.log("expense :>> ", expense);
 
-  return res.send("OK")
+  return res.send("OK");
 };

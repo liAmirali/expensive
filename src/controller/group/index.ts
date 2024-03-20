@@ -4,16 +4,20 @@ import { ApiError, ApiRes } from "../../utils/responses";
 import { Group, IGroup } from "../../models/group/Group";
 import { Types } from "mongoose";
 import { matchedData } from "express-validator";
-import { IOccasion } from "../../models/group/Occasion";
 import { calculateDemandAndDebts, mergeDebtsAndDemands } from "../../utils/expense";
-import { DebtsAndDemands } from "../../../types/expense";
+import { IOccasion } from "../../models/group/Occasion";
+import { deepCopy } from "../../utils/object";
 
 export const getSingleGroup = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
 
   const { groupId } = matchedData(req, { locations: ["params"] }) as { groupId: string };
 
-  const group = await Group.findById(groupId).populate<{ members: IUser[] }>("members");
+  const group = await Group.findById(groupId)
+    .populate<{ members: IUser[] }>("members")
+    .populate<{ occasions: (IOccasion & { expenses: IOccasionExpense[] })[] }>(
+      "occasions.expenses"
+    );
 
   if (group === null) {
     return res.json(new ApiError("Group was not found.", 404));
@@ -25,7 +29,7 @@ export const getSingleGroup = async (req: Request, res: Response) => {
     return res.json(new ApiError("You don't have access to this group.", 403));
   }
 
-  const groupToSend = JSON.parse(JSON.stringify(group)) as IGroup;
+  const groupToSend = deepCopy(group);
 
   for (let member of groupToSend.members as unknown as IUser[]) {
     member.expenses = undefined;
@@ -51,14 +55,20 @@ export const listGroups = async (req: Request, res: Response) => {
 
   const user = await User.findById(userId)
     .select("groups")
-    .populate<{ groups: (IGroup & { members: IUser[] })[] }>("groups")
+    .populate<{
+      groups: ({
+        members: IUser[];
+        occasions: ({ expenses: IOccasionExpense[] } & IOccasion)[];
+      } & IGroup)[];
+    }>("groups")
     .populate({
       path: "groups",
       populate: {
         path: "members",
         model: "User",
       },
-    });
+    })
+    .populate("groups.occasions.expenses");
   if (user === null) {
     throw new ApiError("User is not authenticated.", 401);
   }
@@ -75,7 +85,7 @@ export const listGroups = async (req: Request, res: Response) => {
     );
   });
 
-  let groupsToSend = JSON.parse(JSON.stringify(groups)) as IGroup[];
+  let groupsToSend = deepCopy(groups);
   groupsToSend = groupsToSend.map((group) => {
     let groupDebtsAndDemands: DebtsAndDemands = {};
 

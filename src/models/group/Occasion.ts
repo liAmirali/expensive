@@ -1,13 +1,10 @@
 import { Schema, Types } from "mongoose";
-import { IOccasionExpense, occasionExpenseSchema } from "./OccasionExpense";
-import { expenseSchema } from "../Expense";
-import { DebtsAndDemands } from "../../../types/expense";
 
 export interface IOccasion {
   _id?: Types.ObjectId;
   name: string;
   members: Types.ObjectId[];
-  expenses?: IOccasionExpense[];
+  expenses: Types.ObjectId[];
   debtsAndDemands?: DebtsAndDemands;
 }
 
@@ -22,9 +19,10 @@ export const occasionSchema = new Schema<IOccasion>({
       ref: "User",
     },
   ],
-  expenses: [expenseSchema],
+  expenses: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "OccasionExpense",
+    },
+  ],
 });
-
-occasionSchema
-  .path<Schema.Types.Subdocument>("expenses")
-  .discriminator("OccasionExpense", occasionExpenseSchema);
