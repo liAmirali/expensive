@@ -20,5 +20,4 @@ export const sendEmail = async (mailOptions: MailOptions) => {
     sender: "Expensive Support",
     ...mailOptions,
   });
-  console.log("res :>> ", res);
 };

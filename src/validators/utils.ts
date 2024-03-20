@@ -6,8 +6,6 @@ import { ACCEPTED_CURRENCY } from "../constants/expense";
 export const throwValidationError = (req: Request, res: Response, next: NextFunction) => {
   const result = validationResult(req);
 
-  console.log("RESULT:", result);
-
   if (!result.isEmpty()) {
     throw new ApiError("Validation Error.", 422, result.array());
   }

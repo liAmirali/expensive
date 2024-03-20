@@ -43,8 +43,8 @@ export const getSingleGroup = async (req: Request, res: Response) => {
     const occasion = groupToSend.occasions[i];
     if (!occasion.expenses) continue;
 
-    const [_, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses, userId);
-    occasion.debtsAndDemands = debtsAndDemands;
+    // const [_, debtsAndDemands] = calculateDemandAndDebts(occasion.expenses, userId);
+    // occasion.debtsAndDemands = debtsAndDemands;
   }
 
   return res.json(new ApiRes("Group fetched successfully.", { group: groupToSend }));
@@ -68,7 +68,14 @@ export const listGroups = async (req: Request, res: Response) => {
         model: "User",
       },
     })
-    .populate("groups.occasions.expenses");
+    .populate({
+      path: "groups",
+      populate: {
+        path: "occasions.expenses",
+        model: "OccasionExpense",
+      },
+    });
+
   if (user === null) {
     throw new ApiError("User is not authenticated.", 401);
   }
@@ -136,7 +143,6 @@ export const createGroup = async (req: Request, res: Response) => {
     }
 
     const fetchedMembers = await User.find({ _id: { $in: memberObjectIds } });
-    console.log("fetchedMembers:", fetchedMembers);
 
     // Throwing an error if some users in the members array was not found in the database
     if (fetchedMembers === null || fetchedMembers.length < members.length) {
@@ -188,8 +194,6 @@ export const deleteGroup = async (req: Request, res: Response) => {
 
 export const updateGroup = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-
-  console.log("userId :>> ", userId);
 
   const { groupId, name, members } = matchedData(req, { locations: ["params", "body"] }) as {
     groupId: string;

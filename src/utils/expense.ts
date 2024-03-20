@@ -32,7 +32,6 @@ export const filterExpenses = (
     if (currency && item.currency && item.currency !== currency) return false;
 
     // Filtering for the expense date
-    console.log("item.dateTime :>> ", item.dateTime);
     if (startDate && endDate) {
       const startDateObj = new Date(startDate);
       const endDateObj = new Date(endDate);

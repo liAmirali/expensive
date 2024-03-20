@@ -21,8 +21,6 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
       assignedTo: string[];
     };
 
-  console.log("req.body:", req.body);
-
   const userId = req.user!.userId;
 
   const group = await Group.findById(groupId).select("occasions");
@@ -73,6 +71,7 @@ export const createOccasionExpense = async (req: Request, res: Response) => {
   occasion.expenses.push(newOccasionExpense._id);
 
   await group.save();
+  await newOccasionExpense.save();
 
   return res.json(new ApiRes("Expense created successfully.", { expense: newExpense }));
 };
@@ -128,8 +127,6 @@ export const getOccasionExpenses = async (req: Request, res: Response) => {
     occasion.expenses
   );
 
-  console.log("filteredExpenses:", filteredExpenses);
-
   const [_, debtsAndDemands] = calculateDemandAndDebts(filteredExpenses, userId);
 
   return res.json(
@@ -171,8 +168,7 @@ export const getSingleOccasionExpense = async (req: Request, res: Response) => {
     throw new ApiError("User is not authorized.", 403);
   }
 
-  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId);
-  console.log("expense:", expense);
+  const expense = occasion.expenses?.find((expense) => expense._id!.toString() === expenseId)
   if (!expense) {
     throw new ApiError("Expense ID was not found.", 404);
   }
@@ -310,8 +306,6 @@ export const clearDebt = async (req: Request, res: Response) => {
     "occasions.$._id": occasionId,
     "occasions.$.expenses.$._id": expenseId,
   });
-
-  console.log("expense :>> ", expense);
 
   return res.send("OK");
 };

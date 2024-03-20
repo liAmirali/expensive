@@ -129,9 +129,6 @@ export const getOccasionMembers = async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const { occasionId, groupId } = matchedData(req, { locations: ["params", "query"] });
 
-  console.log("occasionId :>> ", occasionId);
-  console.log("groupId :>> ", groupId);
-
   const group = await Group.findById(groupId)
     .populate<{ occasions: (IOccasion & { members: IUser[] })[] }>({
       path: "occasions",
@@ -145,7 +142,6 @@ export const getOccasionMembers = async (req: Request, res: Response) => {
   if (!group) {
     throw new ApiError("Group was not found.", 404);
   }
-  console.log("group.occasions :>> ", group.occasions);
 
   const occasion = group.occasions.find((occasion) => occasion._id!.toString() === occasionId);
   if (!occasion) {

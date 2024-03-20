@@ -7,8 +7,6 @@ import { DB_SECRET } from "../constants/database";
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const authorizationHeader = req.get("Authorization");
 
-  console.log("authorizationHeader :>> ", authorizationHeader);
-
   if (!authorizationHeader) {
     const error = new ApiError("Authorization header is not provided.");
     error.statusCode = 401;
@@ -29,16 +27,13 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    console.log("READ TOKEN:", token);
     const payload = jwt.verify(token, DB_SECRET) as IJwtPayload;
-    console.log("JWT payload:", payload);
 
     req.user = {
       email: payload.email,
       userId: payload.userId,
     };
   } catch (error) {
-    console.log("[JWT ERROR]:", error);
     throw new ApiError("Invalid token.", 401);
   }
 

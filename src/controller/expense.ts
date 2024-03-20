@@ -16,7 +16,6 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
       endDate: string;
     }; // TODO: Export this into an interface
 
-  console.log("req.query :>> ", req.query);
   // let minValueNumber = minValue as number;
 
   const userId = req.user?.userId;
@@ -50,7 +49,6 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
     if (currency && item.currency && item.currency !== currency) return false;
 
     // Filtering for the expense date
-    console.log("item.dateTime :>> ", item.dateTime);
     if (startDate && endDate) {
       const startDateObj = new Date(startDate);
       const endDateObj = new Date(endDate);
@@ -65,8 +63,6 @@ export const getExpense = async (req: Request, res: Response, next: NextFunction
 
     return true;
   });
-
-  console.log("filteredExpenses :>> ", filteredExpenses);
 
   return res.json(new ApiRes("Expenses was sent successfully.", { expenses: filteredExpenses }));
 };
@@ -125,7 +121,6 @@ export const deleteExpense = async (req: Request, res: Response, next: NextFunct
   const { id } = req.body;
 
   const expense = await Expense.findByIdAndDelete(id);
-  console.log("DELETION RESULT:", expense);
   if (expense === null) {
     throw new ApiError("Expense was not found.", 404);
   }
