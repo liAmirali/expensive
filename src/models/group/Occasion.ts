@@ -17,12 +17,17 @@ export const occasionSchema = new Schema<IOccasion>({
     {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      default: [],
     },
   ],
   expenses: [
     {
       type: Schema.Types.ObjectId,
       ref: "OccasionExpense",
+      required: true,
+      default: [],
+      select: true,
     },
   ],
 });
