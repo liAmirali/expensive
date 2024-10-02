@@ -1,24 +1,52 @@
 import { Injectable } from '@nestjs/common';
-
-// This should be a real class/interface representing a user entity
-export type User = { userId: number; username: string; password: string };
+import { User } from '@prisma/client';
+import { RegisterDto } from 'src/auth/auth.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+  /**
+   * It finds a user with the user identifier and returns it or returns null
+   * @param userIdentifier This can be the user's username or their email or maybe their phone number.
+   */
+  async findOne(userIdentifier: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            username: userIdentifier,
+          },
+          {
+            email: userIdentifier,
+          },
+        ],
+      },
+    });
+  }
+
+  /**
+   * Creates a user based on the data provided
+   * @param data The data to create a new user
+   */
+  async createUser(data: RegisterDto): Promise<User> {
+    const salt = await bcrypt.genSalt();
+
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+
+    const cratedUser = this.prisma.user.create({
+      data: {
+        username: data.username,
+        email: data.email,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        password: hashedPassword,
+        salt: salt,
+      },
+    });
+
+    return cratedUser;
   }
 }
