@@ -13,6 +13,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://admin:admin@db:5432/expensive_db
+    command: bash entrypoint.sh
 
   db:
     container_name: postgres-db
