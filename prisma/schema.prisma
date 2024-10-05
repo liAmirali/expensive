@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -15,12 +15,92 @@ datasource db {
 }
 
 model User {
-  id         Int    @id @default(autoincrement())
-  first_name String
-  last_name  String
-  username   String @unique
-  email      String @unique
+  id          Int           @id @default(autoincrement())
+  firstName   String
+  last_name   String
+  username    String        @unique
+  email       String        @unique
+  password    String
+  salt        String
+  isVerified  Boolean       @default(false)
+  GroupMember GroupMember[]
+}
 
-  password   String
-  salt       String
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  GroupMember GroupMember[]
+  Occasion    Occasion[]
+}
+
+// It's an explicit many to many relation between Group and User
+model GroupMember {
+  id             Int              @id @default(autoincrement())
+  user           User             @relation(fields: [userId], references: [id])
+  group          Group            @relation(fields: [groupId], references: [id])
+  userId         Int
+  groupId        Int
+  role           String
+  OccasionMember OccasionMember[]
+  Payer          Payer[]
+  Debtor         Debtor[]
+}
+
+model Occasion {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  date           DateTime
+  Group          Group            @relation(fields: [groupId], references: [id])
+  groupId        Int
+  OccasionMember OccasionMember[]
+  Expense        Expense[]
+}
+
+model OccasionMember {
+  groupMember   GroupMember @relation(fields: [groupMemberId], references: [id])
+  occasion      Occasion    @relation(fields: [occasionId], references: [id])
+  groupMemberId Int
+  occasionId    Int
+
+  @@id([groupMemberId, occasionId])
+}
+
+model Expense {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  occasion    Occasion      @relation(fields: [occasionId], references: [id])
+  occasionId  Int
+  Payer       Payer[]
+  ExpenseItem ExpenseItem[]
+}
+
+model ExpenseItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  expense     Expense  @relation(fields: [expenseId], references: [id])
+  expenseId   Int
+  Debtor      Debtor[]
+}
+
+model Payer {
+  id        Int         @id @default(autoincrement())
+  amount    Float
+  expense   Expense     @relation(fields: [expenseId], references: [id])
+  expenseId Int
+  payer     GroupMember @relation(fields: [payerId], references: [id])
+  payerId   Int
+}
+
+model Debtor {
+  id            Int         @id @default(autoincrement())
+  proportion    Int         @default(1)
+  expenseItem   ExpenseItem @relation(fields: [expenseItemId], references: [id])
+  expenseItemId Int
+  debtor        GroupMember @relation(fields: [debtorId], references: [id])
+  debtorId      Int
 }
