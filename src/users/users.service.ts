@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { RegisterDto } from 'src/auth/auth.dto';
+import { RegisterDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
@@ -40,8 +40,8 @@ export class UsersService {
       data: {
         username: data.username,
         email: data.email,
-        first_name: data.first_name,
-        last_name: data.last_name,
+        firstName: data.firstName,
+        last_name: data.lastName,
         password: hashedPassword,
         salt: salt,
       },
