@@ -41,7 +41,7 @@ export class UsersService {
         username: data.username,
         email: data.email,
         firstName: data.firstName,
-        last_name: data.lastName,
+        lastName: data.lastName,
         password: hashedPassword,
         salt: salt,
       },
