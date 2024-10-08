@@ -31,10 +31,10 @@ export class GroupController {
     return this.groupService.create(createGroupDto, owner);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.groupService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.groupService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

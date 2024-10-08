@@ -35,8 +35,10 @@ export class GroupService {
     return group;
   }
 
-  findAll() {
-    return `This action returns all group`;
+  async findAll() {
+    const allGroups = await this.prismaService.group.findMany();
+    console.log('allGroups:', allGroups);
+    return allGroups;
   }
 
   findOne(id: number) {
