@@ -1,21 +1,19 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `first_name` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `last_name` on the `User` table. All the data in the column will be lost.
-  - Added the required column `firstName` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `lastName` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "GroupRole" AS ENUM ('OWNER', 'MEMBER');
 
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "first_name",
-DROP COLUMN "last_name",
-ADD COLUMN     "firstName" TEXT NOT NULL,
-ADD COLUMN     "isVerified" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN     "lastName" TEXT NOT NULL;
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Group" (
@@ -95,6 +93,12 @@ CREATE TABLE "Debtor" (
 
     CONSTRAINT "Debtor_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "GroupMember" ADD CONSTRAINT "GroupMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
