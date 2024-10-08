@@ -25,7 +25,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: expensive_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - expensive_db:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  expensive_db:
