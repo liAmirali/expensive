@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   RegisterBodyDto,
   SignInBodyDto,
@@ -24,6 +30,7 @@ export class AuthController {
     );
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 201, type: MeDTO })
   @Public()
   @Post('register')
