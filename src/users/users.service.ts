@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { RegisterBodyDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {
@@ -44,18 +49,32 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    const cratedUser = this.prisma.user.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        password: hashedPassword,
-        salt: salt,
-      },
-    });
+    try {
+      const cratedUser = await this.prisma.user.create({
+        data: {
+          username: data.username,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          password: hashedPassword,
+          salt: salt,
+        },
+      });
 
-    return cratedUser;
+      return cratedUser;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          const target = error.meta?.target as string[] | undefined;
+
+          if (target.includes('username')) {
+            throw new ForbiddenException('Username is already taken.');
+          } else if (target.includes('email')) {
+            throw new ForbiddenException('Email is already taken.');
+          }
+        }
+      }
+    }
   }
 
   /**

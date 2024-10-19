@@ -34,9 +34,6 @@ export class AuthService {
   async registerUser(registerDto: RegisterBodyDto) {
     const user = await this.usersService.createUser(registerDto);
 
-    user.password = undefined;
-    user.salt = undefined;
-
     return user;
   }
 }
