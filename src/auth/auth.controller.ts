@@ -1,8 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { RegisterDto, SignInDto } from './dto/auth.dto';
+import {
+  RegisterBodyDto,
+  SignInBodyDto,
+  SignInResponseDto,
+} from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { Public } from './auth.gaurd';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeDTO } from 'src/users/dto/user.dto';
 
 @ApiTags('Authentication')
@@ -10,18 +14,20 @@ import { MeDTO } from 'src/users/dto/user.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('login')
+  @ApiResponse({ status: 201, type: SignInResponseDto })
   @Public()
-  signIn(@Body() signInDto: SignInDto) {
+  @Post('login')
+  signIn(@Body() signInDto: SignInBodyDto) {
     return this.authService.signIn(
       signInDto.userIdentifier,
       signInDto.password,
     );
   }
 
-  @Post('register')
+  @ApiResponse({ status: 201, type: MeDTO })
   @Public()
-  async registerUser(@Body() registerDto: RegisterDto) {
+  @Post('register')
+  async registerUser(@Body() registerDto: RegisterBodyDto) {
     return new MeDTO(await this.authService.registerUser(registerDto));
   }
 }

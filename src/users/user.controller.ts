@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeDTO } from './dto/user.dto';
 
 @ApiTags('Users')
@@ -18,6 +18,7 @@ export class UserController {
   constructor(private usersService: UsersService) {}
 
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: 200, type: MeDTO })
   @Get('me')
   async me(@Req() req: Request) {
     const userId: number = req['user'].id;
@@ -28,4 +29,9 @@ export class UserController {
 
     return new MeDTO(foundUser);
   }
+
+  // @Get('search')
+  // async search(@Req() req: Request) {
+
+  // }
 }
