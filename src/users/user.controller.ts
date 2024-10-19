@@ -3,6 +3,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Query,
   Req,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,8 +31,12 @@ export class UserController {
     return new MeDTO(foundUser);
   }
 
-  // @Get('search')
-  // async search(@Req() req: Request) {
-
-  // }
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: 200, type: MeDTO, isArray: true })
+  @Get('search')
+  async search(@Query('q') query: string) {
+    return (await this.usersService.search(query)).map(
+      (user) => new MeDTO(user),
+    );
+  }
 }

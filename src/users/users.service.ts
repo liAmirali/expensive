@@ -57,4 +57,32 @@ export class UsersService {
 
     return cratedUser;
   }
+
+  /**
+   * It searches for a user based on the query provided on the username, first name, or last name fields
+   * @param query The query to search for
+   */
+  async search(query: string): Promise<User[]> {
+    return this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            username: {
+              contains: query,
+            },
+          },
+          {
+            firstName: {
+              contains: query,
+            },
+          },
+          {
+            lastName: {
+              contains: query,
+            },
+          },
+        ],
+      },
+    });
+  }
 }
