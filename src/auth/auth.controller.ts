@@ -3,6 +3,7 @@ import { RegisterDto, SignInDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { Public } from './auth.gaurd';
 import { ApiTags } from '@nestjs/swagger';
+import { MeDTO } from 'src/users/dto/user.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -20,7 +21,7 @@ export class AuthController {
 
   @Post('register')
   @Public()
-  registerUser(@Body() registerDto: RegisterDto) {
-    return this.authService.registerUser(registerDto);
+  async registerUser(@Body() registerDto: RegisterDto) {
+    return new MeDTO(await this.authService.registerUser(registerDto));
   }
 }

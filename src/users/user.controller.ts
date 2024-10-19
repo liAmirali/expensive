@@ -1,8 +1,15 @@
-import { Controller, ForbiddenException, Get, Req } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  ForbiddenException,
+  Get,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
+import { MeDTO } from './dto/user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -10,6 +17,7 @@ import { plainToInstance } from 'class-transformer';
 export class UserController {
   constructor(private usersService: UsersService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('me')
   async me(@Req() req: Request) {
     const userId: number = req['user'].id;
@@ -18,8 +26,6 @@ export class UserController {
       throw new ForbiddenException('User not found.');
     }
 
-    const userResponse = plainToInstance(MeResponseDto, foundUser);
-
-    return userResponse;
+    return new MeDTO(foundUser);
   }
 }
