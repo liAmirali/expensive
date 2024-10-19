@@ -13,7 +13,7 @@ export class AuthService {
 
   async signIn(username: string, pass: string): Promise<any> {
     // The sent username parameter can be a username or an email
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.identifyOne(username);
 
     if (!user) throw new UnauthorizedException("User doesn't exist");
 

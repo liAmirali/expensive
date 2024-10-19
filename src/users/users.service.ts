@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { RegisterDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -12,7 +12,7 @@ export class UsersService {
    * It finds a user with the user identifier and returns it or returns null
    * @param userIdentifier This can be the user's username or their email or maybe their phone number.
    */
-  async findOne(userIdentifier: string): Promise<User | null> {
+  async identifyOne(userIdentifier: string): Promise<User | null> {
     return this.prisma.user.findFirst({
       where: {
         OR: [
@@ -23,6 +23,14 @@ export class UsersService {
             email: userIdentifier,
           },
         ],
+      },
+    });
+  }
+
+  async findById(userId: number): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
       },
     });
   }
