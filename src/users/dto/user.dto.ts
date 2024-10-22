@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsValidUsername } from '../validators/username-validator';
 
 export class MeDTO {
   @ApiProperty()
@@ -39,14 +40,22 @@ export class MeDTO {
   }
 }
 
-export class UserFullDTO {
+export class UserPublicDTO {
   @ApiProperty()
+  @IsNumber()
   id: number;
+
   @ApiProperty()
+  @IsString()
   firstName: string;
+
   @ApiProperty()
+  @IsString()
   lastName: string;
+
   @ApiProperty()
+  @IsString()
+  @IsValidUsername()
   username: string;
 
   @Exclude()
@@ -57,4 +66,8 @@ export class UserFullDTO {
   salt: string;
   @Exclude()
   isVerified: boolean;
+
+  constructor(user: Partial<User>) {
+    Object.assign(this, user);
+  }
 }

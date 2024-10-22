@@ -1,18 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { IsValidUsername } from 'src/users/validators/username-validator';
 
 export class SignInBodyDto {
   @ApiProperty()
+  @IsString()
+  @IsValidUsername()
   userIdentifier: string;
 
   @ApiProperty()
+  @IsString()
   password: string;
 }
 
 export class SignInResponseDto {
   @ApiProperty()
+  @IsString()
   accessToken: string;
 }
 

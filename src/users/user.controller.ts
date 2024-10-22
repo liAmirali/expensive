@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MeDTO } from './dto/user.dto';
+import { MeDTO, UserPublicDTO } from './dto/user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -32,11 +32,11 @@ export class UserController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @ApiResponse({ status: 200, type: MeDTO, isArray: true })
+  @ApiResponse({ status: 200, type: UserPublicDTO, isArray: true })
   @Get('search')
   async search(@Query('q') query: string) {
     return (await this.usersService.search(query)).map(
-      (user) => new MeDTO(user),
+      (user) => new UserPublicDTO(user),
     );
   }
 }
