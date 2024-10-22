@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { RegisterBodyDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -68,12 +64,13 @@ export class UsersService {
           const target = error.meta?.target as string[] | undefined;
 
           if (target.includes('username')) {
-            throw new ForbiddenException('Username is already taken.');
+            throw new ConflictException('Username is already taken.');
           } else if (target.includes('email')) {
-            throw new ForbiddenException('Email is already taken.');
+            throw new ConflictException('Email is already taken.');
           }
         }
       }
+      throw error;
     }
   }
 

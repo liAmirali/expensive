@@ -1,19 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
+import { IsBoolean, IsEmail, IsNumber, IsString } from 'class-validator';
 
 export class MeDTO {
   @ApiProperty()
+  @IsNumber()
   id: number;
+
   @ApiProperty()
+  @IsString()
   firstName: string;
+
   @ApiProperty()
+  @IsString()
   lastName: string;
+
   @ApiProperty()
+  @IsEmail()
   email: string;
+
   @ApiProperty()
+  @IsString()
   username: string;
+
   @ApiProperty()
+  @IsBoolean()
   isVerified: boolean;
 
   @Exclude()

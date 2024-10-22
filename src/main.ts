@@ -1,9 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Automatically remove non-decorated properties
+      forbidNonWhitelisted: true, // Throw an error when extra properties are provided
+      transform: true, // Automatically transform payloads to match DTO types
+      exceptionFactory: (errors: ValidationError[]) => {
+        const formattedErrors = errors.map((error) => {
+          return {
+            field: error.property,
+            errors: Object.values(error.constraints),
+          };
+        });
+        return new BadRequestException(formattedErrors);
+      },
+    }),
+  );
 
   app.enableCors({
     origin: '*',
