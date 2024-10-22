@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { UpdateGroupDto } from './dto/update-group.dto';
+import { CreateGroupDto, UpdateGroupDto } from './dto/group.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupMember, Prisma } from '@prisma/client';
 
@@ -41,15 +40,15 @@ export class GroupService {
     return allGroups;
   }
 
-  findOne(id: number) {
+  findOne(id: ID) {
     return `This action returns a #${id} group`;
   }
 
-  update(id: number, updateGroupDto: UpdateGroupDto) {
+  update(id: ID, updateGroupDto: UpdateGroupDto) {
     return `This action updates a #${id} group`;
   }
 
-  remove(id: number) {
+  remove(id: ID) {
     return `This action removes a #${id} group`;
   }
 }

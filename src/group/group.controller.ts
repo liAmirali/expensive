@@ -8,20 +8,27 @@ import {
   Delete,
   Req,
   BadRequestException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { CreateGroupDto } from './dto/create-group.dto';
+import { CreateGroupDto, UpdateGroupDto, GroupDTO } from './dto/group.dto';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Groups')
-@Controller('group')
+@Controller('groups')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
-  @Post()
-  create(@Body() createGroupDto: CreateGroupDto, @Req() req: Request) {
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: 201, type: GroupDTO })
+  @Post('create')
+  async create(
+    @Body() createGroupDto: CreateGroupDto,
+    @Req() req: Request,
+  ): Promise<GroupDTO> {
     const { members } = createGroupDto;
     const owner: ID = req['user'].id;
 
@@ -31,10 +38,10 @@ export class GroupController {
       );
     }
 
-    return this.groupService.create(createGroupDto, owner);
+    return new GroupDTO(await this.groupService.create(createGroupDto, owner));
   }
 
-  @Get()
+  @Get('all')
   findAll() {
     return this.groupService.findAll();
   }
@@ -44,10 +51,10 @@ export class GroupController {
   //   return this.groupService.findOne(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
-  //   return this.groupService.update(+id, updateGroupDto);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
+    return this.groupService.update(+id, updateGroupDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

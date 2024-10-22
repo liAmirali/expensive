@@ -7,7 +7,7 @@ import { IsValidUsername } from '../validators/username-validator';
 export class MeDTO {
   @ApiProperty()
   @IsNumber()
-  id: number;
+  id: ID;
 
   @ApiProperty()
   @IsString()
@@ -43,7 +43,7 @@ export class MeDTO {
 export class UserPublicDTO {
   @ApiProperty()
   @IsNumber()
-  id: number;
+  id: ID;
 
   @ApiProperty()
   @IsString()

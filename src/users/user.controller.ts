@@ -12,8 +12,8 @@ import { Request } from 'express';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeDTO, UserPublicDTO } from './dto/user.dto';
 
-@ApiTags('Users')
 @ApiBearerAuth()
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private usersService: UsersService) {}
@@ -22,7 +22,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: MeDTO })
   @Get('me')
   async me(@Req() req: Request) {
-    const userId: number = req['user'].id;
+    const userId: ID = req['user'].id;
     const foundUser = await this.usersService.findById(userId);
     if (!foundUser) {
       throw new ForbiddenException('User not found.');
