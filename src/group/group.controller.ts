@@ -15,7 +15,12 @@ import {
 import { GroupService } from './group.service';
 import { CreateGroupDto, UpdateGroupDto, GroupDTO } from './dto/group.dto';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Groups')
@@ -23,9 +28,15 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
+  @ApiOperation({
+    description:
+      'Creates a group.\
+      The user is automatically added as an owner.\
+      The owner must not be among the members.',
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 201, type: GroupDTO })
-  @Post('create')
+  @Post('')
   async create(
     @Body() createGroupDto: CreateGroupDto,
     @Req() req: Request,
@@ -42,8 +53,13 @@ export class GroupController {
     return new GroupDTO(await this.groupService.create(createGroupDto, owner));
   }
 
+  @ApiOperation({
+    description:
+      'Lists all groups.\
+      Only groups that the user is a member of are returned.',
+  })
   @ApiResponse({ status: 200, type: GroupDTO, isArray: true })
-  @Get('all')
+  @Get('')
   findAll(@Req() req: Request) {
     const userId: ID = req['user'].id;
     return this.groupService.findAllAccessibleGroups(userId);
@@ -54,6 +70,11 @@ export class GroupController {
   //   return this.groupService.findOne(+id);
   // }
 
+  @ApiOperation({
+    description:
+      'Partially updates a group.\
+      Only the provided fields are updated. The rest remain the same.',
+  })
   @ApiResponse({ status: 200, type: GroupDTO })
   @Patch(':id')
   async update(
