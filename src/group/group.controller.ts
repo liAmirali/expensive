@@ -13,7 +13,12 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { CreateGroupDto, UpdateGroupDto, GroupDTO } from './dto/group.dto';
+import {
+  CreateGroupDto,
+  UpdateGroupDto,
+  GroupDTO,
+  AddGroupMemberDto,
+} from './dto/group.dto';
 import { Request } from 'express';
 import {
   ApiBearerAuth,
@@ -86,6 +91,16 @@ export class GroupController {
     return new GroupDTO(
       await this.groupService.update(id, updateGroupDto, userId),
     );
+  }
+
+  @Post(':id/members')
+  async addMember(
+    @Req() req: Request,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: AddGroupMemberDto,
+  ) {
+    const who: ID = req['user'].id;
+    return this.groupService.addMember(id, body.userId, who);
   }
 
   // @Delete(':id')

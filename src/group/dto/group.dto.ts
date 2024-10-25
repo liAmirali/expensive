@@ -74,3 +74,9 @@ export class UpdateGroupDto {
   @IsString()
   description: string | undefined;
 }
+
+export class AddGroupMemberDto {
+  @ApiProperty()
+  @IsNumber()
+  userId: ID;
+}

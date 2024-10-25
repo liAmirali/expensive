@@ -124,4 +124,54 @@ export class GroupService {
 
     return updatedGroup;
   }
+
+  async addMember(groupId: ID, userIdToAdd: ID, whoAdds: ID) {
+    const group = await this.prismaService.group.findUnique({
+      where: {
+        id: groupId,
+      },
+      include: {
+        members: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    if (!group || !GroupPolicy.canAddMember(whoAdds, group)) {
+      throw new BadRequestException(
+        'You are not allowed to add a member to this group.',
+      );
+    }
+
+    const userExists = await this.prismaService.user.findUnique({
+      where: {
+        id: userIdToAdd,
+      },
+    });
+
+    if (!userExists) {
+      throw new BadRequestException('User does not exist.');
+    }
+
+    const userAlreadyInGroup = group.members.find(
+      (member) => member.userId === userIdToAdd,
+    );
+
+    if (userAlreadyInGroup) {
+      throw new BadRequestException('User is already in the group.');
+    }
+
+    const newMember = await this.prismaService.groupMember.create({
+      data: {
+        userId: userIdToAdd,
+        groupId,
+        role: 'MEMBER',
+      },
+    });
+
+    return newMember;
+  }
 }
