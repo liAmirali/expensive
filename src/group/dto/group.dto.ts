@@ -1,5 +1,4 @@
-import { Optional } from '@nestjs/common';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Group, GroupRole } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -7,6 +6,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   ValidateNested,
@@ -52,7 +52,7 @@ export class CreateGroupDto {
   @IsString()
   name: string;
 
-  @Optional()
+  @IsOptional()
   @ApiPropertyOptional()
   @IsString()
   description: string;
@@ -62,4 +62,15 @@ export class CreateGroupDto {
   members: ID[];
 }
 
-export class UpdateGroupDto extends PartialType(CreateGroupDto) {}
+export class UpdateGroupDto {
+  @MaxLength(255)
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  name: string | undefined;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  description: string | undefined;
+}

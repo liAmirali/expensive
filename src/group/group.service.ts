@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateGroupDto, UpdateGroupDto } from './dto/group.dto';
+import { CreateGroupDto, GroupDTO, UpdateGroupDto } from './dto/group.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Group, Prisma } from '@prisma/client';
+import { GroupPolicy } from './policies/group-policy';
 
 @Injectable()
 export class GroupService {
@@ -41,10 +42,7 @@ export class GroupService {
           create: groupMembers,
         },
       },
-      select: {
-        id: true,
-        name: true,
-        description: true,
+      include: {
         members: {
           select: {
             userId: true,
@@ -66,10 +64,7 @@ export class GroupService {
           },
         },
       },
-      select: {
-        id: true,
-        name: true,
-        description: true,
+      include: {
         members: {
           select: {
             userId: true,
@@ -78,19 +73,55 @@ export class GroupService {
         },
       },
     });
-    console.log('allGroups:', allGroups);
+
     return allGroups;
   }
 
-  findOne(id: ID) {
-    return `This action returns a #${id} group`;
-  }
+  async update(
+    groupId: ID,
+    updateGroupDto: UpdateGroupDto,
+    who: ID,
+  ): Promise<Group> {
+    const group = await this.prismaService.group.findUnique({
+      where: {
+        id: groupId,
+      },
+      include: {
+        members: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
 
-  update(id: ID, updateGroupDto: UpdateGroupDto) {
-    return `This action updates a #${id} group`;
-  }
+    if (!group || !GroupPolicy.canUpdate(who, group)) {
+      throw new BadRequestException(
+        'You are not allowed to update this group.',
+      );
+    }
 
-  remove(id: ID) {
-    return `This action removes a #${id} group`;
+    const { name, description } = updateGroupDto;
+
+    const updatedGroup = await this.prismaService.group.update({
+      where: {
+        id: groupId,
+      },
+      data: {
+        name,
+        description,
+      },
+      include: {
+        members: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    return updatedGroup;
   }
 }

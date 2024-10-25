@@ -54,12 +54,17 @@ export class GroupController {
   //   return this.groupService.findOne(+id);
   // }
 
+  @ApiResponse({ status: 200, type: GroupDTO })
   @Patch(':id')
-  update(
+  async update(
+    @Req() req: Request,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
-    return this.groupService.update(id, updateGroupDto);
+    const userId: ID = req['user'].id;
+    return new GroupDTO(
+      await this.groupService.update(id, updateGroupDto, userId),
+    );
   }
 
   // @Delete(':id')
