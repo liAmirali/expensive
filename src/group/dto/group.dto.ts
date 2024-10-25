@@ -57,9 +57,7 @@ export class CreateGroupDto {
   @IsString()
   description: string;
 
-  @Optional()
-  @ApiProperty({ type: Number, isArray: true, required: false })
-  @ValidateNested()
+  @ApiProperty({ type: Number, isArray: true })
   @IsNumber({}, { each: true })
   members: ID[];
 }

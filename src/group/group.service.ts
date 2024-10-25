@@ -18,7 +18,6 @@ export class GroupService {
       },
     });
 
-    console.log('existingUserIDs:', existingUserIDs);
     if (existingUserIDs.length !== members.length) {
       throw new BadRequestException("Some users don't exist.");
     }
@@ -50,7 +49,6 @@ export class GroupService {
           select: {
             userId: true,
             role: true,
-            _count: true,
           },
         },
       },

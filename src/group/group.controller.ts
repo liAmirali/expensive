@@ -10,6 +10,7 @@ import {
   BadRequestException,
   UseInterceptors,
   ClassSerializerInterceptor,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { CreateGroupDto, UpdateGroupDto, GroupDTO } from './dto/group.dto';
@@ -52,8 +53,11 @@ export class GroupController {
   // }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
-    return this.groupService.update(+id, updateGroupDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ) {
+    return this.groupService.update(id, updateGroupDto);
   }
 
   // @Delete(':id')
