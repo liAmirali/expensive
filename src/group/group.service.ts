@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGroupDto, UpdateGroupDto } from './dto/group.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GroupMember, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class GroupService {
@@ -9,6 +9,19 @@ export class GroupService {
 
   async create(createGroupDto: CreateGroupDto, owner: ID) {
     const { name, description, members } = createGroupDto;
+
+    const existingUserIDs = await this.prismaService.user.findMany({
+      where: {
+        id: {
+          in: members,
+        },
+      },
+    });
+
+    console.log('existingUserIDs:', existingUserIDs);
+    if (existingUserIDs.length !== members.length) {
+      throw new BadRequestException("Some users don't exist.");
+    }
 
     const groupMembers: Prisma.GroupMemberCreateManyGroupInput[] = members.map(
       (member) => ({
@@ -27,6 +40,18 @@ export class GroupService {
         description,
         members: {
           create: groupMembers,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        members: {
+          select: {
+            userId: true,
+            role: true,
+            _count: true,
+          },
         },
       },
     });

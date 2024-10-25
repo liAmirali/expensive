@@ -1,8 +1,10 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { Group } from '@prisma/client';
+import { Group, GroupRole } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -10,6 +12,15 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+export class GroupMemberReducedDTO {
+  @ApiProperty()
+  @IsNumber()
+  userId: number;
+
+  @ApiProperty({ type: GroupRole, enum: GroupRole })
+  @IsEnum(GroupRole)
+  role: GroupRole;
+}
 export class GroupDTO {
   @ApiProperty()
   @IsNumber()
@@ -23,10 +34,11 @@ export class GroupDTO {
   @IsString()
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: GroupMemberReducedDTO, isArray: true, required: false })
   @IsArray()
-  @IsNumber({}, { each: true })
-  members: ID[];
+  @ValidateNested({ each: true })
+  @Type(() => GroupMemberReducedDTO)
+  members: GroupMemberReducedDTO[];
 
   constructor(group: Group) {
     Object.assign(this, group);
@@ -46,7 +58,8 @@ export class CreateGroupDto {
   description: string;
 
   @Optional()
-  @ApiPropertyOptional()
+  @ApiProperty({ type: Number, isArray: true, required: false })
+  @ValidateNested()
   @IsNumber({}, { each: true })
   members: ID[];
 }
