@@ -57,8 +57,16 @@ export class GroupService {
     return group;
   }
 
-  async findAll() {
-    const allGroups = await this.prismaService.group.findMany();
+  async findAllAccessibleGroups(userId: ID) {
+    const allGroups = await this.prismaService.group.findMany({
+      where: {
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+    });
     console.log('allGroups:', allGroups);
     return allGroups;
   }

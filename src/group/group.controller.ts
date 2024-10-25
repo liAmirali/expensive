@@ -43,8 +43,9 @@ export class GroupController {
   }
 
   @Get('all')
-  findAll() {
-    return this.groupService.findAll();
+  findAll(@Req() req: Request) {
+    const userId: ID = req['user'].id;
+    return this.groupService.findAllAccessibleGroups(userId);
   }
 
   // @Get(':id')
