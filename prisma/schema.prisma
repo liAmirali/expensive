@@ -24,6 +24,7 @@ model User {
   salt          String
   isVerified    Boolean       @default(false)
   groupsMembers GroupMember[]
+  isDeleted     Boolean       @default(false)
 }
 
 model Group {
@@ -32,6 +33,7 @@ model Group {
   description String?
   members     GroupMember[]
   occasions   Occasion[]
+  isDeleted   Boolean       @default(false)
 }
 
 // It's an explicit many to many relation between Group and User
@@ -61,6 +63,7 @@ model Occasion {
   groupId         Int
   occasionMembers OccasionMember[]
   expenses        Expense[]
+  isDeleted       Boolean          @default(false)
 }
 
 model OccasionMember {

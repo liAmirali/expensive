@@ -42,7 +42,7 @@ export class GroupController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 201, type: GroupDTO })
   @Post('')
-  async create(
+  async createGroup(
     @Body() createGroupDto: CreateGroupDto,
     @Req() req: Request,
   ): Promise<GroupDTO> {
@@ -82,7 +82,7 @@ export class GroupController {
   })
   @ApiResponse({ status: 200, type: GroupDTO })
   @Patch(':id')
-  async update(
+  async updateGroup(
     @Req() req: Request,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGroupDto: UpdateGroupDto,
@@ -91,6 +91,22 @@ export class GroupController {
     return new GroupDTO(
       await this.groupService.update(id, updateGroupDto, userId),
     );
+  }
+
+  @ApiOperation({
+    description:
+      'Deletes a group.\
+      Only the owner can delete a group.\
+      The group is not actually deleted but marked as deleted.',
+  })
+  @Delete(':id')
+  async deleteGroup(
+    @Req() req: Request,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const userId: ID = req['user'].id;
+
+    return this.groupService.delete(id, userId);
   }
 
   @Post(':id/members')

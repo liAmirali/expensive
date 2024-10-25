@@ -8,6 +8,25 @@ import { GroupPolicy } from './policies/group-policy';
 export class GroupService {
   constructor(private prismaService: PrismaService) {}
 
+  async findOne(groupId: ID) {
+    const group = await this.prismaService.group.findUnique({
+      where: {
+        id: groupId,
+        isDeleted: false,
+      },
+      include: {
+        members: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    return group;
+  }
+
   async create(createGroupDto: CreateGroupDto, owner: ID) {
     const { name, description, members } = createGroupDto;
 
@@ -63,6 +82,7 @@ export class GroupService {
             userId,
           },
         },
+        isDeleted: false,
       },
       include: {
         members: {
@@ -82,19 +102,7 @@ export class GroupService {
     updateGroupDto: UpdateGroupDto,
     who: ID,
   ): Promise<Group> {
-    const group = await this.prismaService.group.findUnique({
-      where: {
-        id: groupId,
-      },
-      include: {
-        members: {
-          select: {
-            userId: true,
-            role: true,
-          },
-        },
-      },
-    });
+    const group = await this.findOne(groupId);
 
     if (!group || !GroupPolicy.canUpdate(who, group)) {
       throw new BadRequestException(
@@ -125,20 +133,27 @@ export class GroupService {
     return updatedGroup;
   }
 
-  async addMember(groupId: ID, userIdToAdd: ID, whoAdds: ID) {
-    const group = await this.prismaService.group.findUnique({
+  async delete(groupId: ID, userId: ID) {
+    const group = await this.findOne(groupId);
+
+    if (!group || !GroupPolicy.canDelete(userId, group)) {
+      throw new BadRequestException(
+        'You are not allowed to delete this group.',
+      );
+    }
+
+    await this.prismaService.group.update({
+      data: {
+        isDeleted: true,
+      },
       where: {
         id: groupId,
       },
-      include: {
-        members: {
-          select: {
-            userId: true,
-            role: true,
-          },
-        },
-      },
     });
+  }
+
+  async addMember(groupId: ID, userIdToAdd: ID, whoAdds: ID) {
+    const group = await this.findOne(groupId);
 
     if (!group || !GroupPolicy.canAddMember(whoAdds, group)) {
       throw new BadRequestException(
