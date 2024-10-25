@@ -66,6 +66,17 @@ export class GroupService {
           },
         },
       },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        members: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
     });
     console.log('allGroups:', allGroups);
     return allGroups;

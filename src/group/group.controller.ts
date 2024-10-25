@@ -42,6 +42,7 @@ export class GroupController {
     return new GroupDTO(await this.groupService.create(createGroupDto, owner));
   }
 
+  @ApiResponse({ status: 200, type: GroupDTO, isArray: true })
   @Get('all')
   findAll(@Req() req: Request) {
     const userId: ID = req['user'].id;
