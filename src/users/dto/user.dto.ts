@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { User } from '../../generated/prisma/client.js';
 import { Exclude } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNumber, IsString } from 'class-validator';
 import { IsValidUsername } from '../validators/username-validator';

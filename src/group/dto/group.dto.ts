@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Group, GroupRole } from '@prisma/client';
+import { Group, GroupRole } from '../../generated/prisma/client.js';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -17,7 +17,7 @@ export class GroupMemberReducedDTO {
   @IsNumber()
   userId: number;
 
-  @ApiProperty({ type: GroupRole, enum: GroupRole })
+  @ApiProperty({ enum: GroupRole, enumName: 'GroupRole' })
   @IsEnum(GroupRole)
   role: GroupRole;
 }
