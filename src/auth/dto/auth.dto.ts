@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
-import { IsValidUsername } from 'src/users/validators/username-validator';
+import { IsValidUsername } from '../../users/validators/username-validator.js';
 
 export class SignInBodyDto {
   @ApiProperty()

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { PrismaService } from './prisma/prisma.service';
-import { GroupModule } from './group/group.module';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { AuthModule } from './auth/auth.module.js';
+import { UsersModule } from './users/users.module.js';
+import { PrismaService } from './prisma/prisma.service.js';
+import { GroupModule } from './group/group.module.js';
 
 @Module({
   imports: [AuthModule, UsersModule, GroupModule],

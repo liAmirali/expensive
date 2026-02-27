@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateGroupDto, GroupDTO, UpdateGroupDto } from './dto/group.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateGroupDto, UpdateGroupDto } from './dto/group.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { Group, Prisma } from '../generated/prisma/client.js';
-import { GroupPolicy } from './policies/group-policy';
+import { GroupPolicy } from './policies/group-policy.js';
 
 @Injectable()
 export class GroupService {

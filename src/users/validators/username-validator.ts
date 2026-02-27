@@ -18,7 +18,7 @@ export class IsValidUsernameConstraint implements ValidatorConstraintInterface {
 
     const username = value as string;
 
-    let errorMessage: string;
+    let errorMessage: string | undefined;
 
     if (username.length < 4) {
       errorMessage = 'Username must be at least 4 characters long.';
@@ -30,7 +30,8 @@ export class IsValidUsernameConstraint implements ValidatorConstraintInterface {
     }
 
     if (errorMessage) {
-      validationArguments.constraints[0] = errorMessage;
+      if (validationArguments)
+        validationArguments.constraints[0] = errorMessage;
       return false;
     }
 
@@ -38,7 +39,7 @@ export class IsValidUsernameConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-    return args.constraints[0] || 'Invalid username.';
+    return (args.constraints[0] as string | undefined) ?? 'Invalid username.';
   }
 }
 

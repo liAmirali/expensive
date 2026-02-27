@@ -12,14 +12,14 @@ import {
   ClassSerializerInterceptor,
   ParseIntPipe,
 } from '@nestjs/common';
-import { GroupService } from './group.service';
+import { GroupService } from './group.service.js';
 import {
   CreateGroupDto,
   UpdateGroupDto,
   GroupDTO,
   AddGroupMemberDto,
-} from './dto/group.dto';
-import { Request } from 'express';
+} from './dto/group.dto.js';
+import type { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -47,7 +47,7 @@ export class GroupController {
     @Req() req: Request,
   ): Promise<GroupDTO> {
     const { members } = createGroupDto;
-    const owner: ID = req['user'].id;
+    const owner: ID = (req['user'] as { id: ID }).id;
 
     if (members && members.includes(owner)) {
       throw new BadRequestException(
@@ -66,7 +66,7 @@ export class GroupController {
   @ApiResponse({ status: 200, type: GroupDTO, isArray: true })
   @Get('')
   findAll(@Req() req: Request) {
-    const userId: ID = req['user'].id;
+    const userId: ID = (req['user'] as { id: ID }).id;
     return this.groupService.findAllAccessibleGroups(userId);
   }
 
@@ -87,7 +87,7 @@ export class GroupController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
-    const userId: ID = req['user'].id;
+    const userId: ID = (req['user'] as { id: ID }).id;
     return new GroupDTO(
       await this.groupService.update(id, updateGroupDto, userId),
     );
@@ -104,7 +104,7 @@ export class GroupController {
     @Req() req: Request,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const userId: ID = req['user'].id;
+    const userId: ID = (req['user'] as { id: ID }).id;
 
     return this.groupService.delete(id, userId);
   }
@@ -115,7 +115,7 @@ export class GroupController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: AddGroupMemberDto,
   ) {
-    const who: ID = req['user'].id;
+    const who: ID = (req['user'] as { id: ID }).id;
     return this.groupService.addMember(id, body.userId, who);
   }
 

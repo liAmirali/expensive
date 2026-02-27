@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Public } from './auth/auth.gaurd';
+import { Public } from './auth/auth.gaurd.js';
+import { AppService } from './app.service.js';
 
 @Controller()
 export class AppController {

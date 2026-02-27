@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
@@ -15,7 +15,7 @@ async function bootstrap() {
         const formattedErrors = errors.map((error) => {
           return {
             field: error.property,
-            errors: Object.values(error.constraints),
+            errors: Object.values(error.constraints ?? {}),
           };
         });
         return new BadRequestException(formattedErrors);
@@ -38,4 +38,4 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
-bootstrap();
+void bootstrap();

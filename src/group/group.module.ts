@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { GroupService } from './group.service';
-import { GroupController } from './group.controller';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { GroupService } from './group.service.js';
+import { GroupController } from './group.controller.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Module({
   controllers: [GroupController],

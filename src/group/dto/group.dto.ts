@@ -32,7 +32,7 @@ export class GroupDTO {
 
   @ApiProperty()
   @IsString()
-  description: string;
+  description: string | null;
 
   @ApiProperty({ type: GroupMemberReducedDTO, isArray: true, required: false })
   @IsArray()

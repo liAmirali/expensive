@@ -9,11 +9,11 @@ import {
   RegisterBodyDto,
   SignInBodyDto,
   SignInResponseDto,
-} from './dto/auth.dto';
-import { AuthService } from './auth.service';
-import { Public } from './auth.gaurd';
+} from './dto/auth.dto.js';
+import { AuthService } from './auth.service.js';
+import { Public } from './auth.gaurd.js';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MeDTO } from 'src/users/dto/user.dto';
+import { MeDTO } from '../users/dto/user.dto.js';
 
 @ApiTags('Authentication')
 @Controller('auth')

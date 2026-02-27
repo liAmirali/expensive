@@ -1,4 +1,4 @@
-import { GroupDTO } from '../dto/group.dto';
+import { GroupDTO } from '../dto/group.dto.js';
 
 export class GroupPolicy {
   static canUpdate(userId: ID, group: GroupDTO) {

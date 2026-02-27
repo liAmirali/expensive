@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '../generated/prisma/client.js';
-import { RegisterBodyDto } from 'src/auth/dto/auth.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { RegisterBodyDto } from '../auth/dto/auth.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -62,9 +62,9 @@ export class UsersService {
         if (error.code === 'P2002') {
           const target = error.meta?.target as string[] | undefined;
 
-          if (target.includes('username')) {
+          if (target?.includes('username')) {
             throw new ConflictException('Username is already taken.');
-          } else if (target.includes('email')) {
+          } else if (target?.includes('email')) {
             throw new ConflictException('Email is already taken.');
           }
         }
