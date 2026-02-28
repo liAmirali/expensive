@@ -6,9 +6,7 @@ export class GroupPolicy {
   }
 
   static canDelete(userId: ID, group: GroupDTO) {
-    return !!group.members.find(
-      (member) => member.userId === userId && member.role === 'OWNER',
-    );
+    return !!group.members.find((member) => member.userId === userId && member.role === 'OWNER');
   }
 
   static canAddMember(userId: ID, group: GroupDTO) {

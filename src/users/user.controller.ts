@@ -35,8 +35,6 @@ export class UserController {
   @ApiResponse({ status: 200, type: UserPublicDTO, isArray: true })
   @Get('search')
   async search(@Query('q') query: string) {
-    return (await this.usersService.search(query)).map(
-      (user) => new UserPublicDTO(user),
-    );
+    return (await this.usersService.search(query)).map((user) => new UserPublicDTO(user));
   }
 }

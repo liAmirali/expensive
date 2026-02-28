@@ -13,19 +13,9 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { GroupService } from './group.service.js';
-import {
-  CreateGroupDto,
-  UpdateGroupDto,
-  GroupDTO,
-  AddGroupMemberDto,
-} from './dto/group.dto.js';
+import { CreateGroupDto, UpdateGroupDto, GroupDTO, AddGroupMemberDto } from './dto/group.dto.js';
 import type { Request } from 'express';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Groups')
@@ -88,9 +78,7 @@ export class GroupController {
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
     const userId: ID = (req['user'] as { id: ID }).id;
-    return new GroupDTO(
-      await this.groupService.update(id, updateGroupDto, userId),
-    );
+    return new GroupDTO(await this.groupService.update(id, updateGroupDto, userId));
   }
 
   @ApiOperation({
@@ -100,10 +88,7 @@ export class GroupController {
       The group is not actually deleted but marked as deleted.',
   })
   @Delete(':id')
-  async deleteGroup(
-    @Req() req: Request,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async deleteGroup(@Req() req: Request, @Param('id', ParseIntPipe) id: number) {
     const userId: ID = (req['user'] as { id: ID }).id;
 
     return this.groupService.delete(id, userId);

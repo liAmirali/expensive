@@ -5,11 +5,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  RegisterBodyDto,
-  SignInBodyDto,
-  SignInResponseDto,
-} from './dto/auth.dto.js';
+import { RegisterBodyDto, SignInBodyDto, SignInResponseDto } from './dto/auth.dto.js';
 import { AuthService } from './auth.service.js';
 import { Public } from './auth.gaurd.js';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -24,10 +20,7 @@ export class AuthController {
   @Public()
   @Post('login')
   signIn(@Body() signInDto: SignInBodyDto) {
-    return this.authService.signIn(
-      signInDto.userIdentifier,
-      signInDto.password,
-    );
+    return this.authService.signIn(signInDto.userIdentifier, signInDto.password);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

@@ -10,10 +10,7 @@ import {
 @ValidatorConstraint({ async: false })
 @Injectable()
 export class IsValidUsernameConstraint implements ValidatorConstraintInterface {
-  validate(
-    value: any,
-    validationArguments?: ValidationArguments,
-  ): Promise<boolean> | boolean {
+  validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> | boolean {
     if (!value) return false;
 
     const username = value as string;
@@ -30,8 +27,7 @@ export class IsValidUsernameConstraint implements ValidatorConstraintInterface {
     }
 
     if (errorMessage) {
-      if (validationArguments)
-        validationArguments.constraints[0] = errorMessage;
+      if (validationArguments) validationArguments.constraints[0] = errorMessage;
       return false;
     }
 

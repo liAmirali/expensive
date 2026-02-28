@@ -42,12 +42,10 @@ export class GroupService {
       throw new BadRequestException("Some users don't exist.");
     }
 
-    const groupMembers: Prisma.GroupMemberCreateManyGroupInput[] = members.map(
-      (member) => ({
-        userId: member,
-        role: 'MEMBER',
-      }),
-    );
+    const groupMembers: Prisma.GroupMemberCreateManyGroupInput[] = members.map((member) => ({
+      userId: member,
+      role: 'MEMBER',
+    }));
     groupMembers.push({
       userId: owner,
       role: 'OWNER',
@@ -97,17 +95,11 @@ export class GroupService {
     return allGroups;
   }
 
-  async update(
-    groupId: ID,
-    updateGroupDto: UpdateGroupDto,
-    who: ID,
-  ): Promise<Group> {
+  async update(groupId: ID, updateGroupDto: UpdateGroupDto, who: ID): Promise<Group> {
     const group = await this.findOne(groupId);
 
     if (!group || !GroupPolicy.canUpdate(who, group)) {
-      throw new BadRequestException(
-        'You are not allowed to update this group.',
-      );
+      throw new BadRequestException('You are not allowed to update this group.');
     }
 
     const { name, description } = updateGroupDto;
@@ -137,9 +129,7 @@ export class GroupService {
     const group = await this.findOne(groupId);
 
     if (!group || !GroupPolicy.canDelete(userId, group)) {
-      throw new BadRequestException(
-        'You are not allowed to delete this group.',
-      );
+      throw new BadRequestException('You are not allowed to delete this group.');
     }
 
     await this.prismaService.group.update({
@@ -156,9 +146,7 @@ export class GroupService {
     const group = await this.findOne(groupId);
 
     if (!group || !GroupPolicy.canAddMember(whoAdds, group)) {
-      throw new BadRequestException(
-        'You are not allowed to add a member to this group.',
-      );
+      throw new BadRequestException('You are not allowed to add a member to this group.');
     }
 
     const userExists = await this.prismaService.user.findUnique({
@@ -171,9 +159,7 @@ export class GroupService {
       throw new BadRequestException('User does not exist.');
     }
 
-    const userAlreadyInGroup = group.members.find(
-      (member) => member.userId === userIdToAdd,
-    );
+    const userAlreadyInGroup = group.members.find((member) => member.userId === userIdToAdd);
 
     if (userAlreadyInGroup) {
       throw new BadRequestException('User is already in the group.');
