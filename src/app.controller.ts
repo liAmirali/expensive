@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { Public } from './auth/auth.gaurd.js';
+import { Public } from './auth/auth.guard.js';
 import { AppService } from './app.service.js';
 
 @Controller()

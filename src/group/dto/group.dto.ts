@@ -1,11 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Group, GroupRole } from '../../generated/prisma/client.js';
+import { Group, GroupRole, GroupMembershipStatus } from '../../generated/prisma/client.js';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -14,25 +13,42 @@ import {
 
 export class GroupMemberReducedDTO {
   @ApiProperty()
-  @IsNumber()
-  userId: number;
+  userId: string;
 
   @ApiProperty({ enum: GroupRole, enumName: 'GroupRole' })
   @IsEnum(GroupRole)
   role: GroupRole;
+
+  @ApiProperty({ enum: GroupMembershipStatus, enumName: 'GroupMembershipStatus' })
+  @IsEnum(GroupMembershipStatus)
+  status: GroupMembershipStatus;
 }
 export class GroupDTO {
   @ApiProperty()
-  @IsNumber()
   id: ID;
 
   @ApiProperty()
   @IsString()
   name: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  description?: string | null;
+
   @ApiProperty()
   @IsString()
-  description: string | null;
+  baseCurrency: string;
+
+  @ApiProperty()
+  createdById: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  archivedAt?: Date | null;
 
   @ApiProperty({ type: GroupMemberReducedDTO, isArray: true, required: false })
   @IsArray()
@@ -40,8 +56,9 @@ export class GroupDTO {
   @Type(() => GroupMemberReducedDTO)
   members: GroupMemberReducedDTO[];
 
-  constructor(group: Group) {
+  constructor(group: Group & { memberships?: GroupMemberReducedDTO[] }) {
     Object.assign(this, group);
+    this.members = group.memberships ?? [];
   }
 }
 
@@ -57,9 +74,15 @@ export class CreateGroupDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ type: Number, isArray: true })
-  @IsNumber({}, { each: true })
-  members: ID[];
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  baseCurrency?: string;
+
+  @ApiProperty({ type: String, isArray: true, required: false })
+  @IsOptional()
+  @IsArray()
+  members?: ID[];
 }
 
 export class UpdateGroupDto {
@@ -77,6 +100,23 @@ export class UpdateGroupDto {
 
 export class AddGroupMemberDto {
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   userId: ID;
+
+  @ApiProperty({ enum: GroupRole, enumName: 'GroupRole', required: false })
+  @IsOptional()
+  @IsEnum(GroupRole)
+  role?: GroupRole;
+}
+
+export class UpdateGroupMemberDto {
+  @ApiProperty({ enum: GroupRole, enumName: 'GroupRole', required: false })
+  @IsOptional()
+  @IsEnum(GroupRole)
+  role?: GroupRole;
+
+  @ApiProperty({ enum: GroupMembershipStatus, enumName: 'GroupMembershipStatus', required: false })
+  @IsOptional()
+  @IsEnum(GroupMembershipStatus)
+  status?: GroupMembershipStatus;
 }

@@ -1,33 +1,37 @@
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Post,
-  UseInterceptors,
-} from '@nestjs/common';
-import { RegisterBodyDto, SignInBodyDto, SignInResponseDto } from './dto/auth.dto.js';
+  RegisterBodyDto,
+  LoginBodyDto,
+  RefreshBodyDto,
+  AuthTokensDto,
+} from './dto/auth.dto.js';
 import { AuthService } from './auth.service.js';
-import { Public } from './auth.gaurd.js';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MeDTO } from '../users/dto/user.dto.js';
+import { Public } from './auth.guard.js';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiResponse({ status: 201, type: SignInResponseDto })
-  @Public()
-  @Post('login')
-  signIn(@Body() signInDto: SignInBodyDto) {
-    return this.authService.signIn(signInDto.userIdentifier, signInDto.password);
-  }
-
-  @UseInterceptors(ClassSerializerInterceptor)
-  @ApiResponse({ status: 201, type: MeDTO })
+  @ApiResponse({ status: 201, type: AuthTokensDto })
   @Public()
   @Post('register')
-  async registerUser(@Body() registerDto: RegisterBodyDto) {
-    return new MeDTO(await this.authService.registerUser(registerDto));
+  registerUser(@Body() registerDto: RegisterBodyDto) {
+    return this.authService.registerUser(registerDto);
+  }
+
+  @ApiResponse({ status: 200, type: AuthTokensDto })
+  @Public()
+  @Post('login')
+  login(@Body() loginDto: LoginBodyDto) {
+    return this.authService.login(loginDto);
+  }
+
+  @ApiResponse({ status: 200, type: AuthTokensDto })
+  @Public()
+  @Post('refresh')
+  refresh(@Body() refreshDto: RefreshBodyDto) {
+    return this.authService.refresh(refreshDto);
   }
 }

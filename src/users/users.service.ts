@@ -2,30 +2,11 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '../generated/prisma/client.js';
 import { RegisterBodyDto } from '../auth/dto/auth.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import * as bcrypt from 'bcrypt';
+import { UpdateMeDto } from './dto/user.dto.js';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-
-  /**
-   * It finds a user with the user identifier and returns it or returns null
-   * @param userIdentifier This can be the user's username or their email or maybe their phone number.
-   */
-  async identifyOne(userIdentifier: string): Promise<User | null> {
-    return this.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            username: userIdentifier,
-          },
-          {
-            email: userIdentifier,
-          },
-        ],
-      },
-    });
-  }
 
   async findById(userId: ID): Promise<User | null> {
     return this.prisma.user.findUnique({
@@ -35,36 +16,35 @@ export class UsersService {
     });
   }
 
-  /**
-   * Creates a user based on the data provided
-   * @param data The data to create a new user
-   */
-  async createUser(data: RegisterBodyDto): Promise<User> {
-    const salt = await bcrypt.genSalt();
+  async findByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+  }
 
-    const hashedPassword = await bcrypt.hash(data.password, salt);
-
+  async createUser(data: RegisterBodyDto & { passwordHash: string }): Promise<User> {
     try {
-      const cratedUser = await this.prisma.user.create({
+      const createdUser = await this.prisma.user.create({
         data: {
-          username: data.username,
           email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          password: hashedPassword,
-          salt: salt,
+          fullName: data.fullName,
+          avatarUrl: data.avatarUrl ?? null,
+          phoneNumber: data.phoneNumber ?? null,
+          defaultCurrency: data.defaultCurrency ?? 'IRR',
+          preferredLocale: data.preferredLocale ?? 'fa-IR',
+          passwordHash: data.passwordHash,
         },
       });
 
-      return cratedUser;
+      return createdUser;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           const target = error.meta?.target as string[] | undefined;
 
-          if (target?.includes('username')) {
-            throw new ConflictException('Username is already taken.');
-          } else if (target?.includes('email')) {
+          if (target?.includes('email')) {
             throw new ConflictException('Email is already taken.');
           }
         }
@@ -73,30 +53,37 @@ export class UsersService {
     }
   }
 
-  /**
-   * It searches for a user based on the query provided on the username, first name, or last name fields
-   * @param query The query to search for
-   */
   async search(query: string): Promise<User[]> {
     return this.prisma.user.findMany({
       where: {
+        isActive: true,
         OR: [
           {
-            username: {
+            email: {
               contains: query,
+              mode: 'insensitive',
             },
           },
           {
-            firstName: {
+            fullName: {
               contains: query,
-            },
-          },
-          {
-            lastName: {
-              contains: query,
+              mode: 'insensitive',
             },
           },
         ],
+      },
+    });
+  }
+
+  async updateMe(userId: ID, data: UpdateMeDto): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        fullName: data.fullName,
+        avatarUrl: data.avatarUrl,
+        phoneNumber: data.phoneNumber,
+        defaultCurrency: data.defaultCurrency,
+        preferredLocale: data.preferredLocale,
       },
     });
   }

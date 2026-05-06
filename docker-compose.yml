@@ -12,7 +12,11 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql://admin:admin@db:5432/expensive_db
+      - DATABASE_URL=postgresql://expensive_admin:expensive_admin@db:5432/expensive_db?schema=public
+      - JWT_ACCESS_SECRET=change-me-access
+      - JWT_REFRESH_SECRET=change-me-refresh
+      - JWT_ACCESS_TTL_SECONDS=900
+      - JWT_REFRESH_TTL_SECONDS=1209600
     command: bash entrypoint.sh
 
   db:
@@ -21,8 +25,8 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: expensive_admin
+      POSTGRES_PASSWORD: expensive_admin
       POSTGRES_DB: expensive_db
     volumes:
       - expensive_db:/var/lib/postgresql/data

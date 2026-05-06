@@ -1,8 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateGroupDto, UpdateGroupDto } from './dto/group.dto.js';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateGroupDto, UpdateGroupDto, UpdateGroupMemberDto } from './dto/group.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Group, Prisma } from '../generated/prisma/client.js';
-import { GroupPolicy } from './policies/group-policy.js';
+import { Group, GroupMembershipStatus, GroupRole, Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class GroupService {
@@ -12,13 +11,13 @@ export class GroupService {
     const group = await this.prismaService.group.findUnique({
       where: {
         id: groupId,
-        isDeleted: false,
       },
       include: {
-        members: {
+        memberships: {
           select: {
             userId: true,
             role: true,
+            status: true,
           },
         },
       },
@@ -28,42 +27,49 @@ export class GroupService {
   }
 
   async create(createGroupDto: CreateGroupDto, owner: ID) {
-    const { name, description, members } = createGroupDto;
+    const { name, description, members = [], baseCurrency } = createGroupDto;
 
-    const existingUserIDs = await this.prismaService.user.findMany({
-      where: {
-        id: {
-          in: members,
+    if (members.length > 0) {
+      const existingUserIDs = await this.prismaService.user.findMany({
+        where: {
+          id: {
+            in: members,
+          },
         },
-      },
-    });
+      });
 
-    if (existingUserIDs.length !== members.length) {
-      throw new BadRequestException("Some users don't exist.");
+      if (existingUserIDs.length !== members.length) {
+        throw new BadRequestException("Some users don't exist.");
+      }
     }
 
-    const groupMembers: Prisma.GroupMemberCreateManyGroupInput[] = members.map((member) => ({
+    const groupMembers: Prisma.GroupMembershipCreateManyGroupInput[] = members.map((member) => ({
       userId: member,
-      role: 'MEMBER',
+      role: GroupRole.MEMBER,
+      status: GroupMembershipStatus.PENDING,
     }));
     groupMembers.push({
       userId: owner,
-      role: 'OWNER',
+      role: GroupRole.OWNER,
+      status: GroupMembershipStatus.ACTIVE,
     });
 
     const group = await this.prismaService.group.create({
       data: {
         name,
         description,
-        members: {
-          create: groupMembers,
+        baseCurrency: baseCurrency ?? 'IRR',
+        createdById: owner,
+        memberships: {
+          createMany: { data: groupMembers },
         },
       },
       include: {
-        members: {
+        memberships: {
           select: {
             userId: true,
             role: true,
+            status: true,
           },
         },
       },
@@ -75,18 +81,19 @@ export class GroupService {
   async findAllAccessibleGroups(userId: ID) {
     const allGroups = await this.prismaService.group.findMany({
       where: {
-        members: {
+        memberships: {
           some: {
             userId,
+            status: GroupMembershipStatus.ACTIVE,
           },
         },
-        isDeleted: false,
       },
       include: {
-        members: {
+        memberships: {
           select: {
             userId: true,
             role: true,
+            status: true,
           },
         },
       },
@@ -98,7 +105,15 @@ export class GroupService {
   async update(groupId: ID, updateGroupDto: UpdateGroupDto, who: ID): Promise<Group> {
     const group = await this.findOne(groupId);
 
-    if (!group || !GroupPolicy.canUpdate(who, group)) {
+    if (!group) {
+      throw new NotFoundException('Group not found.');
+    }
+
+    const membership = await this.prismaService.groupMembership.findFirst({
+      where: { groupId, userId: who, status: GroupMembershipStatus.ACTIVE },
+    });
+
+    if (!membership || (membership.role !== GroupRole.OWNER && membership.role !== GroupRole.ADMIN)) {
       throw new BadRequestException('You are not allowed to update this group.');
     }
 
@@ -113,10 +128,11 @@ export class GroupService {
         description,
       },
       include: {
-        members: {
+        memberships: {
           select: {
             userId: true,
             role: true,
+            status: true,
           },
         },
       },
@@ -126,15 +142,22 @@ export class GroupService {
   }
 
   async delete(groupId: ID, userId: ID) {
-    const group = await this.findOne(groupId);
+    const membership = await this.prismaService.groupMembership.findFirst({
+      where: {
+        groupId,
+        userId,
+        status: GroupMembershipStatus.ACTIVE,
+        role: GroupRole.OWNER,
+      },
+    });
 
-    if (!group || !GroupPolicy.canDelete(userId, group)) {
-      throw new BadRequestException('You are not allowed to delete this group.');
+    if (!membership) {
+      throw new BadRequestException('You are not allowed to archive this group.');
     }
 
     await this.prismaService.group.update({
       data: {
-        isDeleted: true,
+        archivedAt: new Date(),
       },
       where: {
         id: groupId,
@@ -142,10 +165,12 @@ export class GroupService {
     });
   }
 
-  async addMember(groupId: ID, userIdToAdd: ID, whoAdds: ID) {
-    const group = await this.findOne(groupId);
+  async addMember(groupId: ID, userIdToAdd: ID, whoAdds: ID, role: GroupRole = GroupRole.MEMBER) {
+    const inviter = await this.prismaService.groupMembership.findFirst({
+      where: { groupId, userId: whoAdds, status: GroupMembershipStatus.ACTIVE },
+    });
 
-    if (!group || !GroupPolicy.canAddMember(whoAdds, group)) {
+    if (!inviter || (inviter.role !== GroupRole.OWNER && inviter.role !== GroupRole.ADMIN)) {
       throw new BadRequestException('You are not allowed to add a member to this group.');
     }
 
@@ -159,20 +184,58 @@ export class GroupService {
       throw new BadRequestException('User does not exist.');
     }
 
-    const userAlreadyInGroup = group.members.find((member) => member.userId === userIdToAdd);
+    const existingMembership = await this.prismaService.groupMembership.findUnique({
+      where: { groupId_userId: { groupId, userId: userIdToAdd } },
+    });
 
-    if (userAlreadyInGroup) {
+    if (existingMembership) {
       throw new BadRequestException('User is already in the group.');
     }
 
-    const newMember = await this.prismaService.groupMember.create({
+    const newMember = await this.prismaService.groupMembership.create({
       data: {
         userId: userIdToAdd,
         groupId,
-        role: 'MEMBER',
+        role,
+        status: GroupMembershipStatus.PENDING,
+        invitedById: whoAdds,
       },
     });
 
     return newMember;
+  }
+
+  async updateMember(groupId: ID, memberId: ID, data: UpdateGroupMemberDto, who: ID) {
+    const updater = await this.prismaService.groupMembership.findFirst({
+      where: { groupId, userId: who, status: GroupMembershipStatus.ACTIVE },
+    });
+
+    if (!updater || updater.role !== GroupRole.OWNER) {
+      throw new BadRequestException('Only the owner can update member roles.');
+    }
+
+    const target = await this.prismaService.groupMembership.findUnique({
+      where: { groupId_userId: { groupId, userId: memberId } },
+    });
+
+    if (!target) {
+      throw new NotFoundException('Group member not found.');
+    }
+
+    if (target.role === GroupRole.OWNER) {
+      throw new BadRequestException('Owner role cannot be modified.');
+    }
+
+    if (data.role === GroupRole.OWNER) {
+      throw new BadRequestException('Owner role cannot be reassigned.');
+    }
+
+    return this.prismaService.groupMembership.update({
+      where: { groupId_userId: { groupId, userId: memberId } },
+      data: {
+        role: data.role,
+        status: data.status,
+      },
+    });
   }
 }

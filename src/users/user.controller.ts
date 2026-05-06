@@ -3,14 +3,16 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Patch,
   Query,
   Req,
+  Body,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import type { Request } from 'express';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MeDTO, UserPublicDTO } from './dto/user.dto.js';
+import { MeDTO, UpdateMeDto, UserPublicDTO } from './dto/user.dto.js';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -29,6 +31,15 @@ export class UserController {
     }
 
     return new MeDTO(foundUser);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: 200, type: MeDTO })
+  @Patch('me')
+  async updateMe(@Req() req: Request, @Body() body: UpdateMeDto) {
+    const userId: ID = (req['user'] as { id: ID }).id;
+    const updatedUser = await this.usersService.updateMe(userId, body);
+    return new MeDTO(updatedUser);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

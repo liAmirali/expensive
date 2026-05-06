@@ -1,9 +1,9 @@
-FROM node:20.13
+FROM node:24
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN pnpm install --lock-version --registry="https://mirror-npm.runflare.com"
 
 COPY . .
 

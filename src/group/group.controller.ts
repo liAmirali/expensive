@@ -10,12 +10,21 @@ import {
   BadRequestException,
   UseInterceptors,
   ClassSerializerInterceptor,
-  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { GroupService } from './group.service.js';
-import { CreateGroupDto, UpdateGroupDto, GroupDTO, AddGroupMemberDto } from './dto/group.dto.js';
+import {
+  CreateGroupDto,
+  UpdateGroupDto,
+  GroupDTO,
+  AddGroupMemberDto,
+  UpdateGroupMemberDto,
+} from './dto/group.dto.js';
 import type { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GroupMembershipGuard } from '../common/guards/group-membership.guard.js';
+import { Roles } from '../common/decorators/roles.decorator.js';
+import { GroupRole } from '../generated/prisma/client.js';
 
 @ApiBearerAuth()
 @ApiTags('Groups')
@@ -57,13 +66,18 @@ export class GroupController {
   @Get('')
   findAll(@Req() req: Request) {
     const userId: ID = (req['user'] as { id: ID }).id;
-    return this.groupService.findAllAccessibleGroups(userId);
+    return this.groupService.findAllAccessibleGroups(userId).then((groups) =>
+      groups.map((group) => new GroupDTO(group as any)),
+    );
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.groupService.findOne(+id);
-  // }
+  @ApiResponse({ status: 200, type: GroupDTO })
+  @UseGuards(GroupMembershipGuard)
+  @Get(':groupId')
+  async findOne(@Param('groupId') groupId: string) {
+    const group = await this.groupService.findOne(groupId);
+    return new GroupDTO(group as any);
+  }
 
   @ApiOperation({
     description:
@@ -71,10 +85,12 @@ export class GroupController {
       Only the provided fields are updated. The rest remain the same.',
   })
   @ApiResponse({ status: 200, type: GroupDTO })
-  @Patch(':id')
+  @UseGuards(GroupMembershipGuard)
+  @Roles(GroupRole.OWNER, GroupRole.ADMIN)
+  @Patch(':groupId')
   async updateGroup(
     @Req() req: Request,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('groupId') id: string,
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
     const userId: ID = (req['user'] as { id: ID }).id;
@@ -87,21 +103,38 @@ export class GroupController {
       Only the owner can delete a group.\
       The group is not actually deleted but marked as deleted.',
   })
-  @Delete(':id')
-  async deleteGroup(@Req() req: Request, @Param('id', ParseIntPipe) id: number) {
+  @UseGuards(GroupMembershipGuard)
+  @Roles(GroupRole.OWNER)
+  @Delete(':groupId')
+  async deleteGroup(@Req() req: Request, @Param('groupId') id: string) {
     const userId: ID = (req['user'] as { id: ID }).id;
 
     return this.groupService.delete(id, userId);
   }
 
-  @Post(':id/members')
+  @UseGuards(GroupMembershipGuard)
+  @Roles(GroupRole.OWNER, GroupRole.ADMIN)
+  @Post(':groupId/invite')
   async addMember(
     @Req() req: Request,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('groupId') id: string,
     @Body() body: AddGroupMemberDto,
   ) {
     const who: ID = (req['user'] as { id: ID }).id;
-    return this.groupService.addMember(id, body.userId, who);
+    return this.groupService.addMember(id, body.userId, who, body.role);
+  }
+
+  @UseGuards(GroupMembershipGuard)
+  @Roles(GroupRole.OWNER)
+  @Patch(':groupId/members/:userId')
+  async updateMember(
+    @Req() req: Request,
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+    @Body() body: UpdateGroupMemberDto,
+  ) {
+    const who: ID = (req['user'] as { id: ID }).id;
+    return this.groupService.updateMember(groupId, userId, body, who);
   }
 
   // @Delete(':id')
