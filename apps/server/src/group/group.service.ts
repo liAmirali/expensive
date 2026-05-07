@@ -27,7 +27,7 @@ export class GroupService {
   }
 
   async create(createGroupDto: CreateGroupDto, owner: ID) {
-    const { name, description, members = [], baseCurrency } = createGroupDto;
+    const { name, description, members = [] } = createGroupDto;
 
     if (members.length > 0) {
       const existingUserIDs = await this.prismaService.user.findMany({
@@ -58,7 +58,6 @@ export class GroupService {
       data: {
         name,
         description,
-        baseCurrency: baseCurrency ?? 'IRR',
         createdById: owner,
         memberships: {
           createMany: { data: groupMembers },

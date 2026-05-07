@@ -24,10 +24,6 @@ export class ExpensesService {
       throw new BadRequestException('Ledger is closed.');
     }
 
-    if (ledger.currency !== dto.currency) {
-      throw new BadRequestException('Expense currency must match ledger currency.');
-    }
-
     const membership = await this.prisma.groupMembership.findFirst({
       where: {
         groupId: ledger.groupId,
@@ -97,7 +93,6 @@ export class ExpensesService {
       title: dto.title,
       description: dto.description,
       totalAmount,
-      currency: dto.currency,
       expenseDate: new Date(dto.expenseDate),
       splitMethod: dto.splitMethod,
       createdBy: { connect: { id: createdById } },
@@ -119,9 +114,6 @@ export class ExpensesService {
     };
 
     const expense = await this.prisma.$transaction(async (tx) => {
-      if (ledger.expenses.length > 0 && dto.currency !== ledger.currency) {
-        throw new BadRequestException('Ledger currency is immutable after first expense.');
-      }
       const createdExpense = await tx.expense.create({ data });
       this.logger.log(`Expense created ${createdExpense.id}`);
       return createdExpense;

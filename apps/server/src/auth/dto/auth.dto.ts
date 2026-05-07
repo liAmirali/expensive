@@ -39,7 +39,7 @@ export class RegisterBodyDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  defaultCurrency?: string;
+  preferredCurrency?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

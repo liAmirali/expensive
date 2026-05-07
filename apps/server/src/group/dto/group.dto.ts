@@ -37,10 +37,6 @@ export class GroupDTO {
   description?: string | null;
 
   @ApiProperty()
-  @IsString()
-  baseCurrency: string;
-
-  @ApiProperty()
   createdById: string;
 
   @ApiProperty()
@@ -73,11 +69,6 @@ export class CreateGroupDto {
   @ApiPropertyOptional()
   @IsString()
   description: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  baseCurrency?: string;
 
   @ApiProperty({ type: String, isArray: true, required: false })
   @IsOptional()

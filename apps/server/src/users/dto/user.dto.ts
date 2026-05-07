@@ -20,7 +20,7 @@ export class MeDTO {
   phoneNumber?: string | null;
 
   @ApiProperty()
-  defaultCurrency: string;
+  preferredCurrency: string;
 
   @ApiProperty()
   preferredLocale: string;
@@ -64,7 +64,7 @@ export class UpdateMeDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  defaultCurrency?: string;
+  preferredCurrency?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

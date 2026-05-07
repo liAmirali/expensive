@@ -32,7 +32,7 @@ export class UsersService {
           fullName: data.fullName,
           avatarUrl: data.avatarUrl ?? null,
           phoneNumber: data.phoneNumber ?? null,
-          defaultCurrency: data.defaultCurrency ?? 'IRR',
+          preferredCurrency: data.preferredCurrency ?? 'IRT',
           preferredLocale: data.preferredLocale ?? 'fa-IR',
           passwordHash: data.passwordHash,
         },
@@ -82,7 +82,7 @@ export class UsersService {
         fullName: data.fullName,
         avatarUrl: data.avatarUrl,
         phoneNumber: data.phoneNumber,
-        defaultCurrency: data.defaultCurrency,
+        preferredCurrency: data.preferredCurrency,
         preferredLocale: data.preferredLocale,
       },
     });

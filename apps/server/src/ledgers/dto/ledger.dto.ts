@@ -25,9 +25,6 @@ export class LedgerDto {
   visibility: LedgerVisibility;
 
   @ApiProperty()
-  currency: string;
-
-  @ApiProperty()
   createdById: string;
 
   @ApiProperty()
@@ -55,11 +52,6 @@ export class CreateLedgerDto {
   @IsOptional()
   @IsEnum(LedgerVisibility)
   visibility?: LedgerVisibility;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  currency?: string;
 
   @ApiProperty({ type: String, isArray: true })
   @IsArray()

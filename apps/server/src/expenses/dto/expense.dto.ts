@@ -48,10 +48,6 @@ export class CreateExpenseDto {
 
   @ApiProperty()
   @IsString()
-  currency: string;
-
-  @ApiProperty()
-  @IsString()
   expenseDate: string;
 
   @ApiProperty({ enum: SplitMethod, enumName: 'SplitMethod' })

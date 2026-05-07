@@ -14,7 +14,7 @@ model User {
   fullName             String
   avatarUrl            String?
   phoneNumber          String?
-  defaultCurrency      String
+  preferredCurrency    String
   preferredLocale      String
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
@@ -34,16 +34,15 @@ model User {
 }
 
 model Group {
-  id           String            @id @default(uuid())
-  name         String
-  description  String?
-  baseCurrency String
-  createdById  String
-  createdAt    DateTime          @default(now())
-  archivedAt   DateTime?
-  createdBy    User              @relation("GroupCreatedBy", fields: [createdById], references: [id])
-  memberships  GroupMembership[]
-  ledgers      Ledger[]
+  id          String            @id @default(uuid())
+  name        String
+  description String?
+  createdById String
+  createdAt   DateTime          @default(now())
+  archivedAt  DateTime?
+  createdBy   User              @relation("GroupCreatedBy", fields: [createdById], references: [id])
+  memberships GroupMembership[]
+  ledgers     Ledger[]
 
   @@index([createdById])
 }
@@ -71,7 +70,6 @@ model Ledger {
   name         String
   description  String?
   visibility   LedgerVisibility
-  currency     String
   createdById  String
   createdAt    DateTime            @default(now())
   closedAt     DateTime?
@@ -102,7 +100,6 @@ model Expense {
   title       String
   description String?
   totalAmount Decimal        @db.Decimal(18, 6)
-  currency    String
   expenseDate DateTime
   splitMethod SplitMethod
   createdById String

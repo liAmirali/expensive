@@ -56,7 +56,6 @@ export class LedgersService {
         name: dto.name,
         description: dto.description,
         visibility: dto.visibility ?? LedgerVisibility.PRIVATE_TO_PARTICIPANTS,
-        currency: dto.currency ?? group.baseCurrency,
         createdById,
         participants: {
           createMany: {
