@@ -25,26 +25,27 @@ const schema = z
     message: "رمز عبور بسیار ضعیف است",
   });
 
-type FormValues = z.infer<typeof schema>;
+export type SignUpFormValues = z.infer<typeof schema>;
 
-export function SignUpView() {
+export interface SignUpViewProps {
+  onSubmit: (values: SignUpFormValues) => void | Promise<void>;
+  isSubmitting?: boolean;
+  errorMessage?: string;
+}
+
+export function SignUpView({ onSubmit, isSubmitting = false, errorMessage }: SignUpViewProps) {
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
+    formState: { errors },
+  } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
   const password = useWatch({ control, name: "password" });
-
-  const onSubmit = async (values: FormValues) => {
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("signup", values);
-  };
 
   return (
     <div className="animate-fade-in-up">
@@ -91,6 +92,12 @@ export function SignUpView() {
             error={errors.confirmPassword?.message}
             {...register("confirmPassword")}
           />
+
+          {errorMessage && (
+            <p role="alert" className="text-body-sm text-danger-text text-center">
+              {errorMessage}
+            </p>
+          )}
 
           <Button type="submit" size="lg" width="full" loading={isSubmitting}>
             ساخت حساب

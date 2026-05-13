@@ -12,19 +12,20 @@ const schema = z.object({
   password: z.string().min(1, "رمز عبور الزامی است"),
 });
 
-type FormValues = z.infer<typeof schema>;
+export type SignInFormValues = z.infer<typeof schema>;
 
-export function SignInView() {
+export interface SignInViewProps {
+  onSubmit: (values: SignInFormValues) => void | Promise<void>;
+  isSubmitting?: boolean;
+  errorMessage?: string;
+}
+
+export function SignInView({ onSubmit, isSubmitting = false, errorMessage }: SignInViewProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema), mode: "onTouched" });
-
-  const onSubmit = async (values: FormValues) => {
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("signin", values);
-  };
+    formState: { errors },
+  } = useForm<SignInFormValues>({ resolver: zodResolver(schema), mode: "onTouched" });
 
   return (
     <div className="animate-fade-in-up">
@@ -61,6 +62,12 @@ export function SignInView() {
               فراموشی رمز عبور؟
             </Link>
           </div>
+
+          {errorMessage && (
+            <p role="alert" className="text-body-sm text-danger-text text-center">
+              {errorMessage}
+            </p>
+          )}
 
           <Button type="submit" size="lg" width="full" loading={isSubmitting}>
             ورود
