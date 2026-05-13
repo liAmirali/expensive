@@ -19,8 +19,8 @@ async function main() {
       email: 'alice@example.com',
       passwordHash,
       fullName: 'Alice Example',
-      defaultCurrency: 'IRR',
       preferredLocale: 'fa-IR',
+      preferredCurrency: 'IRR',
     },
   });
 
@@ -29,8 +29,8 @@ async function main() {
       email: 'bob@example.com',
       passwordHash,
       fullName: 'Bob Example',
-      defaultCurrency: 'IRR',
       preferredLocale: 'fa-IR',
+      preferredCurrency: 'IRR',
     },
   });
 
@@ -38,7 +38,6 @@ async function main() {
     data: {
       name: 'Tehran Trip',
       description: 'Sample group',
-      baseCurrency: 'IRR',
       createdById: alice.id,
       memberships: {
         createMany: {
@@ -57,7 +56,6 @@ async function main() {
       name: 'Hotel Ledger',
       description: 'Shared lodging',
       visibility: LedgerVisibility.PRIVATE_TO_PARTICIPANTS,
-      currency: 'IRR',
       createdById: alice.id,
       participants: {
         createMany: {
@@ -73,7 +71,6 @@ async function main() {
       payerId: alice.id,
       title: 'Hotel deposit',
       totalAmount: new Decimal(5000000),
-      currency: 'IRR',
       expenseDate: new Date(),
       splitMethod: SplitMethod.EQUAL,
       createdById: alice.id,
