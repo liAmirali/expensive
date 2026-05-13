@@ -31,7 +31,7 @@ export class GroupDTO {
   @IsString()
   name: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsOptional()
   @IsString()
   description?: string | null;
@@ -42,7 +42,7 @@ export class GroupDTO {
   @ApiProperty()
   createdAt: Date;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, format: 'date-time', required: false, nullable: true })
   @IsOptional()
   archivedAt?: Date | null;
 

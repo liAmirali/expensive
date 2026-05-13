@@ -992,10 +992,12 @@
             "type": "string"
           },
           "avatarUrl": {
-            "type": "object"
+            "type": "string",
+            "nullable": true
           },
           "phoneNumber": {
-            "type": "object"
+            "type": "string",
+            "nullable": true
           },
           "preferredCurrency": {
             "type": "string"
@@ -1142,7 +1144,8 @@
             "type": "string"
           },
           "description": {
-            "type": "object"
+            "type": "string",
+            "nullable": true
           },
           "createdById": {
             "type": "string"
@@ -1152,7 +1155,9 @@
             "type": "string"
           },
           "archivedAt": {
-            "type": "object"
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "members": {
             "type": "array",
@@ -1264,7 +1269,8 @@
             "type": "string"
           },
           "description": {
-            "type": "object"
+            "type": "string",
+            "nullable": true
           },
           "visibility": {
             "allOf": [
@@ -1281,7 +1287,9 @@
             "type": "string"
           },
           "closedAt": {
-            "type": "object"
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "required": [

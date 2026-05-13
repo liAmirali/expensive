@@ -13,10 +13,10 @@ export class MeDTO {
   @ApiProperty()
   fullName: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   avatarUrl?: string | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   phoneNumber?: string | null;
 
   @ApiProperty()

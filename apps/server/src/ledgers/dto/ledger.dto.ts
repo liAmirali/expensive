@@ -18,7 +18,7 @@ export class LedgerDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   description?: string | null;
 
   @ApiProperty({ enum: LedgerVisibility, enumName: 'LedgerVisibility' })
@@ -30,7 +30,7 @@ export class LedgerDto {
   @ApiProperty()
   createdAt: Date;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, format: 'date-time', required: false, nullable: true })
   closedAt?: Date | null;
 
   constructor(ledger: Ledger) {
