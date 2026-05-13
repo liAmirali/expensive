@@ -5,17 +5,17 @@
  * The API description for the Expensive app.
  * OpenAPI spec version: 0.0.1
  */
-import type { LedgerDtoClosedAt } from './ledgerDtoClosedAt';
-import type { LedgerDtoDescription } from './ledgerDtoDescription';
 import type { LedgerVisibility } from './ledgerVisibility';
 
 export interface LedgerDto {
   id: string;
   groupId: string;
   name: string;
-  description?: LedgerDtoDescription;
+  /** @nullable */
+  description?: string | null;
   visibility: LedgerVisibility;
   createdById: string;
   createdAt: string;
-  closedAt?: LedgerDtoClosedAt;
+  /** @nullable */
+  closedAt?: string | null;
 }

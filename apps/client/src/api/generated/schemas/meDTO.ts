@@ -5,15 +5,15 @@
  * The API description for the Expensive app.
  * OpenAPI spec version: 0.0.1
  */
-import type { MeDTOAvatarUrl } from './meDTOAvatarUrl';
-import type { MeDTOPhoneNumber } from './meDTOPhoneNumber';
 
 export interface MeDTO {
   id: string;
   email: string;
   fullName: string;
-  avatarUrl?: MeDTOAvatarUrl;
-  phoneNumber?: MeDTOPhoneNumber;
+  /** @nullable */
+  avatarUrl?: string | null;
+  /** @nullable */
+  phoneNumber?: string | null;
   preferredCurrency: string;
   preferredLocale: string;
   isActive: boolean;

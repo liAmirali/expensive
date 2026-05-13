@@ -5,16 +5,16 @@
  * The API description for the Expensive app.
  * OpenAPI spec version: 0.0.1
  */
-import type { GroupDTOArchivedAt } from './groupDTOArchivedAt';
-import type { GroupDTODescription } from './groupDTODescription';
 import type { GroupMemberReducedDTO } from './groupMemberReducedDTO';
 
 export interface GroupDTO {
   id: string;
   name: string;
-  description?: GroupDTODescription;
+  /** @nullable */
+  description?: string | null;
   createdById: string;
   createdAt: string;
-  archivedAt?: GroupDTOArchivedAt;
+  /** @nullable */
+  archivedAt?: string | null;
   members?: GroupMemberReducedDTO[];
 }
