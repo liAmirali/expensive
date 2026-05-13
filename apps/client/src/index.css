@@ -1,113 +1,326 @@
 @import "tailwindcss";
+@import "@fontsource-variable/vazirmatn";
+
+/* ============================================================
+   PRIMITIVES
+   Raw color scales. No semantic meaning.
+   Never use these directly in components — map to semantic tokens first.
+   Naming: --p-{family}-{stop}
+   Stops: 50 100 200 300 400 500 600 700 800 900 950
+   ============================================================ */
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* --- Gray (neutral backbone) --- */
+  --p-gray-50:  #fafafa;
+  --p-gray-100: #f4f4f5;
+  --p-gray-200: #e4e4e7;
+  --p-gray-300: #d4d4d8;
+  --p-gray-400: #a1a1aa;
+  --p-gray-500: #71717a;
+  --p-gray-600: #52525b;
+  --p-gray-700: #3f3f46;
+  --p-gray-800: #27272a;
+  --p-gray-900: #18181b;
+  --p-gray-950: #09090b;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* --- Violet (#4357AD anchor at 500) --- */
+  --p-violet-50:  #f3f4fb;
+  --p-violet-100: #e4e7f7;
+  --p-violet-200: #c4caf0;
+  --p-violet-300: #97a3e3;
+  --p-violet-400: #6878cf;
+  --p-violet-500: #4357ad;
+  --p-violet-600: #374794;
+  --p-violet-700: #2b3878;
+  --p-violet-800: #1c2550;
+  --p-violet-900: #0f1430;
+  --p-violet-950: #080a1a;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* --- Navy (#0B2545 anchor at 900) --- */
+  --p-navy-50:  #edf5fd;
+  --p-navy-100: #d5e8f9;
+  --p-navy-200: #acd0f3;
+  --p-navy-300: #72aee8;
+  --p-navy-400: #3d84d4;
+  --p-navy-500: #1e5fb5;
+  --p-navy-600: #154d96;
+  --p-navy-700: #103c77;
+  --p-navy-800: #0d2e5c;
+  --p-navy-900: #0b2545;
+  --p-navy-950: #060f20;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  /* --- Teal (#2C514C anchor at 700) --- */
+  --p-teal-50:  #edf7f6;
+  --p-teal-100: #d3eeeb;
+  --p-teal-200: #a6ddd7;
+  --p-teal-300: #6fc3bc;
+  --p-teal-400: #3da49c;
+  --p-teal-500: #2a8078;
+  --p-teal-600: #246660;
+  --p-teal-700: #2c514c;
+  --p-teal-800: #1a332f;
+  --p-teal-900: #0e1f1c;
+  --p-teal-950: #070f0e;
+
+  /* --- Cerise (#D1345B anchor at 500) --- */
+  --p-cerise-50:  #fef0f4;
+  --p-cerise-100: #fdd9e6;
+  --p-cerise-200: #fbb3cc;
+  --p-cerise-300: #f87da9;
+  --p-cerise-400: #f05280;
+  --p-cerise-500: #d1345b;
+  --p-cerise-600: #b02249;
+  --p-cerise-700: #8c1838;
+  --p-cerise-800: #5e1126;
+  --p-cerise-900: #350916;
+  --p-cerise-950: #1c050c;
+
+  /* --- Ink (#0B0014 anchor at 950, violet-tinted near-black) --- */
+  --p-ink-50:  #f5f3fb;
+  --p-ink-100: #e9e5f3;
+  --p-ink-200: #d4cde3;
+  --p-ink-300: #b3a6c8;
+  --p-ink-400: #8a7aa6;
+  --p-ink-500: #61527e;
+  --p-ink-600: #483666;
+  --p-ink-700: #31234a;
+  --p-ink-800: #201530;
+  --p-ink-900: #140a1f;
+  --p-ink-950: #0b0014;
+
+  /* --- Sand (#E4DFDA anchor at 100, warm neutral) --- */
+  --p-sand-50:  #f7f5f3;
+  --p-sand-100: #e4dfda;
+  --p-sand-200: #ccc5be;
+  --p-sand-300: #b3aaa2;
+  --p-sand-400: #968e86;
+  --p-sand-500: #796f67;
+  --p-sand-600: #5d5450;
+  --p-sand-700: #423c38;
+  --p-sand-800: #2c2825;
+  --p-sand-900: #191512;
+  --p-sand-950: #0e0b09;
+
+  /* --- Mint (#EEF4ED anchor at 50, green-tinted near-white) --- */
+  --p-mint-50:  #eef4ed;
+  --p-mint-100: #d5e8d3;
+  --p-mint-200: #b3d4b0;
+  --p-mint-300: #88bb83;
+  --p-mint-400: #5a9954;
+  --p-mint-500: #3f7a3a;
+  --p-mint-600: #2e5c29;
+  --p-mint-700: #1f4119;
+  --p-mint-800: #142a10;
+  --p-mint-900: #0b170a;
+  --p-mint-950: #060d05;
+
+  /* --- Static --- */
+  --p-white: #ffffff;
+  --p-black: #000000;
+}
+
+/* ============================================================
+   SEMANTIC TOKENS
+   Map primitives → intent. Use these in components, never --p-* directly.
+   Dark mode: add [data-theme="dark"] overrides here later.
+   ============================================================ */
+
+:root {
+  /* Surface */
+  --color-bg:             var(--p-gray-50);
+  --color-surface:        var(--p-white);
+  --color-surface-raised: var(--p-white);
+  --color-overlay:        var(--p-white);
+
+  /* Text */
+  --color-text:           var(--p-ink-950);
+  --color-text-muted:     var(--p-gray-500);
+  --color-text-subtle:    var(--p-gray-400);
+  --color-text-disabled:  var(--p-gray-300);
+  --color-text-on-accent: var(--p-white);
+
+  /* Border */
+  --color-border:         var(--p-gray-200);
+  --color-border-strong:  var(--p-gray-300);
+  --color-border-focus:   var(--p-violet-500);
+
+  /* Accent */
+  --color-accent:         var(--p-violet-500);
+  --color-accent-hover:   var(--p-violet-600);
+  --color-accent-subtle:  var(--p-violet-100);
+  --color-accent-text:    var(--p-violet-600);
+
+  /* Positive (credit / owed to you) */
+  --color-positive:         var(--p-teal-600);
+  --color-positive-subtle:  var(--p-teal-50);
+  --color-positive-text:    var(--p-teal-700);
+
+  /* Negative (debt / you owe) */
+  --color-negative:         var(--p-cerise-500);
+  --color-negative-subtle:  var(--p-cerise-50);
+  --color-negative-text:    var(--p-cerise-600);
+
+  /* Warning (pending / unresolved) */
+  --color-warning:          var(--p-sand-500);
+  --color-warning-subtle:   var(--p-sand-50);
+  --color-warning-text:     var(--p-sand-600);
+
+  /* Interactive states */
+  --color-disabled-bg:    var(--p-gray-100);
+  --color-disabled-text:  var(--p-gray-400);
+}
+
+/* ============================================================
+   TAILWIND THEME
+   Exposes semantic tokens as Tailwind utility classes.
+   Usage: bg-bg, bg-surface, text-text, text-muted, border-border,
+          bg-accent, text-accent, bg-positive-subtle, text-negative, etc.
+   ============================================================ */
+
+@theme inline {
+  --color-bg:               var(--color-bg);
+  --color-surface:          var(--color-surface);
+  --color-surface-raised:   var(--color-surface-raised);
+  --color-overlay:          var(--color-overlay);
+
+  --color-text:             var(--color-text);
+  --color-text-muted:       var(--color-text-muted);
+  --color-text-subtle:      var(--color-text-subtle);
+  --color-text-disabled:    var(--color-text-disabled);
+  --color-text-on-accent:   var(--color-text-on-accent);
+
+  --color-border:           var(--color-border);
+  --color-border-strong:    var(--color-border-strong);
+  --color-border-focus:     var(--color-border-focus);
+
+  --color-accent:           var(--color-accent);
+  --color-accent-hover:     var(--color-accent-hover);
+  --color-accent-subtle:    var(--color-accent-subtle);
+  --color-accent-text:      var(--color-accent-text);
+
+  --color-positive:         var(--color-positive);
+  --color-positive-subtle:  var(--color-positive-subtle);
+  --color-positive-text:    var(--color-positive-text);
+
+  --color-negative:         var(--color-negative);
+  --color-negative-subtle:  var(--color-negative-subtle);
+  --color-negative-text:    var(--color-negative-text);
+
+  --color-warning:          var(--color-warning);
+  --color-warning-subtle:   var(--color-warning-subtle);
+  --color-warning-text:     var(--color-warning-text);
+
+  --color-disabled-bg:      var(--color-disabled-bg);
+  --color-disabled-text:    var(--color-disabled-text);
+}
+
+/* ============================================================
+   RADIUS TOKENS
+   ============================================================ */
+
+:root {
+  --radius-xs:     0.25rem;   /* 4px  — tight badges */
+  --radius-sm:     0.5rem;    /* 8px  — inputs, small chips */
+  --radius-card:   0.875rem;  /* 14px — cards, buttons (default) */
+  --radius-xl:     1.25rem;   /* 20px — sheets, modals */
+  --radius-sheet:  1.75rem;   /* 28px — bottom sheets */
+  --radius-pill:   9999px;    /* fully round */
+}
+
+@theme inline {
+  --radius-xs:     var(--radius-xs);
+  --radius-sm:     var(--radius-sm);
+  --radius-card:   var(--radius-card);
+  --radius-xl:     var(--radius-xl);
+  --radius-sheet:  var(--radius-sheet);
+  --radius-pill:   var(--radius-pill);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   Font: Vazirmatn Variable (supports fa + en, wght 100–900)
+   Scale: display → heading → body → label → mono
+   Tailwind text-* utilities via --text-{name} + --text-{name}--line-height
+   Font-weight utilities: font-regular / medium / semibold / bold
+   ============================================================ */
+
+@theme {
+  /* Font family */
+  --font-sans: "Vazirmatn Variable", "Vazirmatn", system-ui, sans-serif;
+
+  /* Display — hero numbers, landing headers */
+  --text-display-2xl: 4.5rem;
+  --text-display-2xl--line-height: 1.1;
+  --text-display-xl:  3.75rem;
+  --text-display-xl--line-height:  1.1;
+  --text-display-lg:  3rem;
+  --text-display-lg--line-height:  1.1;
+  --text-display-md:  2.25rem;
+  --text-display-md--line-height:  1.15;
+  --text-display-sm:  1.875rem;
+  --text-display-sm--line-height:  1.2;
+
+  /* Headings */
+  --text-h1: 1.75rem;
+  --text-h1--line-height: 1.25;
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.3;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.35;
+  --text-h4: 1.125rem;
+  --text-h4--line-height: 1.4;
+  --text-h5: 1rem;
+  --text-h5--line-height: 1.45;
+  --text-h6: 0.875rem;
+  --text-h6--line-height: 1.5;
+
+  /* Body */
+  --text-body-xl: 1.125rem;
+  --text-body-xl--line-height: 1.6;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body-md: 0.9375rem;
+  --text-body-md--line-height: 1.6;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+  --text-body-xs: 0.8125rem;
+  --text-body-xs--line-height: 1.5;
+
+  /* Label */
+  --text-label-lg: 0.9375rem;
+  --text-label-lg--line-height: 1.4;
+  --text-label-md: 0.875rem;
+  --text-label-md--line-height: 1.4;
+  --text-label-sm: 0.8125rem;
+  --text-label-sm--line-height: 1.4;
+  --text-label-xs: 0.75rem;
+  --text-label-xs--line-height: 1.4;
+
+  /* Caption / Overline */
+  --text-caption:  0.75rem;
+  --text-caption--line-height:  1.5;
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 1.5;
+
+  /* Font weights */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
