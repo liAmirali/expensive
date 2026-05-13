@@ -10,33 +10,303 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
+import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as GroupsIndexRouteImport } from './routes/groups/index'
+import { Route as ProfileEditRouteImport } from './routes/profile/edit'
+import { Route as OnboardingNameRouteImport } from './routes/onboarding/name'
+import { Route as OnboardingFirstGroupRouteImport } from './routes/onboarding/first-group'
+import { Route as HomeBalancesRouteImport } from './routes/home/balances'
+import { Route as HomeActivityRouteImport } from './routes/home/activity'
+import { Route as GroupsNewRouteImport } from './routes/groups/new'
+import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups/$groupId/index'
+import { Route as GroupsGroupIdInviteRouteImport } from './routes/groups/$groupId/invite'
+import { Route as GroupsGroupIdAddMembersRouteImport } from './routes/groups/$groupId/add-members'
+import { Route as GroupsGroupIdLedgersNewRouteImport } from './routes/groups/$groupId/ledgers/new'
+import { Route as GroupsGroupIdLedgersLedgerIdIndexRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/index'
+import { Route as GroupsGroupIdLedgersLedgerIdSettleIndexRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/settle/index'
+import { Route as GroupsGroupIdLedgersLedgerIdAddExpenseIndexRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/add-expense/index'
+import { Route as GroupsGroupIdLedgersLedgerIdAddExpenseSplitRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+import { Route as GroupsGroupIdLedgersLedgerIdAddExpenseReviewRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+import { Route as GroupsGroupIdLedgersLedgerIdAddExpensePayerRouteImport } from './routes/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsIndexRoute = GroupsIndexRouteImport.update({
+  id: '/groups/',
+  path: '/groups/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/profile/edit',
+  path: '/profile/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingNameRoute = OnboardingNameRouteImport.update({
+  id: '/onboarding/name',
+  path: '/onboarding/name',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingFirstGroupRoute = OnboardingFirstGroupRouteImport.update({
+  id: '/onboarding/first-group',
+  path: '/onboarding/first-group',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeBalancesRoute = HomeBalancesRouteImport.update({
+  id: '/home/balances',
+  path: '/home/balances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeActivityRoute = HomeActivityRouteImport.update({
+  id: '/home/activity',
+  path: '/home/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsNewRoute = GroupsNewRouteImport.update({
+  id: '/groups/new',
+  path: '/groups/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsGroupIdIndexRoute = GroupsGroupIdIndexRouteImport.update({
+  id: '/groups/$groupId/',
+  path: '/groups/$groupId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsGroupIdInviteRoute = GroupsGroupIdInviteRouteImport.update({
+  id: '/groups/$groupId/invite',
+  path: '/groups/$groupId/invite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsGroupIdAddMembersRoute = GroupsGroupIdAddMembersRouteImport.update({
+  id: '/groups/$groupId/add-members',
+  path: '/groups/$groupId/add-members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsGroupIdLedgersNewRoute = GroupsGroupIdLedgersNewRouteImport.update({
+  id: '/groups/$groupId/ledgers/new',
+  path: '/groups/$groupId/ledgers/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsGroupIdLedgersLedgerIdIndexRoute =
+  GroupsGroupIdLedgersLedgerIdIndexRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/',
+    path: '/groups/$groupId/ledgers/$ledgerId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GroupsGroupIdLedgersLedgerIdSettleIndexRoute =
+  GroupsGroupIdLedgersLedgerIdSettleIndexRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/settle/',
+    path: '/groups/$groupId/ledgers/$ledgerId/settle/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute =
+  GroupsGroupIdLedgersLedgerIdAddExpenseIndexRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/add-expense/',
+    path: '/groups/$groupId/ledgers/$ledgerId/add-expense/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute =
+  GroupsGroupIdLedgersLedgerIdAddExpenseSplitRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/add-expense/split',
+    path: '/groups/$groupId/ledgers/$ledgerId/add-expense/split',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute =
+  GroupsGroupIdLedgersLedgerIdAddExpenseReviewRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/add-expense/review',
+    path: '/groups/$groupId/ledgers/$ledgerId/add-expense/review',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute =
+  GroupsGroupIdLedgersLedgerIdAddExpensePayerRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/add-expense/payer',
+    path: '/groups/$groupId/ledgers/$ledgerId/add-expense/payer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/groups/new': typeof GroupsNewRoute
+  '/home/activity': typeof HomeActivityRoute
+  '/home/balances': typeof HomeBalancesRoute
+  '/onboarding/first-group': typeof OnboardingFirstGroupRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/groups/': typeof GroupsIndexRoute
+  '/home/': typeof HomeIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/groups/$groupId/add-members': typeof GroupsGroupIdAddMembersRoute
+  '/groups/$groupId/invite': typeof GroupsGroupIdInviteRoute
+  '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/ledgers/new': typeof GroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId/': typeof GroupsGroupIdLedgersLedgerIdIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/payer': typeof GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/review': typeof GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/split': typeof GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/': typeof GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/settle/': typeof GroupsGroupIdLedgersLedgerIdSettleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/groups/new': typeof GroupsNewRoute
+  '/home/activity': typeof HomeActivityRoute
+  '/home/balances': typeof HomeBalancesRoute
+  '/onboarding/first-group': typeof OnboardingFirstGroupRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/groups': typeof GroupsIndexRoute
+  '/home': typeof HomeIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
+  '/profile': typeof ProfileIndexRoute
+  '/groups/$groupId/add-members': typeof GroupsGroupIdAddMembersRoute
+  '/groups/$groupId/invite': typeof GroupsGroupIdInviteRoute
+  '/groups/$groupId': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/ledgers/new': typeof GroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId': typeof GroupsGroupIdLedgersLedgerIdIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/payer': typeof GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/review': typeof GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/split': typeof GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense': typeof GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/settle': typeof GroupsGroupIdLedgersLedgerIdSettleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/groups/new': typeof GroupsNewRoute
+  '/home/activity': typeof HomeActivityRoute
+  '/home/balances': typeof HomeBalancesRoute
+  '/onboarding/first-group': typeof OnboardingFirstGroupRoute
+  '/onboarding/name': typeof OnboardingNameRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/groups/': typeof GroupsIndexRoute
+  '/home/': typeof HomeIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/groups/$groupId/add-members': typeof GroupsGroupIdAddMembersRoute
+  '/groups/$groupId/invite': typeof GroupsGroupIdInviteRoute
+  '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/ledgers/new': typeof GroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId/': typeof GroupsGroupIdLedgersLedgerIdIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/payer': typeof GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/review': typeof GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/split': typeof GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute
+  '/groups/$groupId/ledgers/$ledgerId/add-expense/': typeof GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute
+  '/groups/$groupId/ledgers/$ledgerId/settle/': typeof GroupsGroupIdLedgersLedgerIdSettleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/groups/new'
+    | '/home/activity'
+    | '/home/balances'
+    | '/onboarding/first-group'
+    | '/onboarding/name'
+    | '/profile/edit'
+    | '/groups/'
+    | '/home/'
+    | '/onboarding/'
+    | '/profile/'
+    | '/groups/$groupId/add-members'
+    | '/groups/$groupId/invite'
+    | '/groups/$groupId/'
+    | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId/'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/'
+    | '/groups/$groupId/ledgers/$ledgerId/settle/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/groups/new'
+    | '/home/activity'
+    | '/home/balances'
+    | '/onboarding/first-group'
+    | '/onboarding/name'
+    | '/profile/edit'
+    | '/groups'
+    | '/home'
+    | '/onboarding'
+    | '/profile'
+    | '/groups/$groupId/add-members'
+    | '/groups/$groupId/invite'
+    | '/groups/$groupId'
+    | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense'
+    | '/groups/$groupId/ledgers/$ledgerId/settle'
+  id:
+    | '__root__'
+    | '/'
+    | '/groups/new'
+    | '/home/activity'
+    | '/home/balances'
+    | '/onboarding/first-group'
+    | '/onboarding/name'
+    | '/profile/edit'
+    | '/groups/'
+    | '/home/'
+    | '/onboarding/'
+    | '/profile/'
+    | '/groups/$groupId/add-members'
+    | '/groups/$groupId/invite'
+    | '/groups/$groupId/'
+    | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId/'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+    | '/groups/$groupId/ledgers/$ledgerId/add-expense/'
+    | '/groups/$groupId/ledgers/$ledgerId/settle/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GroupsNewRoute: typeof GroupsNewRoute
+  HomeActivityRoute: typeof HomeActivityRoute
+  HomeBalancesRoute: typeof HomeBalancesRoute
+  OnboardingFirstGroupRoute: typeof OnboardingFirstGroupRoute
+  OnboardingNameRoute: typeof OnboardingNameRoute
+  ProfileEditRoute: typeof ProfileEditRoute
+  GroupsIndexRoute: typeof GroupsIndexRoute
+  HomeIndexRoute: typeof HomeIndexRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+  GroupsGroupIdAddMembersRoute: typeof GroupsGroupIdAddMembersRoute
+  GroupsGroupIdInviteRoute: typeof GroupsGroupIdInviteRoute
+  GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
+  GroupsGroupIdLedgersNewRoute: typeof GroupsGroupIdLedgersNewRoute
+  GroupsGroupIdLedgersLedgerIdIndexRoute: typeof GroupsGroupIdLedgersLedgerIdIndexRoute
+  GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute
+  GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute
+  GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute
+  GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute
+  GroupsGroupIdLedgersLedgerIdSettleIndexRoute: typeof GroupsGroupIdLedgersLedgerIdSettleIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +318,177 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home/': {
+      id: '/home/'
+      path: '/home'
+      fullPath: '/home/'
+      preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/': {
+      id: '/groups/'
+      path: '/groups'
+      fullPath: '/groups/'
+      preLoaderRoute: typeof GroupsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/profile/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/name': {
+      id: '/onboarding/name'
+      path: '/onboarding/name'
+      fullPath: '/onboarding/name'
+      preLoaderRoute: typeof OnboardingNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/first-group': {
+      id: '/onboarding/first-group'
+      path: '/onboarding/first-group'
+      fullPath: '/onboarding/first-group'
+      preLoaderRoute: typeof OnboardingFirstGroupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home/balances': {
+      id: '/home/balances'
+      path: '/home/balances'
+      fullPath: '/home/balances'
+      preLoaderRoute: typeof HomeBalancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home/activity': {
+      id: '/home/activity'
+      path: '/home/activity'
+      fullPath: '/home/activity'
+      preLoaderRoute: typeof HomeActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/new': {
+      id: '/groups/new'
+      path: '/groups/new'
+      fullPath: '/groups/new'
+      preLoaderRoute: typeof GroupsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/': {
+      id: '/groups/$groupId/'
+      path: '/groups/$groupId'
+      fullPath: '/groups/$groupId/'
+      preLoaderRoute: typeof GroupsGroupIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/invite': {
+      id: '/groups/$groupId/invite'
+      path: '/groups/$groupId/invite'
+      fullPath: '/groups/$groupId/invite'
+      preLoaderRoute: typeof GroupsGroupIdInviteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/add-members': {
+      id: '/groups/$groupId/add-members'
+      path: '/groups/$groupId/add-members'
+      fullPath: '/groups/$groupId/add-members'
+      preLoaderRoute: typeof GroupsGroupIdAddMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/new': {
+      id: '/groups/$groupId/ledgers/new'
+      path: '/groups/$groupId/ledgers/new'
+      fullPath: '/groups/$groupId/ledgers/new'
+      preLoaderRoute: typeof GroupsGroupIdLedgersNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/': {
+      id: '/groups/$groupId/ledgers/$ledgerId/'
+      path: '/groups/$groupId/ledgers/$ledgerId'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/settle/': {
+      id: '/groups/$groupId/ledgers/$ledgerId/settle/'
+      path: '/groups/$groupId/ledgers/$ledgerId/settle'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/settle/'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdSettleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/add-expense/': {
+      id: '/groups/$groupId/ledgers/$ledgerId/add-expense/'
+      path: '/groups/$groupId/ledgers/$ledgerId/add-expense'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/add-expense/'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/add-expense/split': {
+      id: '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+      path: '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/add-expense/split'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseSplitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/add-expense/review': {
+      id: '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+      path: '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/add-expense/review'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpenseReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$groupId/ledgers/$ledgerId/add-expense/payer': {
+      id: '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+      path: '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/add-expense/payer'
+      preLoaderRoute: typeof GroupsGroupIdLedgersLedgerIdAddExpensePayerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GroupsNewRoute: GroupsNewRoute,
+  HomeActivityRoute: HomeActivityRoute,
+  HomeBalancesRoute: HomeBalancesRoute,
+  OnboardingFirstGroupRoute: OnboardingFirstGroupRoute,
+  OnboardingNameRoute: OnboardingNameRoute,
+  ProfileEditRoute: ProfileEditRoute,
+  GroupsIndexRoute: GroupsIndexRoute,
+  HomeIndexRoute: HomeIndexRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+  GroupsGroupIdAddMembersRoute: GroupsGroupIdAddMembersRoute,
+  GroupsGroupIdInviteRoute: GroupsGroupIdInviteRoute,
+  GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
+  GroupsGroupIdLedgersNewRoute: GroupsGroupIdLedgersNewRoute,
+  GroupsGroupIdLedgersLedgerIdIndexRoute:
+    GroupsGroupIdLedgersLedgerIdIndexRoute,
+  GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute:
+    GroupsGroupIdLedgersLedgerIdAddExpensePayerRoute,
+  GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute:
+    GroupsGroupIdLedgersLedgerIdAddExpenseReviewRoute,
+  GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute:
+    GroupsGroupIdLedgersLedgerIdAddExpenseSplitRoute,
+  GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute:
+    GroupsGroupIdLedgersLedgerIdAddExpenseIndexRoute,
+  GroupsGroupIdLedgersLedgerIdSettleIndexRoute:
+    GroupsGroupIdLedgersLedgerIdSettleIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
