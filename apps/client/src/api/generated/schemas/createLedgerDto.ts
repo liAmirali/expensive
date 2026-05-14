@@ -5,11 +5,12 @@
  * The API description for the Expensive app.
  * OpenAPI spec version: 0.0.1
  */
+import type { LedgerParticipantDto } from './ledgerParticipantDto';
 import type { LedgerVisibility } from './ledgerVisibility';
 
 export interface CreateLedgerDto {
   name: string;
   description?: string;
   visibility?: LedgerVisibility;
-  participants: string[];
+  participants: LedgerParticipantDto[];
 }

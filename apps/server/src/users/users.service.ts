@@ -53,10 +53,11 @@ export class UsersService {
     }
   }
 
-  async search(query: string): Promise<User[]> {
+  async search(query: string, excludeUserId?: string): Promise<User[]> {
     return this.prisma.user.findMany({
       where: {
         isActive: true,
+        ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
         OR: [
           {
             email: {

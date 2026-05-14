@@ -179,6 +179,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "includeSelf",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -1126,12 +1134,16 @@
                 "$ref": "#/components/schemas/GroupMembershipStatus"
               }
             ]
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserPublicDTO"
           }
         },
         "required": [
           "userId",
           "role",
-          "status"
+          "status",
+          "user"
         ]
       },
       "GroupDTO": {
@@ -1228,6 +1240,17 @@
           "VISIBLE_TO_GROUP"
         ]
       },
+      "LedgerParticipantDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
       "CreateLedgerDto": {
         "type": "object",
         "properties": {
@@ -1247,7 +1270,7 @@
           "participants": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/LedgerParticipantDto"
             }
           }
         },

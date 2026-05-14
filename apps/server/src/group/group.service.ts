@@ -18,6 +18,9 @@ export class GroupService {
             userId: true,
             role: true,
             status: true,
+            user: {
+              select: { id: true, email: true, fullName: true },
+            },
           },
         },
       },
@@ -69,6 +72,9 @@ export class GroupService {
             userId: true,
             role: true,
             status: true,
+            user: {
+              select: { id: true, email: true, fullName: true },
+            },
           },
         },
       },
@@ -93,6 +99,9 @@ export class GroupService {
             userId: true,
             role: true,
             status: true,
+            user: {
+              select: { id: true, email: true, fullName: true },
+            },
           },
         },
       },
@@ -132,6 +141,9 @@ export class GroupService {
             userId: true,
             role: true,
             status: true,
+            user: {
+              select: { id: true, email: true, fullName: true },
+            },
           },
         },
       },

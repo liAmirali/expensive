@@ -6,7 +6,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type UserControllerSearchParams = {
-q: string;
-includeSelf?: boolean;
-};
+export interface LedgerParticipantDto {
+  userId: string;
+}

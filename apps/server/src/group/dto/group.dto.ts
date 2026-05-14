@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Group, GroupRole, GroupMembershipStatus } from '../../generated/prisma/client.js';
+import { UserPublicDTO } from '../../users/dto/user.dto.js';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -22,6 +23,10 @@ export class GroupMemberReducedDTO {
   @ApiProperty({ enum: GroupMembershipStatus, enumName: 'GroupMembershipStatus' })
   @IsEnum(GroupMembershipStatus)
   status: GroupMembershipStatus;
+
+  @ApiProperty({ type: UserPublicDTO })
+  @Type(() => UserPublicDTO)
+  user: UserPublicDTO;
 }
 export class GroupDTO {
   @ApiProperty()

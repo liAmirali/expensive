@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import type { Request } from 'express';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeDTO, UpdateMeDto, UserPublicDTO } from './dto/user.dto.js';
 
 @ApiBearerAuth()
@@ -44,8 +44,18 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 200, type: UserPublicDTO, isArray: true })
+  @ApiQuery({ name: 'q', required: true, type: String })
+  @ApiQuery({ name: 'includeSelf', required: false, type: Boolean })
   @Get('search')
-  async search(@Query('q') query: string) {
-    return (await this.usersService.search(query)).map((user) => new UserPublicDTO(user));
+  async search(
+    @Req() req: Request,
+    @Query('q') query: string,
+    @Query('includeSelf') includeSelf?: string,
+  ) {
+    const userId: ID = (req['user'] as { id: ID }).id;
+    const exclude = includeSelf === 'true' ? undefined : userId;
+    return (await this.usersService.search(query, exclude)).map(
+      (user) => new UserPublicDTO(user),
+    );
   }
 }

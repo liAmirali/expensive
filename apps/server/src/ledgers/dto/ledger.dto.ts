@@ -5,6 +5,7 @@ import { Type } from 'class-transformer';
 
 export class LedgerParticipantDto {
   @ApiProperty()
+  @IsString()
   userId: string;
 }
 
@@ -53,7 +54,7 @@ export class CreateLedgerDto {
   @IsEnum(LedgerVisibility)
   visibility?: LedgerVisibility;
 
-  @ApiProperty({ type: String, isArray: true })
+  @ApiProperty({ type: LedgerParticipantDto, isArray: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LedgerParticipantDto)

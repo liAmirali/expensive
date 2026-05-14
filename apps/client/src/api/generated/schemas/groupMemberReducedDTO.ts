@@ -7,9 +7,11 @@
  */
 import type { GroupMembershipStatus } from './groupMembershipStatus';
 import type { GroupRole } from './groupRole';
+import type { UserPublicDTO } from './userPublicDTO';
 
 export interface GroupMemberReducedDTO {
   userId: string;
   role: GroupRole;
   status: GroupMembershipStatus;
+  user: UserPublicDTO;
 }
