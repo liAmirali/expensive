@@ -43,7 +43,7 @@ export function GroupDetailContainer() {
         ledgersQ.data?.map((l) =>
           toItem(l, () =>
             navigate({
-              to: "/groups/$groupId/ledgers/$ledgerId/expenses/new",
+              to: "/groups/$groupId/ledgers/$ledgerId",
               params: { groupId, ledgerId: l.id },
             }),
           ),

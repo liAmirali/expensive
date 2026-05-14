@@ -20,6 +20,7 @@ import { Route as AppGroupsIndexRouteImport } from './routes/_app/groups/index'
 import { Route as AppGroupsNewRouteImport } from './routes/_app/groups/new'
 import { Route as AppGroupsGroupIdIndexRouteImport } from './routes/_app/groups/$groupId/index'
 import { Route as AppGroupsGroupIdLedgersNewRouteImport } from './routes/_app/groups/$groupId/ledgers/new'
+import { Route as AppGroupsGroupIdLedgersLedgerIdIndexRouteImport } from './routes/_app/groups/$groupId/ledgers/$ledgerId/index'
 import { Route as AppGroupsGroupIdLedgersLedgerIdExpensesNewRouteImport } from './routes/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
 
 const AuthRoute = AuthRouteImport.update({
@@ -76,6 +77,12 @@ const AppGroupsGroupIdLedgersNewRoute =
     path: '/groups/$groupId/ledgers/new',
     getParentRoute: () => AppRoute,
   } as any)
+const AppGroupsGroupIdLedgersLedgerIdIndexRoute =
+  AppGroupsGroupIdLedgersLedgerIdIndexRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/',
+    path: '/groups/$groupId/ledgers/$ledgerId/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute =
   AppGroupsGroupIdLedgersLedgerIdExpensesNewRouteImport.update({
     id: '/groups/$groupId/ledgers/$ledgerId/expenses/new',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/groups/': typeof AppGroupsIndexRoute
   '/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
   '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId/': typeof AppGroupsGroupIdLedgersLedgerIdIndexRoute
   '/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRoutesByTo {
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/groups': typeof AppGroupsIndexRoute
   '/groups/$groupId': typeof AppGroupsGroupIdIndexRoute
   '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId': typeof AppGroupsGroupIdLedgersLedgerIdIndexRoute
   '/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRoutesById {
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/_app/groups/': typeof AppGroupsIndexRoute
   '/_app/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
   '/_app/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/_app/groups/$groupId/ledgers/$ledgerId/': typeof AppGroupsGroupIdLedgersLedgerIdIndexRoute
   '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRouteTypes {
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/groups/'
     | '/groups/$groupId/'
     | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId/'
     | '/groups/$groupId/ledgers/$ledgerId/expenses/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/groups'
     | '/groups/$groupId'
     | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId'
     | '/groups/$groupId/ledgers/$ledgerId/expenses/new'
   id:
     | '__root__'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/_app/groups/'
     | '/_app/groups/$groupId/'
     | '/_app/groups/$groupId/ledgers/new'
+    | '/_app/groups/$groupId/ledgers/$ledgerId/'
     | '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
   fileRoutesById: FileRoutesById
 }
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGroupsGroupIdLedgersNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/groups/$groupId/ledgers/$ledgerId/': {
+      id: '/_app/groups/$groupId/ledgers/$ledgerId/'
+      path: '/groups/$groupId/ledgers/$ledgerId'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/'
+      preLoaderRoute: typeof AppGroupsGroupIdLedgersLedgerIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new': {
       id: '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
       path: '/groups/$groupId/ledgers/$ledgerId/expenses/new'
@@ -265,6 +285,7 @@ interface AppRouteChildren {
   AppGroupsIndexRoute: typeof AppGroupsIndexRoute
   AppGroupsGroupIdIndexRoute: typeof AppGroupsGroupIdIndexRoute
   AppGroupsGroupIdLedgersNewRoute: typeof AppGroupsGroupIdLedgersNewRoute
+  AppGroupsGroupIdLedgersLedgerIdIndexRoute: typeof AppGroupsGroupIdLedgersLedgerIdIndexRoute
   AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute: typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 
@@ -275,6 +296,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppGroupsIndexRoute: AppGroupsIndexRoute,
   AppGroupsGroupIdIndexRoute: AppGroupsGroupIdIndexRoute,
   AppGroupsGroupIdLedgersNewRoute: AppGroupsGroupIdLedgersNewRoute,
+  AppGroupsGroupIdLedgersLedgerIdIndexRoute:
+    AppGroupsGroupIdLedgersLedgerIdIndexRoute,
   AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute:
     AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute,
 }

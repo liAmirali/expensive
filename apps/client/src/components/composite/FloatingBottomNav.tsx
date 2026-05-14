@@ -16,8 +16,12 @@ const items: NavItem[] = [
   { to: "/profile", label: "حساب من",  Icon: User },
 ];
 
+const ROOT_TABS: NavPath[] = ["/home", "/groups", "/profile"];
+
 export function FloatingBottomNav() {
   const { pathname } = useLocation();
+  const isRootTab = ROOT_TABS.includes(pathname as NavPath);
+  if (!isRootTab) return null;
 
   return (
     <nav
@@ -35,7 +39,7 @@ export function FloatingBottomNav() {
                 aria-current={active ? "page" : undefined}
                 className={`flex size-12 items-center justify-center rounded-pill transition-colors ${
                   active
-                    ? "bg-white text-[var(--p-ink-950)]"
+                    ? "bg-white text-(--p-ink-950)"
                     : "text-white/60 hover:text-white"
                 }`}
               >

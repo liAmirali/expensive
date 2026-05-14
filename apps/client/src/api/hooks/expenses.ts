@@ -1,6 +1,25 @@
-import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
-import { expensesControllerCreateExpense } from "@/api/generated/expenses/expenses";
-import type { CreateExpenseDto } from "@/api/generated/schemas";
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  expensesControllerCreateExpense,
+  expensesControllerListExpenses,
+  getExpensesControllerListExpensesQueryKey,
+} from "@/api/generated/expenses/expenses";
+import type { CreateExpenseDto, ExpenseResponseDto } from "@/api/generated/schemas";
+
+export const useExpensesListQuery = (
+  ledgerId: string,
+  options?: Omit<UseQueryOptions<ExpenseResponseDto[]>, "queryKey" | "queryFn">,
+) =>
+  useQuery<ExpenseResponseDto[]>({
+    queryKey: getExpensesControllerListExpensesQueryKey(ledgerId),
+    queryFn: ({ signal }) => expensesControllerListExpenses(ledgerId, signal),
+    ...options,
+  });
 
 export const useCreateExpenseMutation = (
   ledgerId: string,
