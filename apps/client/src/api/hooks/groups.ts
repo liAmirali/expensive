@@ -1,11 +1,17 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  groupControllerCreateGroup,
   groupControllerFindAll,
   groupControllerFindOne,
   getGroupControllerFindAllQueryKey,
   getGroupControllerFindOneQueryKey,
 } from "@/api/generated/groups/groups";
-import type { GroupDTO } from "@/api/generated/schemas";
+import type { CreateGroupDto, GroupDTO } from "@/api/generated/schemas";
 
 export const useGroupsQuery = (
   options?: Omit<UseQueryOptions<GroupDTO[]>, "queryKey" | "queryFn">,
@@ -13,6 +19,14 @@ export const useGroupsQuery = (
   useQuery<GroupDTO[]>({
     queryKey: getGroupControllerFindAllQueryKey(),
     queryFn: ({ signal }) => groupControllerFindAll(signal),
+    ...options,
+  });
+
+export const useCreateGroupMutation = (
+  options?: UseMutationOptions<GroupDTO, unknown, CreateGroupDto>,
+) =>
+  useMutation<GroupDTO, unknown, CreateGroupDto>({
+    mutationFn: (body) => groupControllerCreateGroup(body),
     ...options,
   });
 

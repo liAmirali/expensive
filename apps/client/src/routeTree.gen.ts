@@ -16,7 +16,11 @@ import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/_auth/signin'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
-import { Route as AppGroupsRouteImport } from './routes/_app/groups'
+import { Route as AppGroupsIndexRouteImport } from './routes/_app/groups/index'
+import { Route as AppGroupsNewRouteImport } from './routes/_app/groups/new'
+import { Route as AppGroupsGroupIdIndexRouteImport } from './routes/_app/groups/$groupId/index'
+import { Route as AppGroupsGroupIdLedgersNewRouteImport } from './routes/_app/groups/$groupId/ledgers/new'
+import { Route as AppGroupsGroupIdLedgersLedgerIdExpensesNewRouteImport } from './routes/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -51,54 +55,112 @@ const AppHomeRoute = AppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
-const AppGroupsRoute = AppGroupsRouteImport.update({
-  id: '/groups',
-  path: '/groups',
+const AppGroupsIndexRoute = AppGroupsIndexRouteImport.update({
+  id: '/groups/',
+  path: '/groups/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppGroupsNewRoute = AppGroupsNewRouteImport.update({
+  id: '/groups/new',
+  path: '/groups/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGroupsGroupIdIndexRoute = AppGroupsGroupIdIndexRouteImport.update({
+  id: '/groups/$groupId/',
+  path: '/groups/$groupId/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGroupsGroupIdLedgersNewRoute =
+  AppGroupsGroupIdLedgersNewRouteImport.update({
+    id: '/groups/$groupId/ledgers/new',
+    path: '/groups/$groupId/ledgers/new',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute =
+  AppGroupsGroupIdLedgersLedgerIdExpensesNewRouteImport.update({
+    id: '/groups/$groupId/ledgers/$ledgerId/expenses/new',
+    path: '/groups/$groupId/ledgers/$ledgerId/expenses/new',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/groups': typeof AppGroupsRoute
   '/home': typeof AppHomeRoute
   '/profile': typeof AppProfileRoute
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
+  '/groups/new': typeof AppGroupsNewRoute
+  '/groups/': typeof AppGroupsIndexRoute
+  '/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
+  '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/groups': typeof AppGroupsRoute
   '/home': typeof AppHomeRoute
   '/profile': typeof AppProfileRoute
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
+  '/groups/new': typeof AppGroupsNewRoute
+  '/groups': typeof AppGroupsIndexRoute
+  '/groups/$groupId': typeof AppGroupsGroupIdIndexRoute
+  '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
-  '/_app/groups': typeof AppGroupsRoute
   '/_app/home': typeof AppHomeRoute
   '/_app/profile': typeof AppProfileRoute
   '/_auth/signin': typeof AuthSigninRoute
   '/_auth/signup': typeof AuthSignupRoute
+  '/_app/groups/new': typeof AppGroupsNewRoute
+  '/_app/groups/': typeof AppGroupsIndexRoute
+  '/_app/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
+  '/_app/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
+  '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new': typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/groups' | '/home' | '/profile' | '/signin' | '/signup'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/profile'
+    | '/signin'
+    | '/signup'
+    | '/groups/new'
+    | '/groups/'
+    | '/groups/$groupId/'
+    | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId/expenses/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/groups' | '/home' | '/profile' | '/signin' | '/signup'
+  to:
+    | '/'
+    | '/home'
+    | '/profile'
+    | '/signin'
+    | '/signup'
+    | '/groups/new'
+    | '/groups'
+    | '/groups/$groupId'
+    | '/groups/$groupId/ledgers/new'
+    | '/groups/$groupId/ledgers/$ledgerId/expenses/new'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/_auth'
-    | '/_app/groups'
     | '/_app/home'
     | '/_app/profile'
     | '/_auth/signin'
     | '/_auth/signup'
+    | '/_app/groups/new'
+    | '/_app/groups/'
+    | '/_app/groups/$groupId/'
+    | '/_app/groups/$groupId/ledgers/new'
+    | '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,26 +220,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/groups': {
-      id: '/_app/groups'
+    '/_app/groups/': {
+      id: '/_app/groups/'
       path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof AppGroupsRouteImport
+      fullPath: '/groups/'
+      preLoaderRoute: typeof AppGroupsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/groups/new': {
+      id: '/_app/groups/new'
+      path: '/groups/new'
+      fullPath: '/groups/new'
+      preLoaderRoute: typeof AppGroupsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/groups/$groupId/': {
+      id: '/_app/groups/$groupId/'
+      path: '/groups/$groupId'
+      fullPath: '/groups/$groupId/'
+      preLoaderRoute: typeof AppGroupsGroupIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/groups/$groupId/ledgers/new': {
+      id: '/_app/groups/$groupId/ledgers/new'
+      path: '/groups/$groupId/ledgers/new'
+      fullPath: '/groups/$groupId/ledgers/new'
+      preLoaderRoute: typeof AppGroupsGroupIdLedgersNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new': {
+      id: '/_app/groups/$groupId/ledgers/$ledgerId/expenses/new'
+      path: '/groups/$groupId/ledgers/$ledgerId/expenses/new'
+      fullPath: '/groups/$groupId/ledgers/$ledgerId/expenses/new'
+      preLoaderRoute: typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRouteImport
       parentRoute: typeof AppRoute
     }
   }
 }
 
 interface AppRouteChildren {
-  AppGroupsRoute: typeof AppGroupsRoute
   AppHomeRoute: typeof AppHomeRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppGroupsNewRoute: typeof AppGroupsNewRoute
+  AppGroupsIndexRoute: typeof AppGroupsIndexRoute
+  AppGroupsGroupIdIndexRoute: typeof AppGroupsGroupIdIndexRoute
+  AppGroupsGroupIdLedgersNewRoute: typeof AppGroupsGroupIdLedgersNewRoute
+  AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute: typeof AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppGroupsRoute: AppGroupsRoute,
   AppHomeRoute: AppHomeRoute,
   AppProfileRoute: AppProfileRoute,
+  AppGroupsNewRoute: AppGroupsNewRoute,
+  AppGroupsIndexRoute: AppGroupsIndexRoute,
+  AppGroupsGroupIdIndexRoute: AppGroupsGroupIdIndexRoute,
+  AppGroupsGroupIdLedgersNewRoute: AppGroupsGroupIdLedgersNewRoute,
+  AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute:
+    AppGroupsGroupIdLedgersLedgerIdExpensesNewRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
