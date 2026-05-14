@@ -2,6 +2,53 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SplitMethod } from '../../generated/prisma/client.js';
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { UserPublicDTO } from '../../users/dto/user.dto.js';
+
+export class ExpenseResponseSplitDto {
+  @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
+  amountOwed: string;
+}
+
+export class ExpenseResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  ledgerId: string;
+
+  @ApiProperty()
+  payerId: string;
+
+  @ApiProperty({ type: UserPublicDTO })
+  payer: UserPublicDTO;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty({ type: String, required: false, nullable: true })
+  description?: string | null;
+
+  @ApiProperty()
+  totalAmount: string;
+
+  @ApiProperty({ type: String, format: 'date-time' })
+  expenseDate: string;
+
+  @ApiProperty({ enum: SplitMethod, enumName: 'SplitMethod' })
+  splitMethod: SplitMethod;
+
+  @ApiProperty()
+  isVoided: boolean;
+
+  @ApiProperty({ type: String, format: 'date-time' })
+  createdAt: string;
+
+  @ApiProperty({ type: ExpenseResponseSplitDto, isArray: true })
+  splits: ExpenseResponseSplitDto[];
+}
 
 export class ExpenseSplitDto {
   @ApiProperty()

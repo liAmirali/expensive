@@ -22,6 +22,7 @@ import type {
 
 import type {
   CreateExpenseDto,
+  ExpenseResponseDto,
   UpdateExpenseDto
 } from '../schemas';
 
@@ -131,7 +132,7 @@ export const expensesControllerListExpenses = (
 ) => {
 
 
-      return apiClient<void>(
+      return apiClient<ExpenseResponseDto[]>(
       {url: `/api/v1/ledgers/${ledgerId}/expenses`, method: 'GET', signal
     },
       );

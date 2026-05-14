@@ -728,7 +728,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExpenseResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1443,6 +1453,85 @@
           "totalAmount",
           "expenseDate",
           "splitMethod",
+          "splits"
+        ]
+      },
+      "ExpenseResponseSplitDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "amountOwed": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "amountOwed"
+        ]
+      },
+      "ExpenseResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ledgerId": {
+            "type": "string"
+          },
+          "payerId": {
+            "type": "string"
+          },
+          "payer": {
+            "$ref": "#/components/schemas/UserPublicDTO"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalAmount": {
+            "type": "string"
+          },
+          "expenseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "splitMethod": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SplitMethod"
+              }
+            ]
+          },
+          "isVoided": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "splits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseResponseSplitDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "ledgerId",
+          "payerId",
+          "payer",
+          "title",
+          "totalAmount",
+          "expenseDate",
+          "splitMethod",
+          "isVoided",
+          "createdAt",
           "splits"
         ]
       },

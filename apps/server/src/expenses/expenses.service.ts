@@ -156,6 +156,9 @@ export class ExpensesService {
       include: {
         splits: true,
         items: true,
+        payer: {
+          select: { id: true, email: true, fullName: true },
+        },
       },
       orderBy: { expenseDate: 'desc' },
     });

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExpensesService } from './expenses.service.js';
-import { CreateExpenseDto, UpdateExpenseDto } from './dto/expense.dto.js';
+import { CreateExpenseDto, ExpenseResponseDto, UpdateExpenseDto } from './dto/expense.dto.js';
 import type { Request } from 'express';
 import { LedgerAccessGuard } from '../common/guards/ledger-access.guard.js';
 import { LedgerParticipantGuard } from '../common/guards/ledger-participant.guard.js';
@@ -25,7 +25,7 @@ export class ExpensesController {
   }
 
   @UseGuards(LedgerAccessGuard, LedgerParticipantGuard)
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, type: ExpenseResponseDto, isArray: true })
   @Get('ledgers/:ledgerId/expenses')
   async listExpenses(@Req() req: Request, @Param('ledgerId') ledgerId: string) {
     const userId: ID = (req['user'] as { id: ID }).id;

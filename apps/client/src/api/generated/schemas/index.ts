@@ -14,6 +14,8 @@ export * from './createGroupDto';
 export * from './createLedgerDto';
 export * from './createSettlementDto';
 export * from './expenseItemDto';
+export * from './expenseResponseDto';
+export * from './expenseResponseSplitDto';
 export * from './expenseSplitDto';
 export * from './groupDTO';
 export * from './groupMemberReducedDTO';
