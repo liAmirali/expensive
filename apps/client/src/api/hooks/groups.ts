@@ -1,17 +1,20 @@
 import {
   useMutation,
   useQuery,
+  useQueryClient,
   type UseMutationOptions,
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import {
+  groupControllerAddMember,
   groupControllerCreateGroup,
   groupControllerFindAll,
   groupControllerFindOne,
+  groupControllerRemoveMember,
   getGroupControllerFindAllQueryKey,
   getGroupControllerFindOneQueryKey,
 } from "@/api/generated/groups/groups";
-import type { CreateGroupDto, GroupDTO } from "@/api/generated/schemas";
+import type { AddGroupMemberDto, CreateGroupDto, GroupDTO } from "@/api/generated/schemas";
 
 export const useGroupsQuery = (
   options?: Omit<UseQueryOptions<GroupDTO[]>, "queryKey" | "queryFn">,
@@ -39,3 +42,33 @@ export const useGroupQuery = (
     queryFn: ({ signal }) => groupControllerFindOne(groupId, signal),
     ...options,
   });
+
+export const useInviteGroupMemberMutation = (
+  groupId: string,
+  options?: UseMutationOptions<unknown, unknown, AddGroupMemberDto>,
+) => {
+  const qc = useQueryClient();
+  return useMutation<unknown, unknown, AddGroupMemberDto>({
+    mutationFn: (body) => groupControllerAddMember(groupId, body),
+    onSuccess: (data, variables, context) => {
+      qc.invalidateQueries({ queryKey: getGroupControllerFindOneQueryKey(groupId) });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+};
+
+export const useRemoveGroupMemberMutation = (
+  groupId: string,
+  options?: UseMutationOptions<unknown, unknown, string>,
+) => {
+  const qc = useQueryClient();
+  return useMutation<unknown, unknown, string>({
+    mutationFn: (userId) => groupControllerRemoveMember(groupId, userId),
+    onSuccess: (data, variables, context) => {
+      qc.invalidateQueries({ queryKey: getGroupControllerFindOneQueryKey(groupId) });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+};

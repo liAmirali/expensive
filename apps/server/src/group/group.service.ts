@@ -216,6 +216,37 @@ export class GroupService {
     return newMember;
   }
 
+  async removeMember(groupId: ID, memberId: ID, who: ID) {
+    const remover = await this.prismaService.groupMembership.findFirst({
+      where: { groupId, userId: who, status: GroupMembershipStatus.ACTIVE },
+    });
+
+    if (!remover || (remover.role !== GroupRole.OWNER && remover.role !== GroupRole.ADMIN)) {
+      throw new BadRequestException('Not allowed to remove members.');
+    }
+
+    const target = await this.prismaService.groupMembership.findUnique({
+      where: { groupId_userId: { groupId, userId: memberId } },
+    });
+
+    if (!target) {
+      throw new NotFoundException('Group member not found.');
+    }
+
+    if (target.role === GroupRole.OWNER) {
+      throw new BadRequestException('Owner cannot be removed.');
+    }
+
+    if (remover.role === GroupRole.ADMIN && target.role === GroupRole.ADMIN && remover.userId !== target.userId) {
+      throw new BadRequestException('Admins cannot remove other admins.');
+    }
+
+    return this.prismaService.groupMembership.update({
+      where: { groupId_userId: { groupId, userId: memberId } },
+      data: { status: GroupMembershipStatus.REMOVED },
+    });
+  }
+
   async updateMember(groupId: ID, memberId: ID, data: UpdateGroupMemberDto, who: ID) {
     const updater = await this.prismaService.groupMembership.findFirst({
       where: { groupId, userId: who, status: GroupMembershipStatus.ACTIVE },

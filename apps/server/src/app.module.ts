@@ -13,7 +13,6 @@ import { SettlementsModule } from './settlements/settlements.module.js';
 import { BalancesModule } from './balances/balances.module.js';
 import { validateEnv } from './config/env.validation.js';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
-import { RolesGuard } from './common/guards/roles.guard.js';
 
 @Module({
   imports: [
@@ -36,10 +35,6 @@ import { RolesGuard } from './common/guards/roles.guard.js';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
     },
   ],
 })

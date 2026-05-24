@@ -1,8 +1,4 @@
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 import { env } from '@/config/env';
 import { clearAuthTokens, getAccessToken } from '@/utils/authToken';
 import { refreshAccessToken } from '@/api/tokenRefresh';
@@ -35,12 +31,7 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status;
     const original = error.config as RetriableConfig | undefined;
 
-    if (
-      !original ||
-      original._retry ||
-      isAuthEndpoint(original.url) ||
-      (status !== 401 && status !== 403)
-    ) {
+    if (!original || original._retry || isAuthEndpoint(original.url) || status !== 401) {
       return Promise.reject(error);
     }
 

@@ -1,10 +1,10 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BalancesService } from './balances.service.js';
-import type { Request } from 'express';
 import { LedgerAccessGuard } from '../common/guards/ledger-access.guard.js';
 import { LedgerParticipantGuard } from '../common/guards/ledger-participant.guard.js';
 import { roundForDisplay } from '../common/utils/decimal.util.js';
+import { CurrentUserId } from '../common/decorators/current-user.decorator.js';
 
 @ApiBearerAuth()
 @ApiTags('Balances')
@@ -15,8 +15,7 @@ export class BalancesController {
   @UseGuards(LedgerAccessGuard, LedgerParticipantGuard)
   @ApiResponse({ status: 200 })
   @Get('ledgers/:ledgerId/balances')
-  async getBalances(@Req() req: Request, @Param('ledgerId') ledgerId: string) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  async getBalances(@CurrentUserId() userId: ID, @Param('ledgerId') ledgerId: string) {
     const { balances, suggestions } = await this.balancesService.getBalances(ledgerId, userId);
 
     return {

@@ -23,6 +23,7 @@ export * from './groupMembershipStatus';
 export * from './groupRole';
 export * from './ledgerDto';
 export * from './ledgerParticipantDto';
+export * from './ledgerParticipantPublicDto';
 export * from './ledgerVisibility';
 export * from './loginBodyDto';
 export * from './meDTO';

@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   BadRequestException,
   UseInterceptors,
   ClassSerializerInterceptor,
@@ -20,11 +19,11 @@ import {
   AddGroupMemberDto,
   UpdateGroupMemberDto,
 } from './dto/group.dto.js';
-import type { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupMembershipGuard } from '../common/guards/group-membership.guard.js';
-import { Roles } from '../common/decorators/roles.decorator.js';
 import { GroupRole } from '../generated/prisma/client.js';
+import { CurrentUserId } from '../common/decorators/current-user.decorator.js';
+import { GroupRoles } from '../common/decorators/group-roles.decorator.js';
 
 @ApiBearerAuth()
 @ApiTags('Groups')
@@ -43,10 +42,9 @@ export class GroupController {
   @Post('')
   async createGroup(
     @Body() createGroupDto: CreateGroupDto,
-    @Req() req: Request,
+    @CurrentUserId() owner: ID,
   ): Promise<GroupDTO> {
     const { members } = createGroupDto;
-    const owner: ID = (req['user'] as { id: ID }).id;
 
     if (members && members.includes(owner)) {
       throw new BadRequestException(
@@ -64,8 +62,7 @@ export class GroupController {
   })
   @ApiResponse({ status: 200, type: GroupDTO, isArray: true })
   @Get('')
-  findAll(@Req() req: Request) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  findAll(@CurrentUserId() userId: ID) {
     return this.groupService.findAllAccessibleGroups(userId).then((groups) =>
       groups.map((group) => new GroupDTO(group as any)),
     );
@@ -85,15 +82,13 @@ export class GroupController {
       Only the provided fields are updated. The rest remain the same.',
   })
   @ApiResponse({ status: 200, type: GroupDTO })
-  @UseGuards(GroupMembershipGuard)
-  @Roles(GroupRole.OWNER, GroupRole.ADMIN)
+  @GroupRoles(GroupRole.OWNER, GroupRole.ADMIN)
   @Patch(':groupId')
   async updateGroup(
-    @Req() req: Request,
+    @CurrentUserId() userId: ID,
     @Param('groupId') id: string,
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
-    const userId: ID = (req['user'] as { id: ID }).id;
     return new GroupDTO(await this.groupService.update(id, updateGroupDto, userId));
   }
 
@@ -103,42 +98,40 @@ export class GroupController {
       Only the owner can delete a group.\
       The group is not actually deleted but marked as deleted.',
   })
-  @UseGuards(GroupMembershipGuard)
-  @Roles(GroupRole.OWNER)
+  @GroupRoles(GroupRole.OWNER)
   @Delete(':groupId')
-  async deleteGroup(@Req() req: Request, @Param('groupId') id: string) {
-    const userId: ID = (req['user'] as { id: ID }).id;
-
+  async deleteGroup(@CurrentUserId() userId: ID, @Param('groupId') id: string) {
     return this.groupService.delete(id, userId);
   }
 
-  @UseGuards(GroupMembershipGuard)
-  @Roles(GroupRole.OWNER, GroupRole.ADMIN)
+  @GroupRoles(GroupRole.OWNER, GroupRole.ADMIN)
   @Post(':groupId/invite')
   async addMember(
-    @Req() req: Request,
+    @CurrentUserId() who: ID,
     @Param('groupId') id: string,
     @Body() body: AddGroupMemberDto,
   ) {
-    const who: ID = (req['user'] as { id: ID }).id;
     return this.groupService.addMember(id, body.userId, who, body.role);
   }
 
-  @UseGuards(GroupMembershipGuard)
-  @Roles(GroupRole.OWNER)
+  @GroupRoles(GroupRole.OWNER, GroupRole.ADMIN)
+  @Delete(':groupId/members/:userId')
+  async removeMember(
+    @CurrentUserId() who: ID,
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.groupService.removeMember(groupId, userId, who);
+  }
+
+  @GroupRoles(GroupRole.OWNER)
   @Patch(':groupId/members/:userId')
   async updateMember(
-    @Req() req: Request,
+    @CurrentUserId() who: ID,
     @Param('groupId') groupId: string,
     @Param('userId') userId: string,
     @Body() body: UpdateGroupMemberDto,
   ) {
-    const who: ID = (req['user'] as { id: ID }).id;
     return this.groupService.updateMember(groupId, userId, body, who);
   }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.groupService.remove(+id);
-  // }
 }

@@ -17,6 +17,7 @@ import { Route as AuthSigninRouteImport } from './routes/_auth/signin'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppGroupsIndexRouteImport } from './routes/_app/groups/index'
+import { Route as AppMembersUserIdRouteImport } from './routes/_app/members/$userId'
 import { Route as AppGroupsNewRouteImport } from './routes/_app/groups/new'
 import { Route as AppGroupsGroupIdIndexRouteImport } from './routes/_app/groups/$groupId/index'
 import { Route as AppGroupsGroupIdLedgersNewRouteImport } from './routes/_app/groups/$groupId/ledgers/new'
@@ -61,6 +62,11 @@ const AppGroupsIndexRoute = AppGroupsIndexRouteImport.update({
   path: '/groups/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMembersUserIdRoute = AppMembersUserIdRouteImport.update({
+  id: '/members/$userId',
+  path: '/members/$userId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGroupsNewRoute = AppGroupsNewRouteImport.update({
   id: '/groups/new',
   path: '/groups/new',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
   '/groups/new': typeof AppGroupsNewRoute
+  '/members/$userId': typeof AppMembersUserIdRoute
   '/groups/': typeof AppGroupsIndexRoute
   '/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
   '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
   '/groups/new': typeof AppGroupsNewRoute
+  '/members/$userId': typeof AppMembersUserIdRoute
   '/groups': typeof AppGroupsIndexRoute
   '/groups/$groupId': typeof AppGroupsGroupIdIndexRoute
   '/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/_auth/signin': typeof AuthSigninRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_app/groups/new': typeof AppGroupsNewRoute
+  '/_app/members/$userId': typeof AppMembersUserIdRoute
   '/_app/groups/': typeof AppGroupsIndexRoute
   '/_app/groups/$groupId/': typeof AppGroupsGroupIdIndexRoute
   '/_app/groups/$groupId/ledgers/new': typeof AppGroupsGroupIdLedgersNewRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/groups/new'
+    | '/members/$userId'
     | '/groups/'
     | '/groups/$groupId/'
     | '/groups/$groupId/ledgers/new'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/groups/new'
+    | '/members/$userId'
     | '/groups'
     | '/groups/$groupId'
     | '/groups/$groupId/ledgers/new'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/_auth/signin'
     | '/_auth/signup'
     | '/_app/groups/new'
+    | '/_app/members/$userId'
     | '/_app/groups/'
     | '/_app/groups/$groupId/'
     | '/_app/groups/$groupId/ledgers/new'
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGroupsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/members/$userId': {
+      id: '/_app/members/$userId'
+      path: '/members/$userId'
+      fullPath: '/members/$userId'
+      preLoaderRoute: typeof AppMembersUserIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/groups/new': {
       id: '/_app/groups/new'
       path: '/groups/new'
@@ -282,6 +301,7 @@ interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
   AppProfileRoute: typeof AppProfileRoute
   AppGroupsNewRoute: typeof AppGroupsNewRoute
+  AppMembersUserIdRoute: typeof AppMembersUserIdRoute
   AppGroupsIndexRoute: typeof AppGroupsIndexRoute
   AppGroupsGroupIdIndexRoute: typeof AppGroupsGroupIdIndexRoute
   AppGroupsGroupIdLedgersNewRoute: typeof AppGroupsGroupIdLedgersNewRoute
@@ -293,6 +313,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
   AppProfileRoute: AppProfileRoute,
   AppGroupsNewRoute: AppGroupsNewRoute,
+  AppMembersUserIdRoute: AppMembersUserIdRoute,
   AppGroupsIndexRoute: AppGroupsIndexRoute,
   AppGroupsGroupIdIndexRoute: AppGroupsGroupIdIndexRoute,
   AppGroupsGroupIdLedgersNewRoute: AppGroupsGroupIdLedgersNewRoute,

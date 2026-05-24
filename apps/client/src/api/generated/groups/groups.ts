@@ -581,6 +581,99 @@ export function useGroupControllerAddMember<TData = Awaited<ReturnType<typeof gr
 
 
 
+export const groupControllerRemoveMember = (
+    groupId: string,
+    userId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiClient<void>(
+      {url: `/api/v1/groups/${groupId}/members/${userId}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getGroupControllerRemoveMemberQueryKey = (groupId: string,
+    userId: string,) => {
+    return [
+    'DELETE', `/api/v1/groups/${groupId}/members/${userId}`
+    ] as const;
+    }
+
+
+export const getGroupControllerRemoveMemberQueryOptions = <TData = Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError = unknown>(groupId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGroupControllerRemoveMemberQueryKey(groupId,userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupControllerRemoveMember>>> = ({ signal }) => groupControllerRemoveMember(groupId,userId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: groupId !== null && groupId !== undefined && userId !== null && userId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GroupControllerRemoveMemberQueryResult = NonNullable<Awaited<ReturnType<typeof groupControllerRemoveMember>>>
+export type GroupControllerRemoveMemberQueryError = unknown
+
+
+export function useGroupControllerRemoveMember<TData = Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError = unknown>(
+ groupId: string,
+    userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupControllerRemoveMember>>,
+          TError,
+          Awaited<ReturnType<typeof groupControllerRemoveMember>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupControllerRemoveMember<TData = Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError = unknown>(
+ groupId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupControllerRemoveMember>>,
+          TError,
+          Awaited<ReturnType<typeof groupControllerRemoveMember>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupControllerRemoveMember<TData = Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError = unknown>(
+ groupId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGroupControllerRemoveMember<TData = Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError = unknown>(
+ groupId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupControllerRemoveMember>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGroupControllerRemoveMemberQueryOptions(groupId,userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 export const groupControllerUpdateMember = (
     groupId: string,
     userId: string,

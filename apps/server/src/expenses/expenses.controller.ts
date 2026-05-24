@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExpensesService } from './expenses.service.js';
 import { CreateExpenseDto, ExpenseResponseDto, UpdateExpenseDto } from './dto/expense.dto.js';
-import type { Request } from 'express';
 import { LedgerAccessGuard } from '../common/guards/ledger-access.guard.js';
 import { LedgerParticipantGuard } from '../common/guards/ledger-participant.guard.js';
+import { CurrentUserId } from '../common/decorators/current-user.decorator.js';
 
 @ApiBearerAuth()
 @ApiTags('Expenses')
@@ -16,19 +16,17 @@ export class ExpensesController {
   @ApiResponse({ status: 201 })
   @Post('ledgers/:ledgerId/expenses')
   async createExpense(
-    @Req() req: Request,
+    @CurrentUserId() userId: ID,
     @Param('ledgerId') ledgerId: string,
     @Body() body: CreateExpenseDto,
   ) {
-    const userId: ID = (req['user'] as { id: ID }).id;
     return this.expensesService.create(ledgerId, userId, body);
   }
 
   @UseGuards(LedgerAccessGuard, LedgerParticipantGuard)
   @ApiResponse({ status: 200, type: ExpenseResponseDto, isArray: true })
   @Get('ledgers/:ledgerId/expenses')
-  async listExpenses(@Req() req: Request, @Param('ledgerId') ledgerId: string) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  async listExpenses(@CurrentUserId() userId: ID, @Param('ledgerId') ledgerId: string) {
     return this.expensesService.list(ledgerId, userId);
   }
 
@@ -36,19 +34,17 @@ export class ExpensesController {
   @ApiResponse({ status: 200 })
   @Patch('expenses/:expenseId')
   async updateExpense(
-    @Req() req: Request,
+    @CurrentUserId() userId: ID,
     @Param('expenseId') expenseId: string,
     @Body() body: UpdateExpenseDto,
   ) {
-    const userId: ID = (req['user'] as { id: ID }).id;
     return this.expensesService.update(expenseId, userId, body);
   }
 
   @UseGuards(LedgerAccessGuard, LedgerParticipantGuard)
   @ApiResponse({ status: 200 })
   @Delete('expenses/:expenseId')
-  async voidExpense(@Req() req: Request, @Param('expenseId') expenseId: string) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  async voidExpense(@CurrentUserId() userId: ID, @Param('expenseId') expenseId: string) {
     return this.expensesService.void(expenseId, userId);
   }
 }

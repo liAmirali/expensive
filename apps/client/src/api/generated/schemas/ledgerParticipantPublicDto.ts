@@ -5,11 +5,10 @@
  * The API description for the Expensive app.
  * OpenAPI spec version: 0.0.1
  */
+import type { UserPublicDTO } from './userPublicDTO';
 
-export interface UserPublicDTO {
-  id: string;
-  email: string;
-  fullName: string;
-  /** @nullable */
-  avatarUrl?: string | null;
+export interface LedgerParticipantPublicDto {
+  userId: string;
+  joinedAt: string;
+  user: UserPublicDTO;
 }

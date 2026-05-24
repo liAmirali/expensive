@@ -13,12 +13,15 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    console.log('Required roles for this route:', requiredRoles);
+
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
     const membership = request.groupMembership || request.ledgerMembership;
+    console.log('User membership context:', membership);
     if (!membership) {
       throw new ForbiddenException('Missing membership context.');
     }

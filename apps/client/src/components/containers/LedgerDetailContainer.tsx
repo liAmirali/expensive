@@ -1,14 +1,19 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { LedgerDetailView } from "@/components/views/LedgerDetailView";
 import type { ExpensesListItem } from "@/components/composite/ExpensesList";
 import { useGroupQuery } from "@/api/hooks/groups";
-import { useLedgerQuery } from "@/api/hooks/ledgers";
+import {
+  useAddLedgerParticipantMutation,
+  useLedgerQuery,
+  useRemoveLedgerParticipantMutation,
+} from "@/api/hooks/ledgers";
 import { useExpensesListQuery } from "@/api/hooks/expenses";
 import { useMeQuery } from "@/api/hooks/users";
 import { toFarsi } from "@/utils/numerals";
 import { extractApiError } from "@/utils/apiError";
-import type { ExpenseResponseDto } from "@/api/generated/schemas";
+import type { ExpenseResponseDto, UserPublicDTO } from "@/api/generated/schemas";
+import type { MembersListItem } from "@/components/composite/MembersList";
 
 const formatFaDate = (iso: string) => {
   const d = new Date(iso);
@@ -34,6 +39,17 @@ export function LedgerDetailContainer() {
   const myId = meQ.data?.id;
   const expenses = expensesQ.data ?? [];
 
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
+  const addMutation = useAddLedgerParticipantMutation(ledgerId);
+  const removeMutation = useRemoveLedgerParticipantMutation(ledgerId, {
+    onSettled: () => setRemovingId(null),
+  });
+
+  const myMembership = groupQ.data?.members?.find((m) => m.user.id === myId);
+  const canManage =
+    myMembership?.role === "OWNER" || myMembership?.role === "ADMIN";
+
   const { totalSpent, myShare, myPaid } = useMemo(() => {
     let total = 0;
     let share = 0;
@@ -51,6 +67,27 @@ export function LedgerDetailContainer() {
   }, [expenses, myId]);
 
   const netBalance = myPaid - myShare;
+
+  const participantIds = new Set(
+    ledgerQ.data?.participants?.map((p) => p.user.id) ?? [],
+  );
+  const addableMembers: UserPublicDTO[] =
+    groupQ.data?.members
+      ?.filter((m) => m.status === "ACTIVE" && !participantIds.has(m.user.id))
+      .map((m) => ({
+        id: m.user.id,
+        fullName: m.user.fullName,
+        email: m.user.email,
+      })) ?? [];
+
+  const participants: MembersListItem[] =
+    ledgerQ.data?.participants?.map((p) => ({
+      id: p.user.id,
+      fullName: p.user.fullName,
+      email: p.user.email,
+      isYou: p.user.id === myId,
+      canRemove: canManage && p.user.id !== myId,
+    })) ?? [];
 
   const toItem = (e: ExpenseResponseDto): ExpensesListItem => {
     const myAmountOwed = myId
@@ -88,6 +125,15 @@ export function LedgerDetailContainer() {
       ? extractError(expensesQ.error)
       : undefined;
 
+  const handleAdd = (u: UserPublicDTO) => {
+    addMutation.mutate({ userId: u.id });
+  };
+
+  const handleRemove = (userId: string) => {
+    setRemovingId(userId);
+    removeMutation.mutate(userId);
+  };
+
   return (
     <LedgerDetailView
       ledgerName={ledgerQ.data?.name ?? ""}
@@ -99,6 +145,26 @@ export function LedgerDetailContainer() {
       netBalance={netBalance}
       expenseCount={expenses.length}
       expenses={expenses.map(toItem)}
+      participants={participants}
+      onParticipantClick={(id) =>
+        navigate({ to: "/members/$userId", params: { userId: id } })
+      }
+      canManageParticipants={canManage}
+      addableMembers={addableMembers}
+      onAddParticipant={handleAdd}
+      isAddingParticipant={addMutation.isPending}
+      addError={
+        addMutation.isError
+          ? extractApiError(addMutation.error, "خطا در افزودن.")
+          : undefined
+      }
+      onRemoveParticipant={handleRemove}
+      removingParticipantId={removingId}
+      removeError={
+        removeMutation.isError
+          ? extractApiError(removeMutation.error, "خطا در حذف.")
+          : undefined
+      }
       isLoading={ledgerQ.isPending || expensesQ.isPending}
       errorMessage={error}
       onBack={() => navigate({ to: "/groups/$groupId", params: { groupId } })}

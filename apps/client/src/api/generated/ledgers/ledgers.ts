@@ -489,3 +489,96 @@ export function useLedgersControllerAddParticipant<TData = Awaited<ReturnType<ty
 
 
 
+export const ledgersControllerRemoveParticipant = (
+    ledgerId: string,
+    userId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiClient<void>(
+      {url: `/api/v1/ledgers/${ledgerId}/participants/${userId}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getLedgersControllerRemoveParticipantQueryKey = (ledgerId: string,
+    userId: string,) => {
+    return [
+    'DELETE', `/api/v1/ledgers/${ledgerId}/participants/${userId}`
+    ] as const;
+    }
+
+
+export const getLedgersControllerRemoveParticipantQueryOptions = <TData = Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError = unknown>(ledgerId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLedgersControllerRemoveParticipantQueryKey(ledgerId,userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>> = ({ signal }) => ledgersControllerRemoveParticipant(ledgerId,userId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: ledgerId !== null && ledgerId !== undefined && userId !== null && userId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LedgersControllerRemoveParticipantQueryResult = NonNullable<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>>
+export type LedgersControllerRemoveParticipantQueryError = unknown
+
+
+export function useLedgersControllerRemoveParticipant<TData = Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError = unknown>(
+ ledgerId: string,
+    userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>,
+          TError,
+          Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLedgersControllerRemoveParticipant<TData = Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError = unknown>(
+ ledgerId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>,
+          TError,
+          Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLedgersControllerRemoveParticipant<TData = Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError = unknown>(
+ ledgerId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useLedgersControllerRemoveParticipant<TData = Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError = unknown>(
+ ledgerId: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ledgersControllerRemoveParticipant>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLedgersControllerRemoveParticipantQueryOptions(ledgerId,userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+

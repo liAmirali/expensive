@@ -1,8 +1,13 @@
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, Plus, UserPlus } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { LedgersList, type LedgersListItem } from "@/components/composite/LedgersList";
+import { MembersList, type MembersListItem } from "@/components/composite/MembersList";
+import { MemberPicker } from "@/components/composite/MemberPicker";
+import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { toFarsi } from "@/utils/numerals";
+import type { UserPublicDTO } from "@/api/generated/schemas";
+import { useState } from "react";
 
 export interface GroupDetailViewProps {
   name: string;
@@ -11,6 +16,19 @@ export interface GroupDetailViewProps {
   owedToYou: number;
   youOwe: number;
   ledgers: LedgersListItem[];
+  members: MembersListItem[];
+  onMemberClick?: (id: string) => void;
+  canManageMembers?: boolean;
+  inviteQuery: string;
+  onInviteQueryChange: (q: string) => void;
+  inviteResults: UserPublicDTO[];
+  isSearchingInvite?: boolean;
+  onInviteUser: (u: UserPublicDTO) => void;
+  isInviting?: boolean;
+  inviteError?: string;
+  onRemoveMember: (userId: string) => void;
+  removingMemberId?: string | null;
+  removeError?: string;
   isLoading?: boolean;
   errorMessage?: string;
   onBack?: () => void;
@@ -24,11 +42,25 @@ export function GroupDetailView({
   owedToYou,
   youOwe,
   ledgers,
+  members,
+  onMemberClick,
+  canManageMembers = false,
+  inviteQuery,
+  onInviteQueryChange,
+  inviteResults,
+  isSearchingInvite,
+  onInviteUser,
+  isInviting,
+  inviteError,
+  onRemoveMember,
+  removingMemberId,
+  removeError,
   isLoading = false,
   errorMessage,
   onBack,
   onCreateLedgerClick,
 }: GroupDetailViewProps) {
+  const [showInvite, setShowInvite] = useState(false);
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
       <header className="flex items-center justify-between gap-2">
@@ -91,7 +123,78 @@ export function GroupDetailView({
           <LedgersList items={ledgers} />
         )}
       </section>
+
+      <section className="flex flex-col gap-3">
+        <header className="flex items-center justify-between px-1">
+          <h2 className="text-h4 font-semibold text-text">اعضا</h2>
+          {canManageMembers && (
+            <Button
+              type="button"
+              variant="soft"
+              size="sm"
+              startIcon={<UserPlus size={16} />}
+              onClick={() => setShowInvite((v) => !v)}
+            >
+              {showInvite ? "بستن" : "افزودن"}
+            </Button>
+          )}
+        </header>
+
+        {canManageMembers && showInvite && (
+          <div className="flex flex-col gap-2">
+            <MemberPicker
+              query={inviteQuery}
+              onQueryChange={onInviteQueryChange}
+              results={inviteResults}
+              isSearching={isSearchingInvite || isInviting}
+              selected={[]}
+              onAdd={(u) => onInviteUser(u)}
+              onRemove={() => {}}
+            />
+            {inviteError && (
+              <p role="alert" className="text-body-sm text-negative-text">
+                {inviteError}
+              </p>
+            )}
+          </div>
+        )}
+
+        {removeError && (
+          <p role="alert" className="text-body-sm text-negative-text">
+            {removeError}
+          </p>
+        )}
+
+        {isLoading ? (
+          <MembersListSkeleton />
+        ) : (
+          <MembersList
+            items={members}
+            onMemberClick={onMemberClick}
+            onRemoveClick={onRemoveMember}
+            removingId={removingMemberId}
+          />
+        )}
+      </section>
     </div>
+  );
+}
+
+function MembersListSkeleton() {
+  return (
+    <GlassCard padding="none" radius="xl">
+      <ul className="divide-y divide-border/60 p-2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <li key={i} className="flex items-center gap-3 p-3">
+            <div className="size-10 rounded-pill bg-border/60 animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3.5 w-28 rounded-sm bg-border/60 animate-pulse" />
+              <div className="h-3 w-40 rounded-sm bg-border/40 animate-pulse" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </GlassCard>
   );
 }
 

@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { GroupDetailView } from "@/components/views/GroupDetailView";
-import { useGroupQuery } from "@/api/hooks/groups";
+import {
+  useGroupQuery,
+  useInviteGroupMemberMutation,
+  useRemoveGroupMemberMutation,
+} from "@/api/hooks/groups";
 import { useLedgersListQuery } from "@/api/hooks/ledgers";
-import type { LedgerDto } from "@/api/generated/schemas";
+import { useMeQuery, useUserSearchQuery } from "@/api/hooks/users";
+import type { LedgerDto, UserPublicDTO } from "@/api/generated/schemas";
 import type { LedgersListItem } from "@/components/composite/LedgersList";
+import type { MembersListItem } from "@/components/composite/MembersList";
 import { extractApiError } from "@/utils/apiError";
 
 const extractError = (err: unknown) =>
@@ -24,6 +31,44 @@ export function GroupDetailContainer() {
 
   const groupQ = useGroupQuery(groupId);
   const ledgersQ = useLedgersListQuery(groupId);
+  const meQ = useMeQuery();
+  const myId = meQ.data?.id;
+
+  const [inviteQuery, setInviteQuery] = useState("");
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const trimmedQuery = inviteQuery.trim();
+  const searchQ = useUserSearchQuery(trimmedQuery, {
+    enabled: trimmedQuery.length >= 2,
+  });
+
+  const inviteMutation = useInviteGroupMemberMutation(groupId, {
+    onSuccess: () => setInviteQuery(""),
+  });
+  const removeMutation = useRemoveGroupMemberMutation(groupId, {
+    onSettled: () => setRemovingId(null),
+  });
+
+  const myMembership = groupQ.data?.members?.find((m) => m.user.id === myId);
+  const canManage = myMembership?.role === "OWNER" || myMembership?.role === "ADMIN";
+
+  const existingIds = new Set(groupQ.data?.members?.map((m) => m.user.id) ?? []);
+  const inviteResults: UserPublicDTO[] =
+    (searchQ.data ?? []).filter((u) => !existingIds.has(u.id));
+
+  const members: MembersListItem[] =
+    groupQ.data?.members?.map((m) => ({
+      id: m.user.id,
+      fullName: m.user.fullName,
+      email: m.user.email,
+      role: m.role,
+      status: m.status,
+      isYou: m.user.id === myId,
+      canRemove:
+        canManage &&
+        m.user.id !== myId &&
+        m.role !== "OWNER" &&
+        !(myMembership?.role === "ADMIN" && m.role === "ADMIN"),
+    })) ?? [];
 
   const error =
     groupQ.isError
@@ -31,6 +76,15 @@ export function GroupDetailContainer() {
       : ledgersQ.isError
       ? extractError(ledgersQ.error)
       : undefined;
+
+  const handleRemove = (userId: string) => {
+    setRemovingId(userId);
+    removeMutation.mutate(userId);
+  };
+
+  const handleInvite = (user: UserPublicDTO) => {
+    inviteMutation.mutate({ userId: user.id });
+  };
 
   return (
     <GroupDetailView
@@ -48,6 +102,29 @@ export function GroupDetailContainer() {
             }),
           ),
         ) ?? []
+      }
+      members={members}
+      onMemberClick={(id) =>
+        navigate({ to: "/members/$userId", params: { userId: id } })
+      }
+      canManageMembers={canManage}
+      inviteQuery={inviteQuery}
+      onInviteQueryChange={setInviteQuery}
+      inviteResults={inviteResults}
+      isSearchingInvite={searchQ.isFetching}
+      onInviteUser={handleInvite}
+      isInviting={inviteMutation.isPending}
+      inviteError={
+        inviteMutation.isError
+          ? extractApiError(inviteMutation.error, "خطا در افزودن عضو.")
+          : undefined
+      }
+      onRemoveMember={handleRemove}
+      removingMemberId={removingId}
+      removeError={
+        removeMutation.isError
+          ? extractApiError(removeMutation.error, "خطا در حذف عضو.")
+          : undefined
       }
       isLoading={groupQ.isPending || ledgersQ.isPending}
       errorMessage={error}

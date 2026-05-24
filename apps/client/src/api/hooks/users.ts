@@ -1,11 +1,20 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  userControllerGetUser,
   userControllerMe,
   userControllerSearch,
+  userControllerUpdateMe,
+  getUserControllerGetUserQueryKey,
   getUserControllerMeQueryKey,
   getUserControllerSearchQueryKey,
 } from "@/api/generated/users/users";
-import type { MeDTO, UserPublicDTO } from "@/api/generated/schemas";
+import type { MeDTO, UpdateMeDto, UserPublicDTO } from "@/api/generated/schemas";
 
 export const useMeQuery = (
   options?: Omit<UseQueryOptions<MeDTO>, "queryKey" | "queryFn">,
@@ -14,6 +23,30 @@ export const useMeQuery = (
     queryKey: getUserControllerMeQueryKey(),
     queryFn: ({ signal }) => userControllerMe(signal),
     staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useUpdateMeMutation = (
+  options?: UseMutationOptions<MeDTO, unknown, UpdateMeDto>,
+) => {
+  const qc = useQueryClient();
+  return useMutation<MeDTO, unknown, UpdateMeDto>({
+    mutationFn: (body) => userControllerUpdateMe(body),
+    onSuccess: (data, variables, context) => {
+      qc.setQueryData(getUserControllerMeQueryKey(), data);
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+};
+
+export const useUserQuery = (
+  userId: string,
+  options?: Omit<UseQueryOptions<UserPublicDTO>, "queryKey" | "queryFn">,
+) =>
+  useQuery<UserPublicDTO>({
+    queryKey: getUserControllerGetUserQueryKey(userId),
+    queryFn: ({ signal }) => userControllerGetUser(userId, signal),
     ...options,
   });
 

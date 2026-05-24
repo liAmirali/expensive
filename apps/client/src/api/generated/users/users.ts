@@ -293,3 +293,89 @@ export function useUserControllerSearch<TData = Awaited<ReturnType<typeof userCo
 
 
 
+export const userControllerGetUser = (
+    userId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiClient<UserPublicDTO>(
+      {url: `/api/v1/users/${userId}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserControllerGetUserQueryKey = (userId: string,) => {
+    return [
+    `/api/v1/users/${userId}`
+    ] as const;
+    }
+
+
+export const getUserControllerGetUserQueryOptions = <TData = Awaited<ReturnType<typeof userControllerGetUser>>, TError = unknown>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserControllerGetUserQueryKey(userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userControllerGetUser>>> = ({ signal }) => userControllerGetUser(userId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: userId !== null && userId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserControllerGetUserQueryResult = NonNullable<Awaited<ReturnType<typeof userControllerGetUser>>>
+export type UserControllerGetUserQueryError = unknown
+
+
+export function useUserControllerGetUser<TData = Awaited<ReturnType<typeof userControllerGetUser>>, TError = unknown>(
+ userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userControllerGetUser>>,
+          TError,
+          Awaited<ReturnType<typeof userControllerGetUser>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserControllerGetUser<TData = Awaited<ReturnType<typeof userControllerGetUser>>, TError = unknown>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userControllerGetUser>>,
+          TError,
+          Awaited<ReturnType<typeof userControllerGetUser>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserControllerGetUser<TData = Awaited<ReturnType<typeof userControllerGetUser>>, TError = unknown>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useUserControllerGetUser<TData = Awaited<ReturnType<typeof userControllerGetUser>>, TError = unknown>(
+ userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userControllerGetUser>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserControllerGetUserQueryOptions(userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+

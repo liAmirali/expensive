@@ -1,9 +1,13 @@
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, Lock, Plus, Users } from "lucide-react";
+import { useState } from "react";
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, Lock, Plus, UserPlus, Users } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { Button } from "@/components/ui/Button";
 import { ExpensesList, type ExpensesListItem } from "@/components/composite/ExpensesList";
+import { MembersList, type MembersListItem } from "@/components/composite/MembersList";
+import { UserSearchResultItem } from "@/components/ui/UserSearchResultItem";
 import { toFarsi } from "@/utils/numerals";
-import type { LedgerVisibility as LedgerVisibilityT } from "@/api/generated/schemas";
+import type { LedgerVisibility as LedgerVisibilityT, UserPublicDTO } from "@/api/generated/schemas";
 
 export interface LedgerDetailViewProps {
   ledgerName: string;
@@ -15,6 +19,16 @@ export interface LedgerDetailViewProps {
   netBalance: number;
   expenseCount: number;
   expenses: ExpensesListItem[];
+  participants: MembersListItem[];
+  onParticipantClick?: (id: string) => void;
+  canManageParticipants?: boolean;
+  addableMembers: UserPublicDTO[];
+  onAddParticipant: (u: UserPublicDTO) => void;
+  isAddingParticipant?: boolean;
+  addError?: string;
+  onRemoveParticipant: (id: string) => void;
+  removingParticipantId?: string | null;
+  removeError?: string;
   isLoading?: boolean;
   errorMessage?: string;
   onBack: () => void;
@@ -31,12 +45,23 @@ export function LedgerDetailView({
   netBalance,
   expenseCount,
   expenses,
+  participants,
+  onParticipantClick,
+  canManageParticipants = false,
+  addableMembers,
+  onAddParticipant,
+  isAddingParticipant,
+  addError,
+  onRemoveParticipant,
+  removingParticipantId,
+  removeError,
   isLoading,
   errorMessage,
   onBack,
   onAddExpense,
 }: LedgerDetailViewProps) {
   const isPrivate = visibility === "PRIVATE_TO_PARTICIPANTS";
+  const [showAdd, setShowAdd] = useState(false);
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in pb-20">
@@ -95,6 +120,67 @@ export function LedgerDetailView({
         ) : (
           <ExpensesList items={expenses} />
         )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <header className="flex items-center justify-between px-1">
+          <h2 className="text-h4 font-semibold text-text">شرکت‌کنندگان</h2>
+          {canManageParticipants && addableMembers.length > 0 && (
+            <Button
+              type="button"
+              variant="soft"
+              size="sm"
+              startIcon={<UserPlus size={16} />}
+              onClick={() => setShowAdd((v) => !v)}
+            >
+              {showAdd ? "بستن" : "افزودن"}
+            </Button>
+          )}
+        </header>
+
+        {canManageParticipants && showAdd && (
+          <GlassCard padding="none" radius="xl">
+            {addableMembers.length === 0 ? (
+              <p className="p-4 text-center text-body-sm text-text-muted">
+                همه اعضای گروه شرکت‌کننده‌اند.
+              </p>
+            ) : (
+              <ul className="p-2">
+                {addableMembers.map((u) => (
+                  <li key={u.id}>
+                    <UserSearchResultItem
+                      fullName={u.fullName}
+                      email={u.email}
+                      onAdd={() => onAddParticipant(u)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {isAddingParticipant && (
+              <p className="px-4 pb-3 text-body-xs text-text-muted">در حال افزودن…</p>
+            )}
+            {addError && (
+              <p role="alert" className="px-4 pb-3 text-body-sm text-negative-text">
+                {addError}
+              </p>
+            )}
+          </GlassCard>
+        )}
+
+        {removeError && (
+          <p role="alert" className="text-body-sm text-negative-text">
+            {removeError}
+          </p>
+        )}
+
+        <MembersList
+          items={participants}
+          emptyText="شرکت‌کننده‌ای ثبت نشده."
+          onMemberClick={onParticipantClick}
+          onRemoveClick={onRemoveParticipant}
+          removingId={removingParticipantId}
+        />
       </section>
 
       {!closed && (

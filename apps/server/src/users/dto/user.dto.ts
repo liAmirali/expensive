@@ -82,9 +82,13 @@ export class UserPublicDTO {
   @ApiProperty()
   fullName: string;
 
+  @ApiProperty({ type: String, required: false, nullable: true })
+  avatarUrl?: string | null;
+
   constructor(user: User) {
     this.id = user.id;
     this.email = user.email;
     this.fullName = user.fullName;
+    this.avatarUrl = user.avatarUrl ?? null;
   }
 }

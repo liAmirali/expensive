@@ -214,6 +214,41 @@
         ]
       }
     },
+    "/api/v1/users/{userId}": {
+      "get": {
+        "operationId": "UserController_getUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublicDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/api/v1/groups": {
       "post": {
         "description": "Creates a group.      The user is automatically added as an owner.      The owner must not be among the members.",
@@ -428,6 +463,40 @@
       }
     },
     "/api/v1/groups/{groupId}/members/{userId}": {
+      "delete": {
+        "operationId": "GroupController_removeMember",
+        "parameters": [
+          {
+            "name": "groupId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Groups"
+        ]
+      },
       "patch": {
         "operationId": "GroupController_updateMember",
         "parameters": [
@@ -665,6 +734,42 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Ledgers"
+        ]
+      }
+    },
+    "/api/v1/ledgers/{ledgerId}/participants/{userId}": {
+      "delete": {
+        "operationId": "LedgersController_removeParticipant",
+        "parameters": [
+          {
+            "name": "ledgerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
           }
         },
         "security": [
@@ -1081,6 +1186,10 @@
           },
           "fullName": {
             "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -1289,6 +1398,26 @@
           "participants"
         ]
       },
+      "LedgerParticipantPublicDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserPublicDTO"
+          }
+        },
+        "required": [
+          "userId",
+          "joinedAt",
+          "user"
+        ]
+      },
       "LedgerDto": {
         "type": "object",
         "properties": {
@@ -1323,6 +1452,12 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LedgerParticipantPublicDto"
+            }
           }
         },
         "required": [
@@ -1331,7 +1466,8 @@
           "name",
           "visibility",
           "createdById",
-          "createdAt"
+          "createdAt",
+          "participants"
         ]
       },
       "UpdateLedgerDto": {

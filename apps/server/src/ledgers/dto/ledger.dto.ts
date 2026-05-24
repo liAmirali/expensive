@@ -2,11 +2,24 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Ledger, LedgerVisibility } from '../../generated/prisma/client.js';
 import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { UserPublicDTO } from '../../users/dto/user.dto.js';
 
 export class LedgerParticipantDto {
   @ApiProperty()
   @IsString()
   userId: string;
+}
+
+export class LedgerParticipantPublicDto {
+  @ApiProperty()
+  userId!: string;
+
+  @ApiProperty()
+  joinedAt!: Date;
+
+  @ApiProperty({ type: UserPublicDTO })
+  @Type(() => UserPublicDTO)
+  user!: UserPublicDTO;
 }
 
 export class LedgerDto {
@@ -34,8 +47,13 @@ export class LedgerDto {
   @ApiProperty({ type: String, format: 'date-time', required: false, nullable: true })
   closedAt?: Date | null;
 
-  constructor(ledger: Ledger) {
+  @ApiProperty({ type: LedgerParticipantPublicDto, isArray: true })
+  @Type(() => LedgerParticipantPublicDto)
+  participants: LedgerParticipantPublicDto[];
+
+  constructor(ledger: Ledger & { participants?: LedgerParticipantPublicDto[] }) {
     Object.assign(this, ledger);
+    this.participants = ledger.participants ?? [];
   }
 }
 

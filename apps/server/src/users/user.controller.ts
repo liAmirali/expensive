@@ -3,16 +3,17 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  NotFoundException,
+  Param,
   Patch,
   Query,
-  Req,
   Body,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
-import type { Request } from 'express';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeDTO, UpdateMeDto, UserPublicDTO } from './dto/user.dto.js';
+import { CurrentUserId } from '../common/decorators/current-user.decorator.js';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -23,8 +24,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 200, type: MeDTO })
   @Get('me')
-  async me(@Req() req: Request) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  async me(@CurrentUserId() userId: ID) {
     const foundUser = await this.usersService.findById(userId);
     if (!foundUser) {
       throw new ForbiddenException('User not found.');
@@ -36,8 +36,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({ status: 200, type: MeDTO })
   @Patch('me')
-  async updateMe(@Req() req: Request, @Body() body: UpdateMeDto) {
-    const userId: ID = (req['user'] as { id: ID }).id;
+  async updateMe(@CurrentUserId() userId: ID, @Body() body: UpdateMeDto) {
     const updatedUser = await this.usersService.updateMe(userId, body);
     return new MeDTO(updatedUser);
   }
@@ -48,14 +47,24 @@ export class UserController {
   @ApiQuery({ name: 'includeSelf', required: false, type: Boolean })
   @Get('search')
   async search(
-    @Req() req: Request,
+    @CurrentUserId() userId: ID,
     @Query('q') query: string,
     @Query('includeSelf') includeSelf?: string,
   ) {
-    const userId: ID = (req['user'] as { id: ID }).id;
     const exclude = includeSelf === 'true' ? undefined : userId;
     return (await this.usersService.search(query, exclude)).map(
       (user) => new UserPublicDTO(user),
     );
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: 200, type: UserPublicDTO })
+  @Get(':userId')
+  async getUser(@Param('userId') userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+    return new UserPublicDTO(user);
   }
 }

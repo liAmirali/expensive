@@ -63,7 +63,20 @@ export class LedgersService {
           },
         },
       },
+      include: this.participantInclude(),
     });
+  }
+
+  private participantInclude() {
+    return {
+      participants: {
+        select: {
+          userId: true,
+          joinedAt: true,
+          user: { select: { id: true, email: true, fullName: true } },
+        },
+      },
+    } as const;
   }
 
   async listByGroup(groupId: ID, userId: ID) {
@@ -76,11 +89,15 @@ export class LedgersService {
 
     return this.prisma.ledger.findMany({
       where: { groupId },
+      include: this.participantInclude(),
     });
   }
 
   async findById(ledgerId: ID, userId: ID) {
-    const ledger = await this.prisma.ledger.findUnique({ where: { id: ledgerId } });
+    const ledger = await this.prisma.ledger.findUnique({
+      where: { id: ledgerId },
+      include: this.participantInclude(),
+    });
     if (!ledger) {
       throw new NotFoundException('Ledger not found.');
     }
@@ -135,6 +152,7 @@ export class LedgersService {
           visibility: dto.visibility,
           closedAt: new Date(dto.closedAt),
         },
+        include: this.participantInclude(),
       });
     }
 
@@ -145,7 +163,48 @@ export class LedgersService {
         description: dto.description,
         visibility: dto.visibility,
       },
+      include: this.participantInclude(),
     });
+  }
+
+  async removeParticipant(ledgerId: ID, userId: ID, targetUserId: ID) {
+    const ledger = await this.prisma.ledger.findUnique({ where: { id: ledgerId } });
+    if (!ledger) {
+      throw new NotFoundException('Ledger not found.');
+    }
+
+    const membership = await this.prisma.groupMembership.findFirst({
+      where: { groupId: ledger.groupId, userId, status: GroupMembershipStatus.ACTIVE },
+    });
+
+    if (!membership || (membership.role !== GroupRole.OWNER && membership.role !== GroupRole.ADMIN)) {
+      throw new BadRequestException('Not allowed to remove participant.');
+    }
+
+    const participant = await this.prisma.ledgerParticipant.findUnique({
+      where: { ledgerId_userId: { ledgerId, userId: targetUserId } },
+    });
+    if (!participant) {
+      throw new NotFoundException('Participant not found.');
+    }
+
+    const hasActivity = await this.prisma.expense.findFirst({
+      where: {
+        ledgerId,
+        OR: [
+          { payerId: targetUserId },
+          { splits: { some: { userId: targetUserId } } },
+        ],
+      },
+    });
+    if (hasActivity) {
+      throw new BadRequestException('Cannot remove participant with existing expense activity.');
+    }
+
+    await this.prisma.ledgerParticipant.delete({
+      where: { ledgerId_userId: { ledgerId, userId: targetUserId } },
+    });
+    return { ok: true };
   }
 
   async addParticipant(ledgerId: ID, userId: ID, dto: AddLedgerParticipantDto) {
