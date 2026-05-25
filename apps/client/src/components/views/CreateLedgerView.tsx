@@ -1,5 +1,5 @@
 import { ChevronRight, Lock, Users } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/Button";
@@ -63,15 +63,18 @@ export function CreateLedgerView({
     },
   });
 
+  const visibility = useWatch({ control, name: "visibility" });
+  const isPublic = visibility === LedgerVisibility.VISIBLE_TO_GROUP;
+
   const submit = (values: CreateLedgerFormValues) =>
     onSubmit({
       name: values.name,
       description: values.description || undefined,
       visibility: values.visibility,
-      participantIds: Array.from(selectedParticipantIds),
+      participantIds: isPublic ? [] : Array.from(selectedParticipantIds),
     });
 
-  const noParticipants = selectedParticipantIds.size === 0;
+  const noParticipants = !isPublic && selectedParticipantIds.size === 0;
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6 animate-fade-in" noValidate>
@@ -136,19 +139,27 @@ export function CreateLedgerView({
         )}
       />
 
-      <section className="flex flex-col gap-3">
-        <header className="flex items-center justify-between">
-          <h2 className="text-label-md font-medium text-text">شرکت‌کنندگان</h2>
-          <span className="text-body-xs text-text-muted">
-            {selectedParticipantIds.size} از {participantOptions.length}
-          </span>
-        </header>
-        <ParticipantsToggleList
-          options={participantOptions}
-          selectedIds={selectedParticipantIds}
-          onToggle={onToggleParticipant}
-        />
-      </section>
+      <p className="text-body-xs text-text-muted leading-relaxed">
+        {isPublic
+          ? "دفتر عمومی برای همهٔ اعضای گروه قابل مشاهده است، حتی اعضایی که بعداً اضافه می‌شوند."
+          : "دفتر خصوصی فقط برای شرکت‌کنندگان انتخاب‌شدهٔ دفتر قابل مشاهده است."}
+      </p>
+
+      {!isPublic && (
+        <section className="flex flex-col gap-3">
+          <header className="flex items-center justify-between">
+            <h2 className="text-label-md font-medium text-text">شرکت‌کنندگان</h2>
+            <span className="text-body-xs text-text-muted">
+              {selectedParticipantIds.size} از {participantOptions.length}
+            </span>
+          </header>
+          <ParticipantsToggleList
+            options={participantOptions}
+            selectedIds={selectedParticipantIds}
+            onToggle={onToggleParticipant}
+          />
+        </section>
+      )}
 
       {errorMessage && (
         <p role="alert" className="text-body-sm text-negative-text text-center">

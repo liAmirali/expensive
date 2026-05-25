@@ -20,7 +20,7 @@ export class LedgersService {
       },
     });
 
-    if (!membership || (membership.role !== GroupRole.OWNER && membership.role !== GroupRole.ADMIN)) {
+    if (!membership) {
       throw new BadRequestException('You are not allowed to create a ledger.');
     }
 
