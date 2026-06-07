@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { GroupService } from './group.service.js';
 import {
@@ -62,10 +63,10 @@ export class GroupController {
   })
   @ApiResponse({ status: 200, type: GroupDTO, isArray: true })
   @Get('')
-  findAll(@CurrentUserId() userId: ID) {
-    return this.groupService.findAllAccessibleGroups(userId).then((groups) =>
-      groups.map((group) => new GroupDTO(group as any)),
-    );
+  async findAll(@CurrentUserId() userId: ID) {
+    return this.groupService
+      .findAllAccessibleGroups(userId)
+      .then((groups) => groups.map((group) => new GroupDTO(group)));
   }
 
   @ApiResponse({ status: 200, type: GroupDTO })
@@ -73,7 +74,10 @@ export class GroupController {
   @Get(':groupId')
   async findOne(@Param('groupId') groupId: string) {
     const group = await this.groupService.findOne(groupId);
-    return new GroupDTO(group as any);
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+    return new GroupDTO(group);
   }
 
   @ApiOperation({
@@ -94,14 +98,14 @@ export class GroupController {
 
   @ApiOperation({
     description:
-      'Deletes a group.\
-      Only the owner can delete a group.\
-      The group is not actually deleted but marked as deleted.',
+      'Archives a group.\
+      Only the owner can archive a group.\
+      The group is not actually deleted but marked as archived.',
   })
-  @GroupRoles(GroupRole.OWNER)
-  @Delete(':groupId')
-  async deleteGroup(@CurrentUserId() userId: ID, @Param('groupId') id: string) {
-    return this.groupService.delete(id, userId);
+  @GroupRoles(GroupRole.OWNER, GroupRole.ADMIN)
+  @Post(':groupId/archive')
+  async archiveGroup(@CurrentUserId() userId: ID, @Param('groupId') id: string) {
+    return this.groupService.archive(id, userId);
   }
 
   @GroupRoles(GroupRole.OWNER, GroupRole.ADMIN)

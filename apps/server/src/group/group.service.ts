@@ -121,7 +121,10 @@ export class GroupService {
       where: { groupId, userId: who, status: GroupMembershipStatus.ACTIVE },
     });
 
-    if (!membership || (membership.role !== GroupRole.OWNER && membership.role !== GroupRole.ADMIN)) {
+    if (
+      !membership ||
+      (membership.role !== GroupRole.OWNER && membership.role !== GroupRole.ADMIN)
+    ) {
       throw new BadRequestException('You are not allowed to update this group.');
     }
 
@@ -152,13 +155,15 @@ export class GroupService {
     return updatedGroup;
   }
 
-  async delete(groupId: ID, userId: ID) {
+  async archive(groupId: ID, userId: ID) {
     const membership = await this.prismaService.groupMembership.findFirst({
       where: {
         groupId,
         userId,
         status: GroupMembershipStatus.ACTIVE,
-        role: GroupRole.OWNER,
+        role: {
+          in: [GroupRole.OWNER, GroupRole.ADMIN],
+        },
       },
     });
 
@@ -237,7 +242,11 @@ export class GroupService {
       throw new BadRequestException('Owner cannot be removed.');
     }
 
-    if (remover.role === GroupRole.ADMIN && target.role === GroupRole.ADMIN && remover.userId !== target.userId) {
+    if (
+      remover.role === GroupRole.ADMIN &&
+      target.role === GroupRole.ADMIN &&
+      remover.userId !== target.userId
+    ) {
       throw new BadRequestException('Admins cannot remove other admins.');
     }
 

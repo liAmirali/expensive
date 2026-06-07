@@ -9,12 +9,6 @@ export class GroupMembershipGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    console.log("GroupMembershipGuard: Checking group membership for request", {
-      method: request.method,
-      url: request.originalUrl,
-      params: request.params,
-      user: request.user ? { id: request.user.id } : null,
-    });
     const groupId = (request.params?.groupId || request.params?.id) as ID | undefined;
     const userId: ID | undefined = request.user?.id;
 
@@ -33,12 +27,6 @@ export class GroupMembershipGuard implements CanActivate {
     if (!membership) {
       throw new ForbiddenException('Not a group member.');
     }
-
-    console.log('GroupMembershipGuard: User is an active member of the group', {
-      groupId,
-      userId,
-      membershipId: membership.id,
-    });
 
     request.groupMembership = membership;
     return true;
